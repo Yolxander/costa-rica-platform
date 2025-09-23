@@ -18,6 +18,7 @@ class PropertySeeder extends Seeder
                 'name' => 'Beachfront Villa - Malibu',
                 'type' => 'Vacation Rental',
                 'status' => 'Active',
+                'approval_status' => fake()->randomElement(['approved', 'approved', 'approved', 'pending']), // Mostly approved
                 'location' => 'Malibu, California',
                 'description' => 'A stunning beachfront villa with panoramic ocean views and direct beach access. Perfect for luxury getaways.',
                 'amenities' => ['wifi', 'parking', 'pool', 'kitchen', 'mountain_view', 'security'],
@@ -50,6 +51,7 @@ class PropertySeeder extends Seeder
                 'name' => 'Downtown Loft - NYC',
                 'type' => 'Short Term Rental',
                 'status' => 'Active',
+                'approval_status' => fake()->randomElement(['approved', 'approved', 'approved', 'pending']), // Mostly approved
                 'location' => 'New York, New York',
                 'description' => 'Modern loft in the heart of Manhattan with stunning city views and all amenities.',
                 'amenities' => ['wifi', 'kitchen', 'gym', 'security'],
@@ -81,6 +83,7 @@ class PropertySeeder extends Seeder
                 'name' => 'Mountain Cabin - Aspen',
                 'type' => 'Vacation Rental',
                 'status' => 'Active',
+                'approval_status' => fake()->randomElement(['approved', 'approved', 'approved', 'pending']), // Mostly approved
                 'location' => 'Aspen, Colorado',
                 'description' => 'Cozy mountain cabin with fireplace, hot tub, and breathtaking mountain views.',
                 'amenities' => ['wifi', 'parking', 'pool', 'mountain_view'],
@@ -143,6 +146,7 @@ class PropertySeeder extends Seeder
                 'name' => 'Lake House - Tahoe',
                 'type' => 'Vacation Rental',
                 'status' => 'Active',
+                'approval_status' => fake()->randomElement(['approved', 'approved', 'approved', 'pending']), // Mostly approved
                 'location' => 'Lake Tahoe, California',
                 'description' => 'Beautiful lakefront property with private dock, perfect for water activities and relaxation.',
                 'amenities' => ['wifi', 'parking', 'pool', 'kitchen'],
@@ -174,6 +178,7 @@ class PropertySeeder extends Seeder
                 'name' => 'Desert Retreat - Palm Springs',
                 'type' => 'Vacation Rental',
                 'status' => 'Active',
+                'approval_status' => fake()->randomElement(['approved', 'approved', 'approved', 'pending']), // Mostly approved
                 'location' => 'Palm Springs, California',
                 'description' => 'Stylish desert retreat with private pool, mountain views, and modern amenities.',
                 'amenities' => ['wifi', 'parking', 'pool', 'kitchen', 'mountain_view'],
@@ -205,6 +210,7 @@ class PropertySeeder extends Seeder
                 'name' => 'Historic Townhouse - Boston',
                 'type' => 'Short Term Rental',
                 'status' => 'Active',
+                'approval_status' => fake()->randomElement(['approved', 'approved', 'approved', 'pending']), // Mostly approved
                 'location' => 'Boston, Massachusetts',
                 'description' => 'Charming historic townhouse in the heart of Boston with modern updates and classic charm.',
                 'amenities' => ['wifi', 'kitchen'],

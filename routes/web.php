@@ -178,41 +178,76 @@ Route::middleware(['auth', 'verified'])->group(function () {
 // Admin routes
 Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('dashboard', function () {
-        // Get properties data from database and transform to match the expected format
-        $properties = \App\Models\Property::all()->map(function ($property) {
+        // Get properties data with approval status
+        $properties = \App\Models\Property::with('user')->get()->map(function ($property) {
             return [
                 'id' => $property->id,
                 'property' => $property->name,
                 'type' => $property->type,
                 'status' => $property->status,
+                'approval_status' => $property->approval_status,
+                'host_name' => $property->user->name,
                 'views_7d' => (string) $property->views_7d,
                 'views_30d' => (string) $property->views_30d,
                 'inquiries' => (string) $property->inquiries,
                 'bookings' => (string) $property->bookings,
+                'created_at' => $property->created_at->format('Y-m-d'),
             ];
         })->toArray();
 
         // Get hosts data
-        $hosts = \App\Models\User::where('role', 'host')->get()->map(function ($host) {
+        $hosts = \App\Models\User::where('role', 'host')->with('hostSubscription')->get()->map(function ($host) {
             return [
                 'id' => $host->id,
                 'name' => $host->name,
                 'email' => $host->email,
                 'properties_count' => \App\Models\Property::where('user_id', $host->id)->count(),
-                'status' => 'active',
+                'subscription_status' => $host->hostSubscription?->status ?? 'none',
+                'subscription_expires' => $host->hostSubscription?->end_date?->format('Y-m-d'),
                 'joined_at' => $host->created_at->diffForHumans(),
             ];
         })->toArray();
 
-        // Calculate totals
-        $total_inquiries = \App\Models\Property::sum('inquiries');
-        $total_revenue = \App\Models\Property::sum('bookings') * 100; // Assuming $100 per booking
+        // Calculate admin-specific metrics
+        $total_listings = \App\Models\Property::count();
+        $active_listings = \App\Models\Property::where('approval_status', 'approved')->count();
+        $pending_approvals = \App\Models\Property::where('approval_status', 'pending')->count();
+
+        $expiring_subscriptions = \App\Models\HostSubscription::where('status', 'active')
+            ->where('end_date', '<=', now()->addDays(30))
+            ->count();
+
+        $recent_inquiries = \App\Models\Inquiry::where('sent_at', '>=', now()->subDays(7))->count();
+
+        $yearly_revenue = \App\Models\HostSubscription::where('status', 'active')
+            ->sum('yearly_fee');
+
+        // Get site analytics data for the last 7 days
+        $site_analytics = \App\Models\SiteAnalytic::where('date', '>=', now()->subDays(7))
+            ->orderBy('date')
+            ->get()
+            ->map(function ($analytic) {
+                return [
+                    'date' => $analytic->date->format('Y-m-d'),
+                    'page_views' => $analytic->page_views,
+                    'unique_visitors' => $analytic->unique_visitors,
+                    'property_views' => $analytic->property_views,
+                    'inquiry_submissions' => $analytic->inquiry_submissions,
+                    'bounce_rate' => $analytic->bounce_rate,
+                    'avg_session_duration' => $analytic->avg_session_duration,
+                ];
+            });
 
         return Inertia::render('admin/admin-dashboard', [
             'properties' => $properties,
             'hosts' => $hosts,
-            'total_inquiries' => $total_inquiries,
-            'total_revenue' => $total_revenue,
+            'total_listings' => $total_listings,
+            'active_listings' => $active_listings,
+            'pending_approvals' => $pending_approvals,
+            'expiring_subscriptions' => $expiring_subscriptions,
+            'recent_inquiries' => $recent_inquiries,
+            'yearly_revenue' => $yearly_revenue,
+            'site_analytics' => $site_analytics,
         ]);
     })->name('dashboard');
 

@@ -87,4 +87,20 @@ class User extends Authenticatable
     {
         return $this->hasMany(Property::class);
     }
+
+    /**
+     * Get the host subscription for the user.
+     */
+    public function hostSubscription()
+    {
+        return $this->hasOne(HostSubscription::class);
+    }
+
+    /**
+     * Get the inquiries sent to this user (host).
+     */
+    public function inquiries()
+    {
+        return $this->hasMany(Inquiry::class);
+    }
 }

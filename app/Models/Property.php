@@ -11,6 +11,7 @@ class Property extends Model
         'name',
         'type',
         'status',
+        'approval_status',
         'location',
         'description',
         'amenities',
@@ -53,5 +54,13 @@ class Property extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the inquiries for the property.
+     */
+    public function inquiries()
+    {
+        return $this->hasMany(Inquiry::class);
     }
 }
