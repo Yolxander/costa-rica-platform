@@ -14,6 +14,9 @@ export function SiteHeader() {
     if (page.url === "/listings") {
       return "Listings Management"
     }
+    if (page.url.startsWith("/property/")) {
+      return "Property Details"
+    }
     return "Documents"
   }
   return (

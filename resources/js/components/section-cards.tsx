@@ -1,5 +1,4 @@
 import { IconTrendingDown, IconTrendingUp, IconEye, IconMessage, IconCalendar, IconBell } from "@tabler/icons-react"
-import data from "@/pages/data.json"
 
 import { Badge } from "@/components/ui/badge"
 import {
@@ -11,15 +10,28 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 
-export function SectionCards() {
+interface SectionCardsProps {
+  properties: Array<{
+    id: number
+    property: string
+    type: string
+    status: string
+    views_7d: string
+    views_30d: string
+    inquiries: string
+    bookings: string
+  }>
+}
+
+export function SectionCards({ properties }: SectionCardsProps) {
   // Calculate metrics from property data
-  const totalViews7d = data.reduce((sum, property) => sum + parseInt(property.views_7d), 0)
-  const totalViews30d = data.reduce((sum, property) => sum + parseInt(property.views_30d), 0)
-  const totalInquiries = data.reduce((sum, property) => sum + parseInt(property.inquiries), 0)
-  const totalBookings = data.reduce((sum, property) => sum + parseInt(property.bookings), 0)
+  const totalViews7d = properties.reduce((sum, property) => sum + parseInt(property.views_7d), 0)
+  const totalViews30d = properties.reduce((sum, property) => sum + parseInt(property.views_30d), 0)
+  const totalInquiries = properties.reduce((sum, property) => sum + parseInt(property.inquiries), 0)
+  const totalBookings = properties.reduce((sum, property) => sum + parseInt(property.bookings), 0)
 
   // Calculate notifications (inquiries + incomplete items)
-  const incompleteItems = data.filter(property => property.status === "Maintenance").length
+  const incompleteItems = properties.filter(property => property.status === "Maintenance").length
   const notifications = totalInquiries + incompleteItems
   return (
     <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">

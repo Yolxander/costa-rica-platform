@@ -7,10 +7,24 @@ import {
     SidebarInset,
     SidebarProvider,
 } from "@/components/ui/sidebar"
+import { usePage } from "@inertiajs/react"
+import { SharedData } from "@/types"
 
-import data from "./data.json"
+interface DashboardPageProps extends SharedData {
+    properties: Array<{
+        id: number
+        property: string
+        type: string
+        status: string
+        views_7d: string
+        views_30d: string
+        inquiries: string
+        bookings: string
+    }>
+}
 
 export default function Page() {
+    const { properties } = usePage<DashboardPageProps>().props
     return (
         <SidebarProvider
             style={
@@ -26,11 +40,11 @@ export default function Page() {
                 <div className="flex flex-1 flex-col">
                     <div className="@container/main flex flex-1 flex-col gap-2">
                         <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-                            <SectionCards />
+                            <SectionCards properties={properties} />
                             <div className="px-4 lg:px-6">
                                 <ChartAreaInteractive />
                             </div>
-                            <PropertyTable data={data} />
+                            <PropertyTable data={properties} />
                         </div>
                     </div>
                 </div>

@@ -26,68 +26,26 @@ import {
   Calendar,
   DollarSign
 } from "lucide-react"
+import { usePage } from "@inertiajs/react"
+import { SharedData } from "@/types"
 
-// Mock data for properties
-const mockProperties = [
-  {
-    id: 1,
-    title: "Beachfront Villa in Manuel Antonio",
-    location: "Manuel Antonio, Costa Rica",
-    status: "active",
-    thumbnail: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=300&h=200&fit=crop&crop=center",
-    price: "$2,800/month",
-    bedrooms: 3,
-    bathrooms: 2,
-    lastUpdated: "2 days ago"
-  },
-  {
-    id: 2,
-    title: "Mountain Retreat in Monteverde",
-    location: "Monteverde, Costa Rica",
-    status: "paused",
-    thumbnail: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=300&h=200&fit=crop&crop=center",
-    price: "$1,900/month",
-    bedrooms: 2,
-    bathrooms: 1,
-    lastUpdated: "1 week ago"
-  },
-  {
-    id: 3,
-    title: "Luxury Oceanview Condo in Tamarindo",
-    location: "Tamarindo, Costa Rica",
-    status: "active",
-    thumbnail: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=300&h=200&fit=crop&crop=center",
-    price: "$3,500/month",
-    bedrooms: 4,
-    bathrooms: 3,
-    lastUpdated: "3 days ago"
-  },
-  {
-    id: 4,
-    title: "Tropical House in La Fortuna",
-    location: "La Fortuna, Costa Rica",
-    status: "active",
-    thumbnail: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=300&h=200&fit=crop&crop=center",
-    price: "$2,200/month",
-    bedrooms: 3,
-    bathrooms: 2,
-    lastUpdated: "5 days ago"
-  },
-  {
-    id: 5,
-    title: "Beach House in Santa Teresa",
-    location: "Santa Teresa, Costa Rica",
-    status: "paused",
-    thumbnail: "https://images.unsplash.com/photo-1600607687644-c7171b42498b?w=300&h=200&fit=crop&crop=center",
-    price: "$2,600/month",
-    bedrooms: 2,
-    bathrooms: 2,
-    lastUpdated: "1 week ago"
-  }
-]
+interface ListingsPageProps extends SharedData {
+  properties: Array<{
+    id: number
+    title: string
+    location: string
+    status: string
+    price: string
+    bedrooms: number
+    bathrooms: number
+    lastUpdated: string
+    thumbnail: string
+  }>
+}
 
 export default function ListingsPage() {
-  const [properties, setProperties] = useState(mockProperties)
+  const { properties: dbProperties } = usePage<ListingsPageProps>().props
+  const [properties, setProperties] = useState(dbProperties)
   const [showModal, setShowModal] = useState(false)
   const [editingProperty, setEditingProperty] = useState(null)
 

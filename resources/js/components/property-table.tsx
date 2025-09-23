@@ -9,6 +9,7 @@ import {
   IconChevronDown,
   IconChevronUp,
 } from "@tabler/icons-react"
+import { Link } from "@inertiajs/react"
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -99,12 +100,15 @@ const columns: ColumnDef<z.infer<typeof propertySchema>>[] = [
     header: "Property",
     cell: ({ row }) => {
       return (
-        <div className="flex flex-col gap-1">
+        <Link
+          href={`/property/${row.original.id}`}
+          className="flex flex-col gap-1 hover:bg-accent/50 rounded-md p-1 -m-1 transition-colors"
+        >
           <div className="font-medium">{row.original.property}</div>
           <div className="text-sm text-muted-foreground">
             {row.original.type}
           </div>
-        </div>
+        </Link>
       )
     },
     enableHiding: false,

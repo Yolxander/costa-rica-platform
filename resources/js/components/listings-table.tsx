@@ -14,6 +14,7 @@ import {
   IconMapPin,
   IconCurrencyDollar,
 } from "@tabler/icons-react"
+import { Link } from "@inertiajs/react"
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -100,7 +101,10 @@ const columns: ColumnDef<z.infer<typeof listingSchema>>[] = [
     header: "Property",
     cell: ({ row }) => {
       return (
-        <div className="flex items-center gap-3">
+        <Link
+          href={`/property/${row.original.id}`}
+          className="flex items-center gap-3 hover:bg-accent/50 rounded-md p-1 -m-1 transition-colors"
+        >
           <div className="w-12 h-12 bg-gray-100 rounded-md flex-shrink-0">
             <img
               src={row.original.thumbnail}
@@ -115,7 +119,7 @@ const columns: ColumnDef<z.infer<typeof listingSchema>>[] = [
               {row.original.location}
             </div>
           </div>
-        </div>
+        </Link>
       )
     },
     enableHiding: false,
