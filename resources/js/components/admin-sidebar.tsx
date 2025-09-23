@@ -22,7 +22,7 @@ import {
   IconChartBar,
 } from "@tabler/icons-react"
 
-import { NavMain } from "@/components/nav-main"
+import { AdminNavMain } from "@/components/admin-nav-main"
 import { NavGroup } from "@/components/nav-group"
 import { NavSecondary } from "@/components/nav-secondary"
 import { AdminNavUser } from "@/components/admin-nav-user"
@@ -124,7 +124,7 @@ export function AdminSidebar({ ...props }: React.ComponentProps<typeof Sidebar>)
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <AdminNavMain items={data.navMain} />
         <NavGroup items={data.navManagement} label="Management" />
         <NavGroup items={data.navContent} label="Content & Support" />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
