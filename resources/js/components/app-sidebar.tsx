@@ -129,16 +129,19 @@ const data = {
       title: "Settings",
       url: "#",
       icon: IconSettings,
+      lockIcon: IconLock,
     },
     {
       title: "Get Help",
       url: "#",
       icon: IconHelp,
+      lockIcon: IconLock,
     },
     {
       title: "Search",
       url: "#",
       icon: IconSearch,
+      lockIcon: IconLock,
     },
   ],
 }

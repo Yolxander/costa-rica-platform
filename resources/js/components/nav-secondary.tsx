@@ -19,6 +19,7 @@ export function NavSecondary({
     title: string
     url: string
     icon: Icon
+    lockIcon?: Icon
   }[]
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
   return (
@@ -31,6 +32,9 @@ export function NavSecondary({
                 <a href={item.url}>
                   <item.icon />
                   <span>{item.title}</span>
+                  {item.lockIcon && (
+                    <item.lockIcon className="ml-auto h-4 w-4 text-muted-foreground" />
+                  )}
                 </a>
               </SidebarMenuButton>
             </SidebarMenuItem>
