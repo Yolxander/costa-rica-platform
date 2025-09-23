@@ -1,5 +1,6 @@
 import { IconCirclePlusFilled, IconBell, type Icon } from "@tabler/icons-react"
 import { usePage } from "@inertiajs/react"
+import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -9,6 +10,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import { AddPropertyModal } from "@/components/add-property-modal"
 
 export function NavMain({
   items,
@@ -20,17 +22,28 @@ export function NavMain({
   }[]
 }) {
   const page = usePage()
+  const [isAddPropertyModalOpen, setIsAddPropertyModalOpen] = useState(false)
+
+  const handleAddPropertyClick = () => {
+    setIsAddPropertyModalOpen(true)
+  }
+
+  const handleCloseModal = () => {
+    setIsAddPropertyModalOpen(false)
+  }
+
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center gap-2">
             <SidebarMenuButton
-              tooltip="Quick Create"
+              tooltip="Add New Property"
               className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8 duration-200 ease-linear"
+              onClick={handleAddPropertyClick}
             >
               <IconCirclePlusFilled />
-              <span>Quick Create</span>
+              <span>Add New Property</span>
             </SidebarMenuButton>
             <Button
               size="icon"
@@ -59,6 +72,10 @@ export function NavMain({
           })}
         </SidebarMenu>
       </SidebarGroupContent>
+      <AddPropertyModal
+        isOpen={isAddPropertyModalOpen}
+        onClose={handleCloseModal}
+      />
     </SidebarGroup>
   )
 }
