@@ -246,15 +246,11 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
 Route::middleware('guest')->group(function () {
     Route::get('admin/login', [AdminAuthenticatedSessionController::class, 'create'])
         ->name('admin.login');
-    
+
     Route::post('admin/login', [AdminAuthenticatedSessionController::class, 'store'])
         ->name('admin.login.store');
 });
 
-// Test route to verify server is working
-Route::get('test', function () {
-    return response()->json(['message' => 'Server is working']);
-});
 
 Route::middleware('auth')->group(function () {
     Route::post('admin/logout', [AdminAuthenticatedSessionController::class, 'destroy'])

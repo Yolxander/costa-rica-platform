@@ -41,7 +41,7 @@ export function AdminNavUser({
   const { post } = useForm()
 
   const handleLogout = () => {
-    post(route('admin.logout'))
+    post('/admin/logout')
   }
 
   return (

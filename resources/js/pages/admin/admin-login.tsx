@@ -29,7 +29,7 @@ export default function AdminLogin({ status, canResetPassword }: AdminLoginProps
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(route('admin.login.store'), {
+        post('/admin/login', {
             onStart: () => setProcessing(true),
             onFinish: () => setProcessing(false),
             onSuccess: () => reset(),
