@@ -1,8 +1,8 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/react-starter-kit",
+    "name": "costa-rica-rental-hub/platform",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "Costa Rica Rental Hub - A community-driven vacation rental platform for Costa Rica properties.",
     "keywords": [
         "laravel",
         "framework"

@@ -1,8 +1,29 @@
-# Laravel + React Starter Kit
+# Costa Rica Rental Hub
 
-A modern, full-stack starter kit combining Laravel 12 with React, Inertia.js, and shadcn/ui components for rapid application development.
+A community-driven vacation rental platform built to connect travelers directly with property hosts across Costa Rica. Unlike traditional booking sites (Airbnb, Booking.com), this platform charges no commission fees — instead, hosts pay a simple flat yearly subscription to list their property.
 
-## 🚀 Features
+## 🎯 Goals
+
+- Provide Costa Rica property owners with an affordable alternative to commission-heavy platforms
+- Give travelers a seamless way to browse by popular regions (Guanacaste, Tamarindo, Manuel Antonio, etc.)
+- Create a mobile-first, bilingual (English/Spanish) experience for international visitors and local hosts
+- Build an admin system that scales, allowing easy listing approvals and subscription management
+
+## ✨ Core Features
+
+- **Regional Browsing** – Properties organized by Costa Rica's most popular destinations
+- **Flat Yearly Fee System** – Hosts list properties with no hidden charges or commissions
+- **Host Dashboard** – Upload photos, edit details, manage availability, view inquiries & analytics
+- **Traveler Search & Filters** – Location, price range, amenities, bedrooms, etc.
+- **Availability Calendar** – Hosts can block off dates; travelers see real-time availability
+- **Direct Contact** – Inquiries routed directly to host (email, WhatsApp, or phone)
+- **Admin Panel** – Manage property approvals, subscription renewals, and overall platform activity
+- **Mobile-First Design** – Optimized for travelers searching on their phones
+- **Bilingual Interface** – Fully accessible in English + Spanish
+
+## 🚀 Tech Stack
+
+This platform is built with modern web technologies:
 
 - **Laravel 12** - Latest Laravel framework with modern PHP 8.2+ features
 - **React 19** - Latest React with TypeScript support
@@ -15,7 +36,7 @@ A modern, full-stack starter kit combining Laravel 12 with React, Inertia.js, an
 - **TypeScript** - Full TypeScript support for both frontend and backend
 - **Vite** - Lightning-fast build tool with HMR
 - **ESLint + Prettier** - Code formatting and linting
-- **SQLite** - Ready-to-use database (easily switchable to MySQL/PostgreSQL)
+- **MYSQL** - Ready-to-use database
 
 ## 📋 Prerequisites
 
@@ -30,7 +51,7 @@ A modern, full-stack starter kit combining Laravel 12 with React, Inertia.js, an
 
 ```bash
 git clone <repository-url>
-cd shadcn-laravel-app
+cd costa-rica-rental-hub
 ```
 
 ### 2. Install PHP dependencies
@@ -141,7 +162,7 @@ Your application will be available at `http://127.0.0.1:8000`
 
 ## 🎨 UI Components
 
-This starter kit includes a comprehensive set of shadcn/ui components:
+This platform includes a comprehensive set of shadcn/ui components:
 
 - **Form Components**: Input, Select, Checkbox, Button, etc.
 - **Layout Components**: Dialog, Sheet, Navigation Menu
@@ -286,6 +307,6 @@ npm install
 
 ---
 
-**Happy coding! 🎉**
+**Happy coding! 🎉
 
 For questions or support, please open an issue in the repository.
