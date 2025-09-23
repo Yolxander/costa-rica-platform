@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Property extends Model
 {
     protected $fillable = [
+        'user_id',
         'name',
         'type',
         'status',
@@ -45,4 +46,12 @@ class Property extends Model
         'service_fee' => 'decimal:2',
         'rating' => 'decimal:2',
     ];
+
+    /**
+     * Get the user that owns the property.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

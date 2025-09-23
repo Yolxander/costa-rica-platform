@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\Admin\Auth\AdminAuthenticatedSessionController;
 
 Route::get('/', function () {
     return Inertia::render('welcome');
@@ -172,6 +173,92 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'property' => $property
         ]);
     })->name('property.details');
+});
+
+// Admin routes
+Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('dashboard', function () {
+        // Get properties data from database and transform to match the expected format
+        $properties = \App\Models\Property::all()->map(function ($property) {
+            return [
+                'id' => $property->id,
+                'property' => $property->name,
+                'type' => $property->type,
+                'status' => $property->status,
+                'views_7d' => (string) $property->views_7d,
+                'views_30d' => (string) $property->views_30d,
+                'inquiries' => (string) $property->inquiries,
+                'bookings' => (string) $property->bookings,
+            ];
+        })->toArray();
+
+        // Get hosts data
+        $hosts = \App\Models\User::where('role', 'host')->get()->map(function ($host) {
+            return [
+                'id' => $host->id,
+                'name' => $host->name,
+                'email' => $host->email,
+                'properties_count' => \App\Models\Property::where('user_id', $host->id)->count(),
+                'status' => 'active',
+                'joined_at' => $host->created_at->diffForHumans(),
+            ];
+        })->toArray();
+
+        // Calculate totals
+        $total_inquiries = \App\Models\Property::sum('inquiries');
+        $total_revenue = \App\Models\Property::sum('bookings') * 100; // Assuming $100 per booking
+
+        return Inertia::render('admin/admin-dashboard', [
+            'properties' => $properties,
+            'hosts' => $hosts,
+            'total_inquiries' => $total_inquiries,
+            'total_revenue' => $total_revenue,
+        ]);
+    })->name('dashboard');
+
+    // Placeholder routes for other admin pages
+    Route::get('hosts', function () {
+        return Inertia::render('admin/host-management');
+    })->name('hosts');
+
+    Route::get('properties', function () {
+        return Inertia::render('admin/property-listings');
+    })->name('properties');
+
+    Route::get('billing', function () {
+        return Inertia::render('admin/renewals-billing');
+    })->name('billing');
+
+    Route::get('content', function () {
+        return Inertia::render('admin/content-management');
+    })->name('content');
+
+    Route::get('inquiries', function () {
+        return Inertia::render('admin/traveler-inquiries');
+    })->name('inquiries');
+
+    Route::get('analytics', function () {
+        return Inertia::render('admin/analytics-reports');
+    })->name('analytics');
+});
+
+// Admin authentication routes
+Route::middleware('guest')->group(function () {
+    Route::get('admin/login', [AdminAuthenticatedSessionController::class, 'create'])
+        ->name('admin.login');
+    
+    Route::post('admin/login', [AdminAuthenticatedSessionController::class, 'store'])
+        ->name('admin.login.store');
+});
+
+// Test route to verify server is working
+Route::get('test', function () {
+    return response()->json(['message' => 'Server is working']);
+});
+
+Route::middleware('auth')->group(function () {
+    Route::post('admin/logout', [AdminAuthenticatedSessionController::class, 'destroy'])
+        ->name('admin.logout');
 });
 
 require __DIR__.'/settings.php';

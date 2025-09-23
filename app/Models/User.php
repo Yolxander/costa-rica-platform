@@ -22,6 +22,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -45,5 +46,45 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Check if user is an admin
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    /**
+     * Check if user is a team member
+     */
+    public function isTeamMember(): bool
+    {
+        return $this->role === 'team_member';
+    }
+
+    /**
+     * Check if user is a host
+     */
+    public function isHost(): bool
+    {
+        return $this->role === 'host';
+    }
+
+    /**
+     * Check if user has admin access (admin or team member)
+     */
+    public function hasAdminAccess(): bool
+    {
+        return $this->isAdmin() || $this->isTeamMember();
+    }
+
+    /**
+     * Get the properties for the user.
+     */
+    public function properties()
+    {
+        return $this->hasMany(Property::class);
     }
 }

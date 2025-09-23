@@ -113,6 +113,12 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                             Sign up
                                         </Link>
                                     </div>
+
+                                    <div className="text-center text-sm text-muted-foreground">
+                                        <Link href="/admin/login" className="underline underline-offset-4 text-primary">
+                                            Admin Login
+                                        </Link>
+                                    </div>
                                 </>
                             )}
                         </Form>

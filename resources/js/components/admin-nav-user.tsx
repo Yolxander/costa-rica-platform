@@ -26,10 +26,9 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { Link, router } from "@inertiajs/react"
-import { logout } from "@/routes"
+import { useForm } from '@inertiajs/react'
 
-export function NavUser({
+export function AdminNavUser({
   user,
 }: {
   user: {
@@ -39,9 +38,10 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+  const { post } = useForm()
 
   const handleLogout = () => {
-    router.flushAll()
+    post(route('admin.logout'))
   }
 
   return (
@@ -90,7 +90,7 @@ export function NavUser({
             <DropdownMenuGroup>
               <DropdownMenuItem>
                 <IconUserCircle />
-                Account
+                Admin Account
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <IconCreditCard />
@@ -102,17 +102,9 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link
-                className="block w-full"
-                href={logout()}
-                as="button"
-                onClick={handleLogout}
-                data-test="logout-button"
-              >
-                <IconLogout />
-                Log out
-              </Link>
+            <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+              <IconLogout />
+              Log out
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
