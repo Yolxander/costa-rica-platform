@@ -75,10 +75,12 @@ type ContextType = {
   date: Date;
   setDate: (date: Date) => void;
   events: CalendarEvent[];
+  dateAvailability: CalendarDateStatus;
   locale: Locale;
   setEvents: (date: CalendarEvent[]) => void;
   onChangeView?: (view: View) => void;
   onEventClick?: (event: CalendarEvent) => void;
+  onDateClick?: (date: Date, availability: DateAvailability | null) => void;
   enableHotkeys?: boolean;
   today: Date;
 };
@@ -93,15 +95,27 @@ export type CalendarEvent = {
   color?: VariantProps<typeof monthEventVariants>['variant'];
 };
 
+export type DateAvailability = {
+  date: Date;
+  status: 'available' | 'blocked' | 'pending-inquiry' | 'maintenance';
+  reason?: string;
+};
+
+export type CalendarDateStatus = {
+  [dateKey: string]: DateAvailability;
+};
+
 type CalendarProps = {
   children: ReactNode;
   defaultDate?: Date;
   events?: CalendarEvent[];
+  dateAvailability?: CalendarDateStatus;
   view?: View;
   locale?: Locale;
   enableHotkeys?: boolean;
   onChangeView?: (view: View) => void;
   onEventClick?: (event: CalendarEvent) => void;
+  onDateClick?: (date: Date, availability: DateAvailability | null) => void;
 };
 
 const Calendar = ({
@@ -112,7 +126,9 @@ const Calendar = ({
   view: _defaultMode = 'month',
   onEventClick,
   events: defaultEvents = [],
+  dateAvailability = {},
   onChangeView,
+  onDateClick,
 }: CalendarProps) => {
   const [view, setView] = useState<View>(_defaultMode);
   const [date, setDate] = useState(defaultDate);
@@ -148,9 +164,11 @@ const Calendar = ({
         setDate,
         events,
         setEvents,
+        dateAvailability,
         locale,
         enableHotkeys,
         onEventClick,
+        onDateClick,
         onChangeView,
         today: new Date(),
       }}
@@ -325,12 +343,18 @@ const CalendarWeekView = () => {
 };
 
 const CalendarMonthView = () => {
-  const { date, view, events, locale } = useCalendar();
+  const { date, view, events, locale, dateAvailability, onDateClick } = useCalendar();
 
   const monthDates = useMemo(() => getDaysInMonth(date), [date]);
   const weekDays = useMemo(() => generateWeekdays(locale), [locale]);
 
   if (view !== 'month') return null;
+
+  const handleDateClick = (clickedDate: Date) => {
+    const dateKey = getDateKey(clickedDate);
+    const availability = dateAvailability[dateKey] || null;
+    onDateClick?.(clickedDate, availability);
+  };
 
   return (
     <div className="h-full flex flex-col">
@@ -353,13 +377,21 @@ const CalendarMonthView = () => {
             isSameDay(event.start, _date)
           );
 
+          const dateKey = getDateKey(_date);
+          const availability = dateAvailability[dateKey];
+          const statusColor = availability ? getDateStatusColor(availability.status) : '';
+
           return (
             <div
               className={cn(
-                'ring-1 p-2 text-sm text-muted-foreground ring-border overflow-auto',
-                !isSameMonth(date, _date) && 'text-muted-foreground/50'
+                'ring-1 p-2 text-sm text-muted-foreground ring-border overflow-auto cursor-pointer transition-colors hover:bg-accent/50',
+                !isSameMonth(date, _date) && 'text-muted-foreground/50',
+                statusColor && 'border-2',
+                statusColor
               )}
               key={_date.toString()}
+              onClick={() => handleDateClick(_date)}
+              title={availability ? `Status: ${availability.status}${availability.reason ? ` - ${availability.reason}` : ''}` : 'Click to manage availability'}
             >
               <span
                 className={cn(
@@ -633,6 +665,25 @@ const generateWeekdays = (locale: Locale) => {
     daysOfWeek.push(format(date, 'EEEEEE', { locale }));
   }
   return daysOfWeek;
+};
+
+const getDateKey = (date: Date) => {
+  return format(date, 'yyyy-MM-dd');
+};
+
+const getDateStatusColor = (status: DateAvailability['status']) => {
+  switch (status) {
+    case 'available':
+      return 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800';
+    case 'blocked':
+      return 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800';
+    case 'pending-inquiry':
+      return 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800';
+    case 'maintenance':
+      return 'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800';
+    default:
+      return '';
+  }
 };
 
 export {
