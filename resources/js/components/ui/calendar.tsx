@@ -143,7 +143,7 @@ const Calendar = ({
     <Context.Provider
       value={{
         view,
-        setView,
+        setView: changeView,
         date,
         setDate,
         events,
