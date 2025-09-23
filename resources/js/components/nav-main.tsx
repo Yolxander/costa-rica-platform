@@ -10,6 +10,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import { QuickAddModal } from "@/components/quick-add-modal"
 import { AddPropertyModal } from "@/components/add-property-modal"
 
 export function NavMain({
@@ -22,14 +23,33 @@ export function NavMain({
   }[]
 }) {
   const page = usePage()
+  const [isQuickAddModalOpen, setIsQuickAddModalOpen] = useState(false)
   const [isAddPropertyModalOpen, setIsAddPropertyModalOpen] = useState(false)
 
-  const handleAddPropertyClick = () => {
+  const handleQuickAddClick = () => {
+    setIsQuickAddModalOpen(true)
+  }
+
+  const handleCloseQuickAddModal = () => {
+    setIsQuickAddModalOpen(false)
+  }
+
+  const handleAddProperty = () => {
     setIsAddPropertyModalOpen(true)
   }
 
-  const handleCloseModal = () => {
+  const handleCloseAddPropertyModal = () => {
     setIsAddPropertyModalOpen(false)
+  }
+
+  const handleUpdateAvailability = () => {
+    // TODO: Implement update availability functionality
+    console.log("Update availability clicked")
+  }
+
+  const handleUploadImage = () => {
+    // TODO: Implement upload image functionality
+    console.log("Upload image clicked")
   }
 
   return (
@@ -38,12 +58,12 @@ export function NavMain({
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center gap-2">
             <SidebarMenuButton
-              tooltip="Add New Property"
+              tooltip="Quick Add"
               className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8 duration-200 ease-linear"
-              onClick={handleAddPropertyClick}
+              onClick={handleQuickAddClick}
             >
               <IconCirclePlusFilled />
-              <span>Add New Property</span>
+              <span>+ Quick Add</span>
             </SidebarMenuButton>
             <Button
               size="icon"
@@ -75,9 +95,16 @@ export function NavMain({
           })}
         </SidebarMenu>
       </SidebarGroupContent>
+      <QuickAddModal
+        isOpen={isQuickAddModalOpen}
+        onClose={handleCloseQuickAddModal}
+        onAddProperty={handleAddProperty}
+        onUpdateAvailability={handleUpdateAvailability}
+        onUploadImage={handleUploadImage}
+      />
       <AddPropertyModal
         isOpen={isAddPropertyModalOpen}
-        onClose={handleCloseModal}
+        onClose={handleCloseAddPropertyModal}
       />
     </SidebarGroup>
   )
