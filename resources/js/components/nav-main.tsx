@@ -1,4 +1,4 @@
-import { IconCirclePlusFilled, IconMail, type Icon } from "@tabler/icons-react"
+import { IconCirclePlusFilled, IconBell, type Icon } from "@tabler/icons-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -35,8 +35,8 @@ export function NavMain({
               className="size-8 group-data-[collapsible=icon]:opacity-0"
               variant="outline"
             >
-              <IconMail />
-              <span className="sr-only">Inbox</span>
+              <IconBell />
+              <span className="sr-only">Notifications</span>
             </Button>
           </SidebarMenuItem>
         </SidebarMenu>

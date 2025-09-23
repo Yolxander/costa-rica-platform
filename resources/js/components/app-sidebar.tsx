@@ -1,24 +1,24 @@
 import * as React from "react"
 import {
   IconCamera,
-  IconChartBar,
-  IconDashboard,
-  IconDatabase,
   IconFileAi,
   IconFileDescription,
-  IconFileWord,
   IconFolder,
   IconHelp,
   IconInnerShadowTop,
-  IconListDetails,
-  IconReport,
   IconSearch,
   IconSettings,
-  IconUsers,
+  IconHome,
+  IconList,
+  IconCalendar,
+  IconMessage,
+  IconChartLine,
+  IconCreditCard,
+  IconBell,
 } from "@tabler/icons-react"
 
-import { NavDocuments } from "@/components/nav-documents"
 import { NavMain } from "@/components/nav-main"
+import { NavGroup } from "@/components/nav-group"
 import { NavSecondary } from "@/components/nav-secondary"
 import { NavUser } from "@/components/nav-user"
 import {
@@ -39,29 +39,43 @@ const data = {
   },
   navMain: [
     {
-      title: "Dashboard",
+      title: "Dashboard (Overview)",
       url: "#",
-      icon: IconDashboard,
+      icon: IconHome,
+    },
+  ],
+  navPropertyManagement: [
+    {
+      title: "Listings Management",
+      url: "#",
+      icon: IconList,
     },
     {
-      title: "Lifecycle",
-      url: "#",
-      icon: IconListDetails,
-    },
-    {
-      title: "Analytics",
-      url: "#",
-      icon: IconChartBar,
-    },
-    {
-      title: "Projects",
+      title: "Property List",
       url: "#",
       icon: IconFolder,
     },
     {
-      title: "Team",
+      title: "Calendar & Availability",
       url: "#",
-      icon: IconUsers,
+      icon: IconCalendar,
+    },
+    {
+      title: "Analytics & Insights",
+      url: "#",
+      icon: IconChartLine,
+    },
+  ],
+  navCommunication: [
+    {
+      title: "Inquiries & Messaging",
+      url: "#",
+      icon: IconMessage,
+    },
+    {
+      title: "Billing & Subscription",
+      url: "#",
+      icon: IconCreditCard,
     },
   ],
   navClouds: [
@@ -129,23 +143,6 @@ const data = {
       icon: IconSearch,
     },
   ],
-  documents: [
-    {
-      name: "Data Library",
-      url: "#",
-      icon: IconDatabase,
-    },
-    {
-      name: "Reports",
-      url: "#",
-      icon: IconReport,
-    },
-    {
-      name: "Word Assistant",
-      url: "#",
-      icon: IconFileWord,
-    },
-  ],
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -168,7 +165,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavDocuments items={data.documents} />
+        <NavGroup items={data.navPropertyManagement} label="Property Management" />
+        <NavGroup items={data.navCommunication} label="Communication" />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
@@ -177,3 +175,5 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     </Sidebar>
   )
 }
+
+
