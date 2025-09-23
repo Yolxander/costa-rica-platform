@@ -1,5 +1,5 @@
 import { IconCirclePlusFilled, IconBell, type Icon } from "@tabler/icons-react"
-import { usePage, Link } from "@inertiajs/react"
+import { usePage, Link, router } from "@inertiajs/react"
 import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
@@ -43,8 +43,7 @@ export function NavMain({
   }
 
   const handleUpdateAvailability = () => {
-    // TODO: Implement update availability functionality
-    console.log("Update availability clicked")
+    router.visit('/calendar')
   }
 
   const handleUploadImage = () => {

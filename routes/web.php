@@ -49,6 +49,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ]);
     })->name('listings');
 
+    Route::get('calendar', function () {
+        // Get events data from database if needed
+        $events = [];
+
+        return Inertia::render('calendar', [
+            'events' => $events
+        ]);
+    })->name('calendar');
+
     Route::get('property/{id}', function ($id) {
         $propertyModel = \App\Models\Property::find($id);
 

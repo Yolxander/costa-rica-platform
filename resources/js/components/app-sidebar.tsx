@@ -52,9 +52,8 @@ const data = {
     },
     {
       title: "Calendar & Availability",
-      url: "#",
+      url: "/calendar",
       icon: IconCalendar,
-      lockIcon: IconLock,
     },
     {
       title: "Analytics & Insights",
