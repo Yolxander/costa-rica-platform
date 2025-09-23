@@ -1,5 +1,5 @@
 import { IconCirclePlusFilled, IconBell, type Icon } from "@tabler/icons-react"
-import { usePage } from "@inertiajs/react"
+import { usePage, Link } from "@inertiajs/react"
 import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
@@ -63,9 +63,12 @@ export function NavMain({
                 <SidebarMenuButton
                   tooltip={item.title}
                   className={isActive ? "bg-sidebar-accent text-sidebar-accent-foreground" : ""}
+                  asChild
                 >
-                  {item.icon && <item.icon />}
-                  <span>{item.title}</span>
+                  <Link href={item.url}>
+                    {item.icon && <item.icon />}
+                    <span>{item.title}</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             )

@@ -11,6 +11,9 @@ export function SiteHeader() {
     if (page.url === "/dashboard") {
       return "Overview"
     }
+    if (page.url === "/listings") {
+      return "Listings Management"
+    }
     return "Documents"
   }
   return (

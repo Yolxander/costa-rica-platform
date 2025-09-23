@@ -1,4 +1,5 @@
 import { type Icon } from "@tabler/icons-react"
+import { Link } from "@inertiajs/react"
 
 import {
   SidebarGroup,
@@ -17,6 +18,7 @@ export function NavGroup({
     title: string
     url: string
     icon?: Icon
+    lockIcon?: Icon
   }[]
   label: string
 }) {
@@ -27,9 +29,14 @@ export function NavGroup({
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton tooltip={item.title}>
-                {item.icon && <item.icon />}
-                <span>{item.title}</span>
+              <SidebarMenuButton tooltip={item.title} asChild>
+                <Link href={item.url}>
+                  {item.icon && <item.icon />}
+                  <span>{item.title}</span>
+                  {item.lockIcon && (
+                    <item.lockIcon className="ml-auto h-4 w-4 text-muted-foreground" />
+                  )}
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}

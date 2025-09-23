@@ -14,6 +14,7 @@ import {
   IconChartLine,
   IconCreditCard,
   IconBell,
+  IconLock,
 } from "@tabler/icons-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -46,18 +47,20 @@ const data = {
   navPropertyManagement: [
     {
       title: "Listings Management",
-      url: "#",
+      url: "/listings",
       icon: IconList,
     },
     {
       title: "Calendar & Availability",
       url: "#",
       icon: IconCalendar,
+      lockIcon: IconLock,
     },
     {
       title: "Analytics & Insights",
       url: "#",
       icon: IconChartLine,
+      lockIcon: IconLock,
     },
   ],
   navCommunication: [
@@ -65,11 +68,13 @@ const data = {
       title: "Inquiries & Messaging",
       url: "#",
       icon: IconMessage,
+      lockIcon: IconLock,
     },
     {
       title: "Billing & Subscription",
       url: "#",
       icon: IconCreditCard,
+      lockIcon: IconLock,
     },
   ],
   navClouds: [
