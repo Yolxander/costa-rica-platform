@@ -3,7 +3,6 @@ import {
   IconCamera,
   IconFileAi,
   IconFileDescription,
-  IconFolder,
   IconHelp,
   IconInnerShadowTop,
   IconSearch,
@@ -49,11 +48,6 @@ const data = {
       title: "Listings Management",
       url: "#",
       icon: IconList,
-    },
-    {
-      title: "Property List",
-      url: "#",
-      icon: IconFolder,
     },
     {
       title: "Calendar & Availability",
