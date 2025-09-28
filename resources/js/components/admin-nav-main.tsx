@@ -72,7 +72,12 @@ export function AdminNavMain({
         </SidebarMenu>
         <SidebarMenu>
           {items.map((item) => {
-            const isActive = page?.url === item.url
+            const currentUrl = page?.url || ''
+            // For dashboard, check exact match or if it's the admin dashboard page
+            const isActive = item.title === "Dashboard"
+              ? (currentUrl === "/admin/dashboard" || currentUrl.endsWith("/admin/dashboard"))
+              : (currentUrl.startsWith(item.url) || currentUrl === item.url)
+
             return (
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton
