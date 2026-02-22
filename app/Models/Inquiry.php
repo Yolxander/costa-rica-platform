@@ -9,6 +9,7 @@ class Inquiry extends Model
     protected $fillable = [
         'property_id',
         'user_id',
+        'traveler_user_id',
         'traveler_name',
         'traveler_email',
         'traveler_phone',
@@ -34,5 +35,10 @@ class Inquiry extends Model
     public function host()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function traveler()
+    {
+        return $this->belongsTo(User::class, 'traveler_user_id');
     }
 }

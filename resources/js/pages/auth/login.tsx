@@ -28,9 +28,15 @@ export default function Login({ status, canResetPassword }: LoginProps) {
             <div className="w-full max-w-sm">
                 <Head title="Log in" />
 
+                <div className="mb-4 text-center">
+                    <Link href="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                        &larr; Back to listings
+                    </Link>
+                </div>
+
                 <Card>
                     <CardHeader>
-                        <CardTitle>Login to your account</CardTitle>
+                        <CardTitle>Log in to your account</CardTitle>
                         <CardDescription>
                             Enter your email and password below to log in
                         </CardDescription>

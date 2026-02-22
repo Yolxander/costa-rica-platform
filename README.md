@@ -1,261 +1,50 @@
 # Costa Rica Rental Hub
 
-A community-driven vacation rental platform built to connect travelers directly with property hosts across Costa Rica. Unlike traditional booking sites (Airbnb, Booking.com), this platform charges no commission fees — instead, hosts pay a simple flat yearly subscription to list their property.
+A community-driven vacation rental platform built to connect travelers directly with property hosts across Costa Rica. Unlike traditional booking sites (Airbnb, Booking.com), this platform charges no commission fees -- instead, hosts pay a simple flat yearly subscription to list their property.
 
-## 🎯 Goals
+## Goals
 
 - Provide Costa Rica property owners with an affordable alternative to commission-heavy platforms
 - Give travelers a seamless way to browse by popular regions (Guanacaste, Tamarindo, Manuel Antonio, etc.)
 - Create a mobile-first, bilingual (English/Spanish) experience for international visitors and local hosts
 - Build an admin system that scales, allowing easy listing approvals and subscription management
 
-## ✨ Core Features
+## Core Features
 
-- **Regional Browsing** – Properties organized by Costa Rica's most popular destinations
-- **Flat Yearly Fee System** – Hosts list properties with no hidden charges or commissions
-- **Host Dashboard** – Upload photos, edit details, manage availability, view inquiries & analytics
-- **Traveler Search & Filters** – Location, price range, amenities, bedrooms, etc.
-- **Availability Calendar** – Hosts can block off dates; travelers see real-time availability
-- **Direct Contact** – Inquiries routed directly to host (email, WhatsApp, or phone)
-- **Admin Panel** – Manage property approvals, subscription renewals, and overall platform activity
-- **Mobile-First Design** – Optimized for travelers searching on their phones
-- **Bilingual Interface** – Fully accessible in English + Spanish
+### Public / Traveler Experience
 
-## 🚀 Tech Stack
+- **Airbnb-style Home Page** -- Search bar, category filter pills, and a responsive property card grid
+- **Listing Detail Page** -- Image gallery, property info, amenities, house rules, and a sticky inquiry sidebar
+- **Direct Inquiry System** -- Travelers send inquiries directly to hosts with check-in/out dates, guest count, and a message
+- **Save Listings** -- Authenticated users can heart/save properties; saved state persists across pages
+- **User Account Page** -- Sidebar-navigated page with Profile editing, Inquiry history, and Saved Listings sections
+- **Login / Register** -- Generic auth pages with post-login redirect back to the page the user came from
 
-This platform is built with modern web technologies:
+### Host Dashboard
 
-- **Laravel 12** - Latest Laravel framework with modern PHP 8.2+ features
-- **React 19** - Latest React with TypeScript support
-- **Inertia.js** - Modern monolith approach with SPA-like experience
-- **shadcn/ui** - Beautiful, accessible UI components built with Radix UI
-- **Tailwind CSS 4** - Latest Tailwind CSS with modern utility classes
-- **Laravel Fortify** - Complete authentication system
-- **Two-Factor Authentication** - Built-in 2FA support
-- **Dark/Light Mode** - System preference detection and manual toggle
-- **TypeScript** - Full TypeScript support for both frontend and backend
-- **Vite** - Lightning-fast build tool with HMR
-- **ESLint + Prettier** - Code formatting and linting
-- **MYSQL** - Ready-to-use database
+- **Dashboard Overview** -- Property stats, views, inquiry counts, and booking summaries
+- **Listings Management** -- Add, edit, and manage property listings with images, pricing, and availability
+- **Calendar** -- Manage property availability and bookings
+- **Inquiries** -- View and respond to traveler inquiries
+- **Property Details** -- Deep-dive analytics and recent activity per property
 
-## 📋 Prerequisites
+### Admin Panel
 
-- **PHP 8.2+**
-- **Composer**
-- **Node.js 18+**
-- **npm** or **yarn**
+- **Admin Dashboard** -- Platform-wide metrics, property approvals, host management, site analytics
+- **Host Management** -- View hosts, subscription status, and property counts
+- **Property Approvals** -- Review and approve/decline new property submissions
+- **Subscription & Billing** -- Track yearly host subscriptions and renewals
+- **Content Management** -- Manage platform content
+- **Analytics & Reports** -- Site traffic, inquiry volume, and revenue charts
 
-## 🛠️ Installation & Setup
+### Authentication & Security
 
-### 1. Clone the repository
+- **Role-based Access** -- Admin, host, and regular user roles with separate dashboards
+- **Two-Factor Authentication (2FA)** -- Optional TOTP-based 2FA via Laravel Fortify
+- **Separate Admin Login** -- Dedicated `/admin/login` route for admin users
+- **Email Verification** and **Password Reset** flows
 
-```bash
-git clone <repository-url>
-cd costa-rica-rental-hub
-```
-
-### 2. Install PHP dependencies
-
-```bash
-composer install
-```
-
-### 3. Install Node.js dependencies
-
-```bash
-npm install
-```
-
-### 4. Environment setup
-
-```bash
-# Copy environment file
-cp .env.example .env
-
-# Generate application key
-php artisan key:generate
-
-# Create SQLite database (or configure your preferred database in .env)
-touch database/database.sqlite
-```
-
-### 5. Run database migrations
-
-```bash
-php artisan migrate
-```
-
-### 6. Build assets for production (or use development mode)
-
-**For production:**
-```bash
-npm run build
-```
-
-**For development (recommended):**
-```bash
-npm run dev
-```
-
-### 7. Start the development server
-
-**Option 1: Start everything with one command**
-```bash
-composer run dev
-```
-This will start:
-- Laravel server (http://127.0.0.1:8000)
-- Vite dev server with HMR
-- Queue worker
-- Log monitoring
-
-**Option 2: Start services individually**
-```bash
-# Terminal 1: Laravel server
-php artisan serve
-
-# Terminal 2: Vite dev server (for hot reloading)
-npm run dev
-```
-
-## 🎯 Quick Start Commands
-
-After cloning the project, run these commands in order:
-
-```bash
-# 1. Install dependencies
-composer install
-npm install
-
-# 2. Setup environment
-cp .env.example .env
-php artisan key:generate
-touch database/database.sqlite
-php artisan migrate
-
-# 3. Start development
-composer run dev
-```
-
-Your application will be available at `http://127.0.0.1:8000`
-
-## 🏗️ Project Structure
-
-```
-├── app/
-│   ├── Http/Controllers/     # Laravel controllers
-│   ├── Http/Middleware/      # Custom middleware
-│   └── Models/              # Eloquent models
-├── resources/
-│   ├── js/
-│   │   ├── components/      # React components
-│   │   │   └── ui/         # shadcn/ui components
-│   │   ├── pages/          # Inertia.js pages
-│   │   ├── layouts/        # Page layouts
-│   │   ├── hooks/          # Custom React hooks
-│   │   └── lib/            # Utility functions
-│   ├── css/               # Global styles
-│   └── views/             # Blade templates
-├── public/build/          # Built assets (after npm run build)
-└── database/              # Migrations and seeders
-```
-
-## 🎨 UI Components
-
-This platform includes a comprehensive set of shadcn/ui components:
-
-- **Form Components**: Input, Select, Checkbox, Button, etc.
-- **Layout Components**: Dialog, Sheet, Navigation Menu
-- **Data Display**: Avatar, Badge, Card, Table
-- **Feedback**: Alert, Toast, Progress
-- **Navigation**: Breadcrumbs, Tabs, Accordion
-
-All components are fully typed with TypeScript and support dark/light themes.
-
-## 🔐 Authentication Features
-
-- **User Registration & Login**
-- **Email Verification**
-- **Password Reset**
-- **Two-Factor Authentication (2FA)**
-- **Profile Management**
-- **Secure Session Handling**
-
-## 🎭 Theme System
-
-- **System Preference Detection** - Automatically detects user's OS theme
-- **Manual Toggle** - Users can override system preference
-- **Persistent Settings** - Theme preference is saved per user
-- **CSS Variables** - Easy customization of colors and spacing
-
-## 📱 Responsive Design
-
-- **Mobile-First Approach** - Optimized for all screen sizes
-- **Tailwind CSS** - Utility-first CSS framework
-- **Flexible Layouts** - Adaptive components that work on any device
-
-## 🧪 Development Tools
-
-### Code Quality
-```bash
-# Lint code
-npm run lint
-
-# Format code
-npm run format
-
-# Type checking
-npm run types
-```
-
-### Testing
-```bash
-# Run PHP tests
-php artisan test
-
-# Run with coverage
-php artisan test --coverage
-```
-
-## 🚀 Deployment
-
-### Production Build
-```bash
-# Build optimized assets
-npm run build
-
-# Cache Laravel config
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
-```
-
-### Environment Variables
-Ensure these are set in production:
-- `APP_ENV=production`
-- `APP_DEBUG=false`
-- `APP_URL=https://your-domain.com`
-- Database credentials
-- Mail configuration (if using email features)
-
-## 🔧 Customization
-
-### Adding New shadcn/ui Components
-```bash
-npx shadcn@latest add [component-name]
-```
-
-### Creating New Pages
-1. Create React component in `resources/js/pages/`
-2. Add route in `routes/web.php`
-3. Return Inertia response in controller
-
-### Styling
-- Global styles: `resources/css/app.css`
-- Component styles: Use Tailwind classes
-- Custom CSS variables: Defined in `app.css`
-
-## 📚 Tech Stack Details
+## Tech Stack
 
 | Technology | Version | Purpose |
 |------------|---------|---------|
@@ -268,45 +57,189 @@ npx shadcn@latest add [component-name]
 | Laravel Fortify | 1.x | Authentication |
 | shadcn/ui | Latest | UI components |
 | Radix UI | Latest | Accessible primitives |
+| MySQL | 8.x | Database |
 
-## 🤝 Contributing
+## Prerequisites
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run tests and linting
-5. Submit a pull request
+- **PHP 8.2+**
+- **Composer**
+- **Node.js 18+**
+- **npm**
 
-## 📄 License
+## Installation & Setup
 
-This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 1. Clone the repository
 
-## 🆘 Troubleshooting
-
-### Common Issues
-
-**Vite manifest not found**
 ```bash
-npm run build
+git clone <repository-url>
+cd costa-rica-platform
 ```
 
-**Permission issues on Linux/Mac**
-```bash
-chmod -R 755 storage bootstrap/cache
-```
+### 2. Install dependencies
 
-**Database connection issues**
-- Ensure database file exists: `touch database/database.sqlite`
-- Check `.env` database configuration
-
-**Node modules issues**
 ```bash
-rm -rf node_modules package-lock.json
+composer install
 npm install
 ```
 
----
+### 3. Environment setup
 
-**Happy coding! 🎉
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-For questions or support, please open an issue in the repository.
+Configure your database credentials in `.env` (MySQL by default, or use SQLite for local dev).
+
+### 4. Run database migrations
+
+```bash
+php artisan migrate
+```
+
+### 5. Start development
+
+**All-in-one:**
+```bash
+composer run dev
+```
+
+This starts the Laravel server (`http://127.0.0.1:8000`), Vite dev server with HMR, queue worker, and log monitoring.
+
+**Or start services individually:**
+```bash
+# Terminal 1
+php artisan serve
+
+# Terminal 2
+npm run dev
+```
+
+## Quick Start
+
+```bash
+composer install && npm install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate
+composer run dev
+```
+
+Your application will be available at `http://127.0.0.1:8000`.
+
+## Project Structure
+
+```
+app/
+  Http/
+    Controllers/
+      Auth/                     # Login, register, password reset
+      Admin/Auth/               # Admin-specific authentication
+      Settings/                 # Profile, password, 2FA controllers
+    Middleware/                  # HandleInertiaRequests, admin guard
+  Models/
+    User.php                    # Roles, savedListings, sentInquiries
+    Property.php                # Listings with images, pricing, amenities
+    Inquiry.php                 # Traveler inquiries linked to properties & users
+    HostSubscription.php        # Yearly host subscriptions
+    SiteAnalytic.php            # Platform analytics data
+
+resources/js/
+  pages/
+    welcome.tsx                 # Public home page (Airbnb-style)
+    listing-detail.tsx          # Public listing detail + inquiry form
+    account.tsx                 # Traveler account (profile, inquiries, saved)
+    dashboard.tsx               # Host dashboard
+    listings.tsx                # Host listings management
+    calendar.tsx                # Host calendar
+    inquiries.tsx               # Host inquiry management
+    auth/                       # Login, register, password reset pages
+    settings/                   # Host/admin profile, password, appearance, 2FA
+    admin/                      # Admin dashboard and management pages
+  components/
+    ui/                         # shadcn/ui components
+  layouts/                      # AppLayout, SettingsLayout, AuthLayout
+
+routes/
+  web.php                       # All route definitions
+  auth.php                      # Authentication routes
+  settings.php                  # Settings routes (profile, password, 2FA)
+
+database/migrations/            # All migration files
+```
+
+## Key Routes
+
+| Route | Auth | Description |
+|-------|------|-------------|
+| `GET /` | No | Home page with property search and grid |
+| `GET /listing/{id}` | No | Property detail page |
+| `POST /listing/{id}/inquire` | No | Submit inquiry to host |
+| `POST /listing/{id}/save` | Yes | Toggle save/unsave a listing |
+| `GET /account` | Yes | Traveler account page |
+| `GET /dashboard` | Yes | Host dashboard |
+| `GET /listings` | Yes | Host listings management |
+| `GET /admin/dashboard` | Admin | Admin dashboard |
+| `GET /settings/profile` | Yes | Host/admin profile settings |
+
+## Development Tools
+
+```bash
+# Lint
+npm run lint
+
+# Format
+npm run format
+
+# Type check
+npm run types
+
+# PHP tests
+php artisan test
+```
+
+## Deployment
+
+```bash
+npm run build
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+```
+
+Set in production `.env`:
+- `APP_ENV=production`
+- `APP_DEBUG=false`
+- `APP_URL=https://your-domain.com`
+- Database and mail credentials
+
+## Customization
+
+**Add a shadcn/ui component:**
+```bash
+npx shadcn@latest add [component-name]
+```
+
+**Create a new page:**
+1. Create a React component in `resources/js/pages/`
+2. Add a route in `routes/web.php`
+3. Return an Inertia response from the route or controller
+
+**Styling:**
+- Global styles and CSS variables: `resources/css/app.css`
+- Component styles: Tailwind utility classes
+- Dark mode: Automatic via CSS variable system
+
+## Troubleshooting
+
+**Vite manifest not found** -- Run `npm run build`.
+
+**Permission issues (Linux/Mac)** -- `chmod -R 755 storage bootstrap/cache`.
+
+**Database connection issues** -- Check `.env` database configuration. For SQLite: `touch database/database.sqlite`.
+
+**Node modules issues** -- `rm -rf node_modules package-lock.json && npm install`.
+
+## License
+
+This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).

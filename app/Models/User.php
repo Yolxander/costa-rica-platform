@@ -103,4 +103,20 @@ class User extends Authenticatable
     {
         return $this->hasMany(Inquiry::class);
     }
+
+    /**
+     * Listings this user has saved.
+     */
+    public function savedListings()
+    {
+        return $this->belongsToMany(Property::class, 'saved_listings')->withTimestamps();
+    }
+
+    /**
+     * Inquiries this user has sent as a traveler.
+     */
+    public function sentInquiries()
+    {
+        return $this->hasMany(Inquiry::class, 'traveler_user_id');
+    }
 }

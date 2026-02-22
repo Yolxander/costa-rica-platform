@@ -65,9 +65,8 @@ const data = {
   navCommunication: [
     {
       title: "Inquiries & Messaging",
-      url: "#",
+      url: "/inquiries",
       icon: IconMessage,
-      lockIcon: IconLock,
     },
     {
       title: "Billing & Subscription",

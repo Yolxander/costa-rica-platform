@@ -19,7 +19,13 @@ export default function Register() {
     return (
         <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
             <div className="w-full max-w-sm">
-                <Head title="Register" />
+                <Head title="Sign up" />
+
+                <div className="mb-4 text-center">
+                    <Link href="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                        &larr; Back to listings
+                    </Link>
+                </div>
 
                 <Card>
                     <CardHeader>

@@ -17,7 +17,13 @@ export function SiteHeader() {
     if (page.url.startsWith("/property/")) {
       return "Property Details"
     }
-    return "Documents"
+    if (page.url === "/inquiries") {
+      return "Inquiries & Messaging"
+    }
+    if (page.url === "/calendar") {
+      return "Calendar & Availability"
+    }
+    return "Dashboard"
   }
   return (
     <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">

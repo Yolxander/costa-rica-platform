@@ -18,8 +18,12 @@ class RegisteredUserController extends Controller
     /**
      * Show the registration page.
      */
-    public function create(): Response
+    public function create(Request $request): Response
     {
+        if ($redirect = $request->query('redirect')) {
+            $request->session()->put('url.intended', url($redirect));
+        }
+
         return Inertia::render('auth/register');
     }
 
@@ -46,6 +50,6 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        return redirect()->intended('/');
     }
 }
