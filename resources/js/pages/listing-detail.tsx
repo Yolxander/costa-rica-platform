@@ -1,4 +1,4 @@
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { type SharedData } from '@/types';
 import {
     IconMapPin,
@@ -23,23 +23,13 @@ import {
     IconSmoking,
     IconMusic,
     IconUser,
-    IconMail,
-    IconPhone,
-    IconSend,
-    IconCircleCheck,
-    IconLogin,
     IconHeartFilled,
 } from '@tabler/icons-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import InputError from '@/components/input-error';
-import { type FormEvent, useState, type ComponentType } from 'react';
-import { toast } from 'sonner';
+import { type ComponentType } from 'react';
 
 interface ListingProperty {
     id: number;
@@ -149,271 +139,6 @@ function ImageGallery({ images, name }: { images: string[]; name: string }) {
                     </div>
                 ))}
         </div>
-    );
-}
-
-function InquiryForm({ property }: { property: ListingProperty }) {
-    const [submitted, setSubmitted] = useState(false);
-    const page = usePage<ListingDetailProps>();
-    const { auth } = page.props;
-    const flash = (page.props as Record<string, unknown>).flash as
-        | { success?: string }
-        | undefined;
-
-    const form = useForm({
-        traveler_name: auth.user?.name ?? '',
-        traveler_email: auth.user?.email ?? '',
-        traveler_phone: '',
-        check_in: '',
-        check_out: '',
-        guests: 1,
-        message: '',
-    });
-
-    function handleSubmit(e: FormEvent) {
-        e.preventDefault();
-        form.post(`/listing/${property.id}/inquire`, {
-            preserveScroll: true,
-            onSuccess: () => {
-                setSubmitted(true);
-                toast.success('Inquiry sent successfully!');
-                form.reset();
-            },
-        });
-    }
-
-    if (submitted || flash?.success) {
-        return (
-            <Card className="border-green-200 dark:border-green-900">
-                <CardContent className="pt-6">
-                    <div className="text-center">
-                        <IconCircleCheck className="mx-auto size-12 text-green-500" />
-                        <h3 className="mt-3 text-lg font-semibold">Inquiry Sent!</h3>
-                        <p className="mt-1 text-sm text-muted-foreground">
-                            {flash?.success ||
-                                'Your inquiry has been sent to the host. They will get back to you soon.'}
-                        </p>
-                        <Button
-                            variant="outline"
-                            className="mt-4"
-                            onClick={() => setSubmitted(false)}
-                        >
-                            Send another inquiry
-                        </Button>
-                    </div>
-                </CardContent>
-            </Card>
-        );
-    }
-
-    return (
-        <Card>
-            <CardHeader className="pb-4">
-                <div className="flex items-baseline justify-between">
-                    <CardTitle className="text-2xl">
-                        ${property.base_price.toLocaleString()}
-                        <span className="text-base font-normal text-muted-foreground">
-                            {' '}
-                            / night
-                        </span>
-                    </CardTitle>
-                    {property.rating > 0 && (
-                        <div className="flex items-center gap-1 text-sm">
-                            <IconStar className="size-4 fill-current" />
-                            <span className="font-medium">{property.rating.toFixed(1)}</span>
-                        </div>
-                    )}
-                </div>
-            </CardHeader>
-            <CardContent>
-                {!auth.user ? (
-                    <div className="space-y-4 text-center">
-                        <p className="text-sm text-muted-foreground">
-                            Log in to send an inquiry to the host and start planning your trip.
-                        </p>
-                        <Link href={`/login?redirect=/listing/${property.id}`} className="block">
-                            <Button className="w-full" size="lg">
-                                <IconLogin className="mr-2 size-4" />
-                                Log in to inquire
-                            </Button>
-                        </Link>
-                        <p className="text-xs text-muted-foreground">
-                            Don&apos;t have an account?{' '}
-                            <Link
-                                href={`/register?redirect=/listing/${property.id}`}
-                                className="font-medium text-primary underline-offset-4 hover:underline"
-                            >
-                                Sign up
-                            </Link>
-                        </p>
-
-                        {property.cleaning_fee > 0 || property.service_fee > 0 ? (
-                            <div className="space-y-2 rounded-lg bg-muted/50 p-3 text-left text-sm">
-                                {property.cleaning_fee > 0 && (
-                                    <div className="flex justify-between text-muted-foreground">
-                                        <span>Cleaning fee</span>
-                                        <span>${property.cleaning_fee.toLocaleString()}</span>
-                                    </div>
-                                )}
-                                {property.service_fee > 0 && (
-                                    <div className="flex justify-between text-muted-foreground">
-                                        <span>Service fee</span>
-                                        <span>${property.service_fee.toLocaleString()}</span>
-                                    </div>
-                                )}
-                            </div>
-                        ) : null}
-                    </div>
-                ) : (
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <div className="grid grid-cols-2 gap-2">
-                            <div>
-                                <Label htmlFor="check_in" className="text-xs">
-                                    CHECK-IN
-                                </Label>
-                                <Input
-                                    id="check_in"
-                                    type="date"
-                                    value={form.data.check_in}
-                                    onChange={(e) => form.setData('check_in', e.target.value)}
-                                    min={new Date().toISOString().split('T')[0]}
-                                />
-                                <InputError message={form.errors.check_in} />
-                            </div>
-                            <div>
-                                <Label htmlFor="check_out" className="text-xs">
-                                    CHECK-OUT
-                                </Label>
-                                <Input
-                                    id="check_out"
-                                    type="date"
-                                    value={form.data.check_out}
-                                    onChange={(e) => form.setData('check_out', e.target.value)}
-                                    min={form.data.check_in || new Date().toISOString().split('T')[0]}
-                                />
-                                <InputError message={form.errors.check_out} />
-                            </div>
-                        </div>
-
-                        <div>
-                            <Label htmlFor="guests" className="text-xs">
-                                GUESTS
-                            </Label>
-                            <Input
-                                id="guests"
-                                type="number"
-                                min={1}
-                                max={property.guests}
-                                value={form.data.guests}
-                                onChange={(e) => form.setData('guests', parseInt(e.target.value) || 1)}
-                            />
-                            <InputError message={form.errors.guests} />
-                        </div>
-
-                        <Separator />
-
-                        <div>
-                            <Label htmlFor="traveler_name" className="text-xs">
-                                YOUR NAME
-                            </Label>
-                            <div className="relative">
-                                <IconUser className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                                <Input
-                                    id="traveler_name"
-                                    placeholder="Full name"
-                                    value={form.data.traveler_name}
-                                    onChange={(e) => form.setData('traveler_name', e.target.value)}
-                                    className="pl-9"
-                                />
-                            </div>
-                            <InputError message={form.errors.traveler_name} />
-                        </div>
-
-                        <div>
-                            <Label htmlFor="traveler_email" className="text-xs">
-                                EMAIL
-                            </Label>
-                            <div className="relative">
-                                <IconMail className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                                <Input
-                                    id="traveler_email"
-                                    type="email"
-                                    placeholder="your@email.com"
-                                    value={form.data.traveler_email}
-                                    onChange={(e) => form.setData('traveler_email', e.target.value)}
-                                    className="pl-9"
-                                />
-                            </div>
-                            <InputError message={form.errors.traveler_email} />
-                        </div>
-
-                        <div>
-                            <Label htmlFor="traveler_phone" className="text-xs">
-                                PHONE (OPTIONAL)
-                            </Label>
-                            <div className="relative">
-                                <IconPhone className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                                <Input
-                                    id="traveler_phone"
-                                    placeholder="+1 (555) 000-0000"
-                                    value={form.data.traveler_phone}
-                                    onChange={(e) => form.setData('traveler_phone', e.target.value)}
-                                    className="pl-9"
-                                />
-                            </div>
-                            <InputError message={form.errors.traveler_phone} />
-                        </div>
-
-                        <div>
-                            <Label htmlFor="message" className="text-xs">
-                                MESSAGE TO HOST
-                            </Label>
-                            <Textarea
-                                id="message"
-                                placeholder="Tell the host about your trip, who's coming, and what you're looking forward to..."
-                                rows={4}
-                                value={form.data.message}
-                                onChange={(e) => form.setData('message', e.target.value)}
-                            />
-                            <InputError message={form.errors.message} />
-                        </div>
-
-                        <Button
-                            type="submit"
-                            className="w-full"
-                            size="lg"
-                            disabled={form.processing}
-                        >
-                            {form.processing ? (
-                                'Sending...'
-                            ) : (
-                                <>
-                                    <IconSend className="mr-2 size-4" />
-                                    Send Inquiry
-                                </>
-                            )}
-                        </Button>
-
-                        {property.cleaning_fee > 0 || property.service_fee > 0 ? (
-                            <div className="space-y-2 rounded-lg bg-muted/50 p-3 text-sm">
-                                {property.cleaning_fee > 0 && (
-                                    <div className="flex justify-between text-muted-foreground">
-                                        <span>Cleaning fee</span>
-                                        <span>${property.cleaning_fee.toLocaleString()}</span>
-                                    </div>
-                                )}
-                                {property.service_fee > 0 && (
-                                    <div className="flex justify-between text-muted-foreground">
-                                        <span>Service fee</span>
-                                        <span>${property.service_fee.toLocaleString()}</span>
-                                    </div>
-                                )}
-                            </div>
-                        ) : null}
-                    </form>
-                )}
-            </CardContent>
-        </Card>
     );
 }
 
@@ -686,9 +411,69 @@ export default function ListingDetail() {
                             </div>
                         </div>
 
-                        {/* Right Column: Inquiry Form */}
+                        {/* Right Column: Price Card */}
                         <div className="lg:sticky lg:top-24 lg:self-start">
-                            <InquiryForm property={property} />
+                            <Card>
+                                <CardHeader className="pb-4">
+                                    <div className="flex items-baseline justify-between">
+                                        <CardTitle className="text-2xl">
+                                            ${property.base_price.toLocaleString()}
+                                            <span className="text-base font-normal text-muted-foreground">
+                                                {' '}/ night
+                                            </span>
+                                        </CardTitle>
+                                        {property.rating > 0 && (
+                                            <div className="flex items-center gap-1 text-sm">
+                                                <IconStar className="size-4 fill-current" />
+                                                <span className="font-medium">{property.rating.toFixed(1)}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    {(property.cleaning_fee > 0 || property.service_fee > 0) && (
+                                        <div className="space-y-2 rounded-lg bg-muted/50 p-3 text-sm">
+                                            {property.cleaning_fee > 0 && (
+                                                <div className="flex justify-between text-muted-foreground">
+                                                    <span>Cleaning fee</span>
+                                                    <span>${property.cleaning_fee.toLocaleString()}</span>
+                                                </div>
+                                            )}
+                                            {property.service_fee > 0 && (
+                                                <div className="flex justify-between text-muted-foreground">
+                                                    <span>Service fee</span>
+                                                    <span>${property.service_fee.toLocaleString()}</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {auth.user ? (
+                                        <Link href={`/listing/${property.id}/checkout`} className="block">
+                                            <Button className="w-full" size="lg">
+                                                Inquire Now
+                                            </Button>
+                                        </Link>
+                                    ) : (
+                                        <>
+                                            <Link href={`/login?redirect=/listing/${property.id}/checkout`} className="block">
+                                                <Button className="w-full" size="lg">
+                                                    Log in to inquire
+                                                </Button>
+                                            </Link>
+                                            <p className="text-center text-xs text-muted-foreground">
+                                                Don&apos;t have an account?{' '}
+                                                <Link
+                                                    href={`/register?redirect=/listing/${property.id}/checkout`}
+                                                    className="font-medium text-primary underline-offset-4 hover:underline"
+                                                >
+                                                    Sign up
+                                                </Link>
+                                            </p>
+                                        </>
+                                    )}
+                                </CardContent>
+                            </Card>
                         </div>
                     </div>
                 </main>

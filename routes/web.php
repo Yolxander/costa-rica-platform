@@ -112,6 +112,45 @@ Route::get('/listing/{id}', function (\Illuminate\Http\Request $request, $id) {
     ]);
 })->name('listing.detail');
 
+Route::get('/listing/{id}/checkout', function (\Illuminate\Http\Request $request, $id) {
+    $property = \App\Models\Property::where('id', $id)
+        ->with('user')
+        ->firstOrFail();
+
+    return Inertia::render('listing-checkout', [
+        'property' => [
+            'id' => $property->id,
+            'name' => $property->name,
+            'type' => $property->type,
+            'status' => $property->status,
+            'location' => $property->location,
+            'description' => $property->description,
+            'amenities' => $property->amenities ?? [],
+            'images' => $property->images ?? [],
+            'house_rules' => $property->house_rules ?? [],
+            'policies' => $property->policies ?? [],
+            'base_price' => (float) $property->base_price,
+            'price_format' => $property->price_format,
+            'currency' => $property->currency,
+            'cleaning_fee' => (float) $property->cleaning_fee,
+            'service_fee' => (float) $property->service_fee,
+            'guests' => $property->guests,
+            'bedrooms' => $property->bedrooms,
+            'bathrooms' => $property->bathrooms,
+            'check_in_time' => $property->check_in_time,
+            'check_out_time' => $property->check_out_time,
+            'minimum_stay' => $property->minimum_stay,
+            'rating' => (float) $property->rating,
+            'reviews' => $property->reviews,
+            'host' => [
+                'name' => $property->user?->name ?? 'Host',
+                'avatar' => $property->user?->avatar ?? null,
+                'id' => $property->user?->id,
+            ],
+        ],
+    ]);
+})->name('listing.checkout');
+
 Route::post('/listing/{id}/inquire', function (\Illuminate\Http\Request $request, $id) {
     $property = \App\Models\Property::findOrFail($id);
 
