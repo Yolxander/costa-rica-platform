@@ -2,7 +2,6 @@ import * as React from "react"
 import {
   IconCircleCheckFilled,
   IconLoader,
-  IconEye,
   IconMessage,
   IconCalendar,
   IconArrowsUpDown,
@@ -62,8 +61,6 @@ export const propertySchema = z.object({
   property: z.string(),
   type: z.string(),
   status: z.string(),
-  views_7d: z.string(),
-  views_30d: z.string(),
   inquiries: z.string(),
   bookings: z.string(),
 })
@@ -137,22 +134,6 @@ const columns: ColumnDef<z.infer<typeof propertySchema>>[] = [
     ),
   },
   {
-    accessorKey: "views_7d",
-    header: "Views",
-    cell: ({ row }) => (
-      <div className="flex flex-col gap-1">
-        <div className="flex items-center gap-1 text-sm">
-          <IconEye className="size-3" />
-          <span className="font-medium">{row.original.views_7d}</span>
-          <span className="text-muted-foreground">(7d)</span>
-        </div>
-        <div className="text-xs text-muted-foreground">
-          {row.original.views_30d} total (30d)
-        </div>
-      </div>
-    ),
-  },
-  {
     accessorKey: "inquiries",
     header: "Inquiries",
     cell: ({ row }) => (
@@ -208,10 +189,6 @@ export function PropertyTable({ data }: PropertyTableProps) {
         let bValue: number
 
         switch (sortBy) {
-          case "views":
-            aValue = parseInt(a.views_7d)
-            bValue = parseInt(b.views_7d)
-            break
           case "inquiries":
             aValue = parseInt(a.inquiries)
             bValue = parseInt(b.inquiries)
@@ -350,7 +327,6 @@ export function PropertyTable({ data }: PropertyTableProps) {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="none">No sorting</SelectItem>
-                <SelectItem value="views">Views</SelectItem>
                 <SelectItem value="inquiries">Inquiries</SelectItem>
                 <SelectItem value="bookings">Bookings</SelectItem>
               </SelectContent>

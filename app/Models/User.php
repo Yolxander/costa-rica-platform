@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, TwoFactorAuthenticatable;
@@ -73,11 +73,12 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if user has admin access (admin or team member)
+     * Check if user has admin access (admin, team member, or host).
+     * Hosts are treated as admins for accessing the admin panel.
      */
     public function hasAdminAccess(): bool
     {
-        return $this->isAdmin() || $this->isTeamMember();
+        return $this->isAdmin() || $this->isTeamMember() || $this->isHost();
     }
 
     /**
@@ -89,34 +90,10 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the host subscription for the user.
-     */
-    public function hostSubscription()
-    {
-        return $this->hasOne(HostSubscription::class);
-    }
-
-    /**
      * Get the inquiries sent to this user (host).
      */
     public function inquiries()
     {
         return $this->hasMany(Inquiry::class);
-    }
-
-    /**
-     * Listings this user has saved.
-     */
-    public function savedListings()
-    {
-        return $this->belongsToMany(Property::class, 'saved_listings')->withTimestamps();
-    }
-
-    /**
-     * Inquiries this user has sent as a traveler.
-     */
-    public function sentInquiries()
-    {
-        return $this->hasMany(Inquiry::class, 'traveler_user_id');
     }
 }

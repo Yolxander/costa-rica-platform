@@ -1,5 +1,4 @@
 import { AppSidebar } from "@/components/app-sidebar"
-import { ChartAreaInteractive } from "@/components/chart-area-interactive"
 import { PropertyTable } from "@/components/property-table"
 import { SectionCards } from "@/components/section-cards"
 import { SiteHeader } from "@/components/site-header"
@@ -16,15 +15,23 @@ interface DashboardPageProps extends SharedData {
         property: string
         type: string
         status: string
-        views_7d: string
-        views_30d: string
         inquiries: string
         bookings: string
     }>
+    directBookings: number
+    revenueProcessed: number
+    guestEmailsCaptured: number
+    moneySaved: number
 }
 
 export default function Page() {
-    const { properties } = usePage<DashboardPageProps>().props
+    const {
+        properties,
+        directBookings,
+        revenueProcessed,
+        guestEmailsCaptured,
+        moneySaved,
+    } = usePage<DashboardPageProps>().props
     return (
         <SidebarProvider
             style={
@@ -40,11 +47,15 @@ export default function Page() {
                 <div className="flex flex-1 flex-col">
                     <div className="@container/main flex flex-1 flex-col gap-2">
                         <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-                            <SectionCards properties={properties} />
+                            <SectionCards
+                                directBookings={directBookings}
+                                revenueProcessed={revenueProcessed}
+                                guestEmailsCaptured={guestEmailsCaptured}
+                                moneySaved={moneySaved}
+                            />
                             <div className="px-4 lg:px-6">
-                                <ChartAreaInteractive />
+                                <PropertyTable data={properties} />
                             </div>
-                            <PropertyTable data={properties} />
                         </div>
                     </div>
                 </div>

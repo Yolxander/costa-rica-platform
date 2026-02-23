@@ -4,78 +4,31 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\Admin\Auth\AdminAuthenticatedSessionController;
 
-Route::get('/', function (\Illuminate\Http\Request $request) {
-    $query = \App\Models\Property::query()->with('user');
-
-    if ($search = $request->query('search')) {
-        $query->where(function ($q) use ($search) {
-            $q->where('name', 'like', "%{$search}%")
-              ->orWhere('location', 'like', "%{$search}%")
-              ->orWhere('description', 'like', "%{$search}%");
-        });
-    }
-
-    if ($type = $request->query('type')) {
-        $query->where('type', $type);
-    }
-
-    if ($guests = $request->query('guests')) {
-        $query->where('guests', '>=', (int) $guests);
-    }
-
-    $properties = $query->get()->map(function ($property) {
-        return [
-            'id' => $property->id,
-            'name' => $property->name,
-            'type' => $property->type,
-            'location' => $property->location,
-            'image' => $property->images && count($property->images) > 0
-                ? $property->images[0]
-                : null,
-            'base_price' => (float) $property->base_price,
-            'price_format' => $property->price_format,
-            'currency' => $property->currency,
-            'guests' => $property->guests,
-            'bedrooms' => $property->bedrooms,
-            'bathrooms' => $property->bathrooms,
-            'rating' => (float) $property->rating,
-            'reviews' => $property->reviews,
-            'amenities' => $property->amenities ?? [],
-            'host_name' => $property->user?->name ?? 'Host',
-        ];
-    })->toArray();
-
-    $types = \App\Models\Property::select('type')
-        ->distinct()
-        ->pluck('type')
-        ->toArray();
-
-    $savedListingIds = [];
-    if ($user = $request->user()) {
-        $savedListingIds = $user->savedListings()->pluck('properties.id')->toArray();
-    }
-
-    return Inertia::render('welcome', [
-        'properties' => $properties,
-        'types' => $types,
-        'filters' => [
-            'search' => $request->query('search', ''),
-            'type' => $request->query('type', ''),
-            'guests' => $request->query('guests', ''),
-        ],
-        'savedListingIds' => $savedListingIds,
-    ]);
+Route::get('/', function () {
+    $hostCount = \App\Models\User::where('role', 'host')->count();
+    return Inertia::render('landing', ['hostCount' => $hostCount]);
 })->name('home');
 
-Route::get('/listing/{id}', function (\Illuminate\Http\Request $request, $id) {
+Route::get('/pricing', function () {
+    return Inertia::render('pricing');
+})->name('pricing');
+
+Route::get('/how-it-works', function () {
+    return Inertia::render('how-it-works');
+})->name('how-it-works');
+
+Route::get('/blog', function () {
+    return Inertia::render('blog');
+})->name('blog');
+
+Route::get('/join', function () {
+    return Inertia::render('join');
+})->name('join');
+
+Route::get('/listing/{id}', function ($id) {
     $property = \App\Models\Property::where('id', $id)
         ->with('user')
         ->firstOrFail();
-
-    $savedListingIds = [];
-    if ($user = $request->user()) {
-        $savedListingIds = $user->savedListings()->pluck('properties.id')->toArray();
-    }
 
     return Inertia::render('listing-detail', [
         'property' => [
@@ -108,7 +61,6 @@ Route::get('/listing/{id}', function (\Illuminate\Http\Request $request, $id) {
                 'id' => $property->user?->id,
             ],
         ],
-        'savedListingIds' => $savedListingIds,
     ]);
 })->name('listing.detail');
 
@@ -167,7 +119,7 @@ Route::post('/listing/{id}/inquire', function (\Illuminate\Http\Request $request
     \App\Models\Inquiry::create([
         'property_id' => $property->id,
         'user_id' => $property->user_id,
-        'traveler_user_id' => auth()->id(),
+        'traveler_user_id' => null,
         'traveler_name' => $validated['traveler_name'],
         'traveler_email' => $validated['traveler_email'],
         'traveler_phone' => $validated['traveler_phone'] ?? null,
@@ -175,104 +127,47 @@ Route::post('/listing/{id}/inquire', function (\Illuminate\Http\Request $request
         'check_out' => $validated['check_out'],
         'guests' => $validated['guests'],
         'message' => $validated['message'],
-        'status' => 'pending',
+        'status' => 'new',
         'sent_at' => now(),
     ]);
 
     return back()->with('success', 'Your inquiry has been sent! The host will get back to you soon.');
 })->name('listing.inquire');
 
-Route::post('/listing/{id}/save', function ($id) {
-    $user = auth()->user();
-    $property = \App\Models\Property::findOrFail($id);
-
-    if ($user->savedListings()->where('property_id', $property->id)->exists()) {
-        $user->savedListings()->detach($property->id);
-    } else {
-        $user->savedListings()->attach($property->id);
-    }
-
-    return back();
-})->middleware('auth')->name('listing.save');
-
-Route::get('/account', function () {
-    $user = auth()->user();
-
-    $inquiries = $user->sentInquiries()
-        ->with('property')
-        ->orderByDesc('sent_at')
-        ->get()
-        ->map(function ($inquiry) {
-            return [
-                'id' => $inquiry->id,
-                'property_id' => $inquiry->property_id,
-                'property_name' => $inquiry->property?->name ?? 'Unknown',
-                'property_image' => $inquiry->property?->images[0] ?? null,
-                'property_location' => $inquiry->property?->location ?? '',
-                'check_in' => $inquiry->check_in->format('M d, Y'),
-                'check_out' => $inquiry->check_out->format('M d, Y'),
-                'guests' => $inquiry->guests,
-                'message' => $inquiry->message,
-                'status' => $inquiry->status,
-                'sent_at' => $inquiry->sent_at->format('M d, Y'),
-            ];
-        })
-        ->toArray();
-
-    $savedListings = $user->savedListings()
-        ->with('user')
-        ->get()
-        ->map(function ($property) {
-            return [
-                'id' => $property->id,
-                'name' => $property->name,
-                'type' => $property->type,
-                'location' => $property->location,
-                'image' => $property->images && count($property->images) > 0 ? $property->images[0] : null,
-                'base_price' => (float) $property->base_price,
-                'price_format' => $property->price_format,
-                'currency' => $property->currency,
-                'guests' => $property->guests,
-                'bedrooms' => $property->bedrooms,
-                'bathrooms' => $property->bathrooms,
-                'rating' => (float) $property->rating,
-                'reviews' => $property->reviews,
-                'amenities' => $property->amenities ?? [],
-                'host_name' => $property->user?->name ?? 'Host',
-            ];
-        })
-        ->toArray();
-
-    return Inertia::render('account', [
-        'inquiries' => $inquiries,
-        'savedListings' => $savedListings,
-    ]);
-})->middleware('auth')->name('account');
-
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
-        // Get properties data from database and transform to match the expected format
-        $properties = \App\Models\Property::all()->map(function ($property) {
+        $user = auth()->user();
+        $properties = \App\Models\Property::where('user_id', $user->id)->get()->map(function ($property) {
             return [
                 'id' => $property->id,
                 'property' => $property->name,
                 'type' => $property->type,
                 'status' => $property->status,
-                'views_7d' => (string) $property->views_7d,
-                'views_30d' => (string) $property->views_30d,
                 'inquiries' => (string) $property->inquiries,
                 'bookings' => (string) $property->bookings,
             ];
         })->toArray();
 
+        $directBookings = \App\Models\Property::where('user_id', $user->id)->sum('bookings');
+        $revenueProcessed = 0; // Placeholder until Stripe Connect
+        $guestEmailsCaptured = \App\Models\Inquiry::where('user_id', $user->id)->distinct()->count('traveler_email');
+        $moneySaved = (int) round(0.15 * $revenueProcessed); // 15% OTA fee estimate
+
         return Inertia::render('dashboard', [
-            'properties' => $properties
+            'properties' => $properties,
+            'directBookings' => $directBookings,
+            'revenueProcessed' => $revenueProcessed,
+            'guestEmailsCaptured' => $guestEmailsCaptured,
+            'moneySaved' => $moneySaved,
         ]);
     })->name('dashboard');
 
+    Route::get('import-airbnb', function () {
+        return Inertia::render('import-airbnb');
+    })->name('import-airbnb');
+
     Route::get('listings', function () {
-        // Get properties data from database and transform to match the listings page format
-        $properties = \App\Models\Property::all()->map(function ($property) {
+        $properties = \App\Models\Property::where('user_id', auth()->id())->get()->map(function ($property) {
             return [
                 'id' => $property->id,
                 'title' => $property->name,
@@ -300,8 +195,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ]);
     })->name('calendar');
 
+    Route::patch('inquiries/{id}', function ($id) {
+        $inquiry = \App\Models\Inquiry::where('user_id', auth()->id())->findOrFail($id);
+        $validated = request()->validate(['status' => 'required|in:new,contacted,booked,lost']);
+        $inquiry->update($validated);
+        return back();
+    })->name('inquiries.update');
+
     Route::get('inquiries', function () {
-        $dbInquiries = \App\Models\Inquiry::with('property')
+        $dbInquiries = \App\Models\Inquiry::where('user_id', auth()->id())
+            ->with('property')
             ->orderByDesc('sent_at')
             ->get();
 
@@ -312,12 +215,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
                     'traveler_name' => $inquiry->traveler_name,
                     'traveler_email' => $inquiry->traveler_email,
                     'traveler_phone' => $inquiry->traveler_phone,
+                    'property_id' => $inquiry->property_id,
                     'property_name' => $inquiry->property?->name ?? 'Unknown',
                     'check_in' => $inquiry->check_in->format('Y-m-d'),
                     'check_out' => $inquiry->check_out->format('Y-m-d'),
                     'guests' => $inquiry->guests,
                     'message' => $inquiry->message,
-                    'status' => $inquiry->status,
+                    'status' => in_array($inquiry->status, ['new', 'contacted', 'booked', 'lost']) ? $inquiry->status : 'new',
                     'sent_at' => $inquiry->sent_at->format('M d, Y'),
                 ];
             })->toArray();
@@ -333,7 +237,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                     'check_out' => '2026-03-22',
                     'guests' => 2,
                     'message' => 'Hi! We are planning a romantic getaway and your beachfront villa looks absolutely perfect. Could you tell me more about the ocean views and nearby restaurants?',
-                    'status' => 'confirmed',
+                    'status' => 'booked',
                     'sent_at' => 'Feb 18, 2026',
                 ],
                 [
@@ -346,7 +250,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                     'check_out' => '2026-04-07',
                     'guests' => 4,
                     'message' => 'Hello! Our family of four is looking for a mountain retreat for spring break. Is the hot tub available during April? Also wondering about ski shuttle availability.',
-                    'status' => 'responded',
+                    'status' => 'contacted',
                     'sent_at' => 'Feb 19, 2026',
                 ],
                 [
@@ -359,7 +263,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                     'check_out' => '2026-03-25',
                     'guests' => 1,
                     'message' => 'I\'m attending SXSW and your downtown loft is in the perfect location. Is it available for those dates? I\'m a quiet guest and very respectful of house rules.',
-                    'status' => 'pending',
+                    'status' => 'new',
                     'sent_at' => 'Feb 20, 2026',
                 ],
                 [
@@ -372,7 +276,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                     'check_out' => '2026-05-17',
                     'guests' => 6,
                     'message' => 'Hola! I\'m organizing a group trip from Costa Rica. We need space for 6 people. Does the villa have enough beds, or would some of us need to share? Also, is the pool heated?',
-                    'status' => 'responded',
+                    'status' => 'contacted',
                     'sent_at' => 'Feb 20, 2026',
                 ],
                 [
@@ -385,7 +289,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                     'check_out' => '2026-04-20',
                     'guests' => 2,
                     'message' => 'The treehouse looks magical! My partner and I are celebrating our anniversary. Is it truly secluded? We want total privacy and nature immersion.',
-                    'status' => 'pending',
+                    'status' => 'new',
                     'sent_at' => 'Feb 21, 2026',
                 ],
                 [
@@ -398,7 +302,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                     'check_out' => '2026-06-08',
                     'guests' => 3,
                     'message' => 'Hey there! Looking for a week-long stay at the lake cabin for some fishing and relaxation. Do you provide kayaks or canoes? What\'s the fishing like in June?',
-                    'status' => 'declined',
+                    'status' => 'lost',
                     'sent_at' => 'Feb 17, 2026',
                 ],
                 [
@@ -411,16 +315,53 @@ Route::middleware(['auth', 'verified'])->group(function () {
                     'check_out' => '2026-04-02',
                     'guests' => 2,
                     'message' => 'Hi! Is the mountain retreat suitable for remote work? I need reliable WiFi as I\'ll be working during the mornings. The rest of the time we\'ll be exploring!',
-                    'status' => 'confirmed',
+                    'status' => 'booked',
                     'sent_at' => 'Feb 16, 2026',
                 ],
             ];
         }
 
+        $properties = \App\Models\Property::where('user_id', auth()->id())->get(['id', 'name'])->map(fn ($p) => ['id' => $p->id, 'name' => $p->name])->toArray();
+
         return Inertia::render('inquiries', [
             'inquiries' => $inquiries,
+            'properties' => $properties,
         ]);
     })->name('inquiries');
+
+    Route::get('crm', function () {
+        $user = auth()->user();
+        $properties = \App\Models\Property::where('user_id', $user->id)->get(['id', 'name']);
+        $propertyFilter = request()->query('property_id');
+
+        $guests = \App\Models\Inquiry::where('user_id', $user->id)
+            ->with('property')
+            ->when($propertyFilter, fn ($q) => $q->where('property_id', $propertyFilter))
+            ->get()
+            ->groupBy('traveler_email')
+            ->map(function ($inquiries, $email) {
+                $first = $inquiries->first();
+                $booked = $inquiries->filter(fn ($i) => $i->status === 'booked')->count();
+                $lastBooking = $inquiries->filter(fn ($i) => $i->status === 'booked')->sortByDesc('check_out')->first();
+                return [
+                    'name' => $first->traveler_name,
+                    'email' => $email,
+                    'phone' => $first->traveler_phone,
+                    'property_id' => $first->property_id,
+                    'property_name' => $first->property?->name ?? 'Unknown',
+                    'booking_count' => $booked ?: $inquiries->count(),
+                    'total_spent' => 0,
+                    'last_booking_date' => $lastBooking?->check_out?->format('Y-m-d'),
+                ];
+            })
+            ->values()
+            ->toArray();
+
+        return Inertia::render('crm', [
+            'guests' => $guests,
+            'properties' => $properties->map(fn ($p) => ['id' => $p->id, 'name' => $p->name])->toArray(),
+        ]);
+    })->name('crm');
 
     Route::get('property/{id}', function ($id) {
         $propertyModel = \App\Models\Property::find($id);
@@ -475,7 +416,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                     'check_out' => '2024-02-18',
                     'guests' => 2,
                     'message' => 'Hi! We are interested in booking your property for a romantic getaway. Could you tell me more about the amenities?',
-                    'status' => 'pending',
+                    'status' => 'new',
                     'created_at' => '2024-01-20 10:30:00',
                 ],
                 [
@@ -486,7 +427,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                     'check_out' => '2024-02-25',
                     'guests' => 4,
                     'message' => 'Perfect property for our family vacation! Please confirm availability.',
-                    'status' => 'responded',
+                    'status' => 'contacted',
                     'created_at' => '2024-01-19 14:15:00',
                 ],
                 [
@@ -497,7 +438,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                     'check_out' => '2024-03-07',
                     'guests' => 2,
                     'message' => 'Looking forward to our stay! Thank you for the quick response.',
-                    'status' => 'confirmed',
+                    'status' => 'booked',
                     'created_at' => '2024-01-18 09:45:00',
                 ],
             ],
@@ -509,7 +450,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                     'check_out' => '2024-03-07',
                     'guests' => 2,
                     'total_amount' => 1050,
-                    'status' => 'confirmed',
+                    'status' => 'booked',
                 ],
                 [
                     'id' => 2,
@@ -518,7 +459,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                     'check_out' => '2024-03-18',
                     'guests' => 3,
                     'total_amount' => 675,
-                    'status' => 'confirmed',
+                    'status' => 'booked',
                 ],
                 [
                     'id' => 3,
@@ -527,7 +468,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                     'check_out' => '2024-04-06',
                     'guests' => 2,
                     'total_amount' => 800,
-                    'status' => 'pending',
+                    'status' => 'new',
                 ],
             ],
         ];
@@ -541,7 +482,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 // Admin routes
 Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('dashboard', function () {
-        // Get properties data with approval status
         $properties = \App\Models\Property::with('user')->get()->map(function ($property) {
             return [
                 'id' => $property->id,
@@ -549,57 +489,27 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
                 'type' => $property->type,
                 'status' => $property->status,
                 'approval_status' => $property->approval_status,
-                'host_name' => $property->user->name,
-                'views_7d' => (string) $property->views_7d,
-                'views_30d' => (string) $property->views_30d,
+                'host_name' => $property->user?->name ?? 'Host',
                 'inquiries' => (string) $property->inquiries,
                 'bookings' => (string) $property->bookings,
                 'created_at' => $property->created_at->format('Y-m-d'),
             ];
         })->toArray();
 
-        // Get hosts data
-        $hosts = \App\Models\User::where('role', 'host')->with('hostSubscription')->get()->map(function ($host) {
+        $hosts = \App\Models\User::where('role', 'host')->get()->map(function ($host) {
             return [
                 'id' => $host->id,
                 'name' => $host->name,
                 'email' => $host->email,
                 'properties_count' => \App\Models\Property::where('user_id', $host->id)->count(),
-                'subscription_status' => $host->hostSubscription?->status ?? 'none',
-                'subscription_expires' => $host->hostSubscription?->end_date?->format('Y-m-d'),
                 'joined_at' => $host->created_at->diffForHumans(),
             ];
         })->toArray();
 
-        // Calculate admin-specific metrics
         $total_listings = \App\Models\Property::count();
         $active_listings = \App\Models\Property::where('approval_status', 'approved')->count();
         $pending_approvals = \App\Models\Property::where('approval_status', 'pending')->count();
-
-        $expiring_subscriptions = \App\Models\HostSubscription::where('status', 'active')
-            ->where('end_date', '<=', now()->addDays(30))
-            ->count();
-
         $recent_inquiries = \App\Models\Inquiry::where('sent_at', '>=', now()->subDays(7))->count();
-
-        $yearly_revenue = \App\Models\HostSubscription::where('status', 'active')
-            ->sum('yearly_fee');
-
-        // Get site analytics data for the last 7 days
-        $site_analytics = \App\Models\SiteAnalytic::where('date', '>=', now()->subDays(7))
-            ->orderBy('date')
-            ->get()
-            ->map(function ($analytic) {
-                return [
-                    'date' => $analytic->date->format('Y-m-d'),
-                    'page_views' => $analytic->page_views,
-                    'unique_visitors' => $analytic->unique_visitors,
-                    'property_views' => $analytic->property_views,
-                    'inquiry_submissions' => $analytic->inquiry_submissions,
-                    'bounce_rate' => $analytic->bounce_rate,
-                    'avg_session_duration' => $analytic->avg_session_duration,
-                ];
-            });
 
         return Inertia::render('admin/admin-dashboard', [
             'properties' => $properties,
@@ -607,14 +517,10 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
             'total_listings' => $total_listings,
             'active_listings' => $active_listings,
             'pending_approvals' => $pending_approvals,
-            'expiring_subscriptions' => $expiring_subscriptions,
             'recent_inquiries' => $recent_inquiries,
-            'yearly_revenue' => $yearly_revenue,
-            'site_analytics' => $site_analytics,
         ]);
     })->name('dashboard');
 
-    // Placeholder routes for other admin pages
     Route::get('hosts', function () {
         return Inertia::render('admin/host-management');
     })->name('hosts');
@@ -626,18 +532,6 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::get('billing', function () {
         return Inertia::render('admin/renewals-billing');
     })->name('billing');
-
-    Route::get('content', function () {
-        return Inertia::render('admin/content-management');
-    })->name('content');
-
-    Route::get('inquiries', function () {
-        return Inertia::render('admin/traveler-inquiries');
-    })->name('inquiries');
-
-    Route::get('analytics', function () {
-        return Inertia::render('admin/analytics-reports');
-    })->name('analytics');
 });
 
 // Admin authentication routes

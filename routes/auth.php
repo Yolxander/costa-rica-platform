@@ -5,16 +5,17 @@ use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
-use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\Host\HostRegisteredUserController;
+use App\Http\Controllers\Host\HostVerifyAccessCodeController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
-    Route::get('register', [RegisteredUserController::class, 'create'])
-        ->name('register');
+    Route::get('host/register', [HostRegisteredUserController::class, 'create'])
+        ->name('host.register');
 
-    Route::post('register', [RegisteredUserController::class, 'store'])
-        ->name('register.store');
+    Route::post('host/register', [HostRegisteredUserController::class, 'store'])
+        ->name('host.register.store');
 
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
         ->name('login');
@@ -36,6 +37,16 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
+    Route::get('host/verify-access-code', [HostVerifyAccessCodeController::class, 'create'])
+        ->name('host.verify-access-code');
+
+    Route::post('host/verify-access-code', [HostVerifyAccessCodeController::class, 'store'])
+        ->name('host.verify-access-code.store');
+
+    Route::post('host/resend-access-code', [HostVerifyAccessCodeController::class, 'resend'])
+        ->middleware('throttle:6,1')
+        ->name('host.resend-access-code');
+
     Route::get('verify-email', EmailVerificationPromptController::class)
         ->name('verification.notice');
 

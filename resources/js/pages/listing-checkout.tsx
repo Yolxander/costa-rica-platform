@@ -14,7 +14,6 @@ import {
     IconSend,
     IconCircleCheck,
     IconHome,
-    IconLogin,
 } from '@tabler/icons-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -71,8 +70,8 @@ export default function ListingCheckout() {
     const [submitted, setSubmitted] = useState(false);
 
     const form = useForm({
-        traveler_name: auth.user?.name ?? '',
-        traveler_email: auth.user?.email ?? '',
+        traveler_name: auth?.user?.name ?? '',
+        traveler_email: auth?.user?.email ?? '',
         traveler_phone: '',
         check_in: '',
         check_out: '',
@@ -132,23 +131,7 @@ export default function ListingCheckout() {
                                     <Button variant="outline">Back to listing</Button>
                                 </Link>
                                 <Link href="/">
-                                    <Button>Browse more listings</Button>
-                                </Link>
-                            </div>
-                        </div>
-                    ) : !auth.user ? (
-                        <div className="mx-auto max-w-lg py-16 text-center">
-                            <IconLogin className="mx-auto size-12 text-muted-foreground/40" />
-                            <h1 className="mt-4 text-2xl font-bold">Log in to continue</h1>
-                            <p className="mt-2 text-muted-foreground">
-                                You need to be logged in to send an inquiry to the host.
-                            </p>
-                            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
-                                <Link href={`/login?redirect=/listing/${property.id}/checkout`}>
-                                    <Button size="lg">Log in</Button>
-                                </Link>
-                                <Link href={`/register?redirect=/listing/${property.id}/checkout`}>
-                                    <Button variant="outline" size="lg">Sign up</Button>
+                                    <Button>Back to home</Button>
                                 </Link>
                             </div>
                         </div>

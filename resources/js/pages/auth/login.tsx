@@ -12,7 +12,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { register } from '@/routes';
 import { request } from '@/routes/password';
 import { Form, Head, Link } from '@inertiajs/react';
 import { LoaderCircle } from 'lucide-react';
@@ -30,7 +29,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
 
                 <div className="mb-4 text-center">
                     <Link href="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                        &larr; Back to listings
+                        &larr; Back to home
                     </Link>
                 </div>
 
@@ -113,17 +112,17 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                         </Button>
                                     </div>
 
-                                    <div className="text-center text-sm text-muted-foreground">
-                                        Don't have an account?{' '}
-                                        <Link href={register()} className="underline underline-offset-4">
-                                            Sign up
-                                        </Link>
-                                    </div>
-
-                                    <div className="text-center text-sm text-muted-foreground">
-                                        <Link href="/admin/login" className="underline underline-offset-4 text-primary">
-                                            Admin Login
-                                        </Link>
+                                    <div className="text-center text-sm text-muted-foreground space-y-1">
+                                        <p>
+                                            <Link href="/host/register" className="underline underline-offset-4 text-primary">
+                                                Become a Host
+                                            </Link>
+                                        </p>
+                                        <p>
+                                            <Link href="/admin/login" className="underline underline-offset-4 text-primary">
+                                                Admin Login
+                                            </Link>
+                                        </p>
                                     </div>
                                 </>
                             )}

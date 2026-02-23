@@ -24,8 +24,10 @@ import {
   Archive,
   MapPin,
   Calendar,
-  DollarSign
+  DollarSign,
+  Download,
 } from "lucide-react"
+import { Link } from "@inertiajs/react"
 import { usePage } from "@inertiajs/react"
 import { SharedData } from "@/types"
 
@@ -126,7 +128,18 @@ export default function ListingsPage() {
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
               <div className="px-4 lg:px-6">
-                <div className="flex items-center justify-end mb-6">
+                <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+                  <div className="flex items-center gap-4">
+                    <Badge variant="outline" className="px-3 py-1.5">
+                      Stripe: Not Connected
+                    </Badge>
+                    <Link href="/import-airbnb">
+                      <Button variant="outline" className="flex items-center gap-2">
+                        <Download className="h-4 w-4" />
+                        Import from Airbnb
+                      </Button>
+                    </Link>
+                  </div>
                   <Button className="flex items-center gap-2" onClick={handleAddProperty}>
                     <Plus className="h-4 w-4" />
                     Add Property

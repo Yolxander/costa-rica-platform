@@ -4,13 +4,20 @@ import {
     SidebarInset,
     SidebarProvider,
 } from "@/components/ui/sidebar"
-import { usePage } from "@inertiajs/react"
+import { usePage, router } from "@inertiajs/react"
 import { SharedData } from "@/types"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 import { useState, useRef, useEffect, useMemo } from "react"
 import {
     IconSend,
@@ -21,6 +28,8 @@ import {
     IconHome,
     IconDotsVertical,
     IconSearch,
+    IconBrandWhatsapp,
+    IconCircleCheck,
 } from "@tabler/icons-react"
 
 interface Inquiry {
@@ -28,12 +37,13 @@ interface Inquiry {
     traveler_name: string
     traveler_email: string
     traveler_phone: string | null
+    property_id?: number
     property_name: string
     check_in: string
     check_out: string
     guests: number
     message: string
-    status: "pending" | "responded" | "confirmed" | "declined"
+    status: "new" | "contacted" | "booked" | "lost"
     sent_at: string
 }
 
@@ -49,10 +59,10 @@ interface InquiriesPageProps extends SharedData {
 }
 
 const statusVariant: Record<Inquiry["status"], "default" | "secondary" | "destructive" | "outline"> = {
-    pending: "outline",
-    responded: "secondary",
-    confirmed: "default",
-    declined: "destructive",
+    new: "outline",
+    contacted: "secondary",
+    booked: "default",
+    lost: "destructive",
 }
 
 function getInitials(name: string) {
@@ -92,7 +102,7 @@ function buildMockMessages(inquiry: Inquiry): Message[] {
         },
     ]
 
-    if (inquiry.status === "responded") {
+    if (inquiry.status === "contacted") {
         messages.push(
             {
                 id: `${inquiry.id}-2`,
@@ -119,7 +129,7 @@ function buildMockMessages(inquiry: Inquiry): Message[] {
                 time: "8:42 PM",
             },
         )
-    } else if (inquiry.status === "confirmed") {
+    } else if (inquiry.status === "booked") {
         messages.push(
             {
                 id: `${inquiry.id}-2`,
@@ -158,7 +168,7 @@ function buildMockMessages(inquiry: Inquiry): Message[] {
                 time: "8:53 PM",
             },
         )
-    } else if (inquiry.status === "declined") {
+    } else if (inquiry.status === "lost") {
         messages.push(
             {
                 id: `${inquiry.id}-2`,
@@ -440,10 +450,33 @@ export default function InquiriesPage() {
                                             <h3 className="mt-3 text-lg font-semibold">
                                                 {selected.traveler_name}
                                             </h3>
-                                            <p className="text-sm text-muted-foreground">Traveler</p>
-                                            <Badge variant={statusVariant[selected.status]} className="mt-2 capitalize">
-                                                {selected.status}
-                                            </Badge>
+                                            <p className="text-sm text-muted-foreground">Guest</p>
+                                            <div className="mt-2 flex flex-col gap-2">
+                                                <Select
+                                                    value={selected.status}
+                                                    onValueChange={(value) => {
+                                                        router.patch(`/inquiries/${selected.id}`, { status: value }, { preserveScroll: true })
+                                                    }}
+                                                >
+                                                    <SelectTrigger>
+                                                        <SelectValue />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="new">New</SelectItem>
+                                                        <SelectItem value="contacted">Contacted</SelectItem>
+                                                        <SelectItem value="booked">Booked</SelectItem>
+                                                        <SelectItem value="lost">Lost</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => router.patch(`/inquiries/${selected.id}`, { status: "booked" }, { preserveScroll: true })}
+                                                >
+                                                    <IconCircleCheck className="mr-1 size-4" />
+                                                    Mark as Booked
+                                                </Button>
+                                            </div>
                                         </div>
 
                                         <Separator />
@@ -489,15 +522,27 @@ export default function InquiriesPage() {
                                         <Separator />
 
                                         {/* Actions */}
-                                        <div className="flex gap-2 p-4">
-                                            <Button variant="outline" className="flex-1" asChild>
+                                        <div className="flex flex-col gap-2 p-4">
+                                            {selected.traveler_phone && (
+                                                <Button variant="default" className="w-full" asChild>
+                                                    <a
+                                                        href={`https://wa.me/${selected.traveler_phone.replace(/\D/g, "")}?text=${encodeURIComponent(`Hi ${selected.traveler_name.split(" ")[0]}, thanks for your inquiry about ${selected.property_name}. I'd love to help!`)}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                    >
+                                                        <IconBrandWhatsapp className="mr-1.5 size-4" />
+                                                        WhatsApp Reply
+                                                    </a>
+                                                </Button>
+                                            )}
+                                            <Button variant="outline" className="w-full" asChild>
                                                 <a href={`mailto:${selected.traveler_email}`}>
                                                     <IconMail className="mr-1.5 size-4" />
                                                     Email
                                                 </a>
                                             </Button>
                                             {selected.traveler_phone && (
-                                                <Button variant="outline" className="flex-1" asChild>
+                                                <Button variant="outline" className="w-full" asChild>
                                                     <a href={`tel:${selected.traveler_phone}`}>
                                                         <IconPhone className="mr-1.5 size-4" />
                                                         Call

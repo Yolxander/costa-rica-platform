@@ -13,6 +13,7 @@ import {
   IconArchive,
   IconMapPin,
   IconCurrencyDollar,
+  IconLink,
 } from "@tabler/icons-react"
 import { Link } from "@inertiajs/react"
 import {
@@ -187,6 +188,14 @@ const columns: ColumnDef<z.infer<typeof listingSchema>>[] = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => {
+              const url = `${window.location.origin}/listing/${row.original.id}`
+              navigator.clipboard.writeText(url)
+              meta?.onCopyLink?.()
+            }}>
+              <IconLink className="h-4 w-4 mr-2" />
+              Copy Public Direct Link
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={() => meta?.onEdit?.(row.original)}>
               <IconEdit className="h-4 w-4 mr-2" />
               Edit

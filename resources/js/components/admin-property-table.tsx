@@ -2,7 +2,6 @@ import * as React from "react"
 import {
   IconCircleCheckFilled,
   IconLoader,
-  IconEye,
   IconMessage,
   IconCalendar,
   IconClock,
@@ -57,8 +56,6 @@ const propertySchema = z.object({
   status: z.string(),
   approval_status: z.string(),
   host_name: z.string(),
-  views_7d: z.string(),
-  views_30d: z.string(),
   inquiries: z.string(),
   bookings: z.string(),
   created_at: z.string(),
@@ -129,34 +126,6 @@ const columns: ColumnDef<Property>[] = [
           {status}
         </Badge>
       )
-    },
-  },
-  {
-    accessorKey: "views_7d",
-    header: ({ column }) => {
-      return (
-        <div className="flex items-center gap-2">
-          <IconEye className="h-4 w-4" />
-          Views (7d)
-        </div>
-      )
-    },
-    cell: ({ row }) => {
-      return <div className="text-right font-medium">{row.getValue("views_7d")}</div>
-    },
-  },
-  {
-    accessorKey: "views_30d",
-    header: ({ column }) => {
-      return (
-        <div className="flex items-center gap-2">
-          <IconEye className="h-4 w-4" />
-          Views (30d)
-        </div>
-      )
-    },
-    cell: ({ row }) => {
-      return <div className="text-right font-medium">{row.getValue("views_30d")}</div>
     },
   },
   {

@@ -9,23 +9,20 @@ class RegistrationTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_registration_screen_can_be_rendered()
+    /**
+     * Traveler registration has been removed - only host registration is available.
+     */
+    public function test_traveler_registration_route_no_longer_exists()
     {
-        $response = $this->get(route('register'));
+        $response = $this->get('/register');
 
-        $response->assertStatus(200);
+        $response->assertStatus(404);
     }
 
-    public function test_new_users_can_register()
+    public function test_host_registration_screen_can_be_rendered()
     {
-        $response = $this->post(route('register.store'), [
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'password' => 'password',
-            'password_confirmation' => 'password',
-        ]);
+        $response = $this->get(route('host.register'));
 
-        $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard', absolute: false));
+        $response->assertStatus(200);
     }
 }

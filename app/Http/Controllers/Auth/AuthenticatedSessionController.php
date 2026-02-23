@@ -19,10 +19,6 @@ class AuthenticatedSessionController extends Controller
      */
     public function create(Request $request): Response
     {
-        if ($redirect = $request->query('redirect')) {
-            $request->session()->put('url.intended', url($redirect));
-        }
-
         return Inertia::render('auth/login', [
             'canResetPassword' => Route::has('password.request'),
             'status' => $request->session()->get('status'),
@@ -49,7 +45,15 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended('/');
+        if ($user->isHost() && !$user->hasVerifiedEmail()) {
+            return redirect()->route('verification.notice');
+        }
+
+        if ($user->hasAdminAccess() && !$user->isHost()) {
+            return redirect()->intended(route('admin.dashboard'));
+        }
+
+        return redirect()->intended(route('dashboard'));
     }
 
     /**

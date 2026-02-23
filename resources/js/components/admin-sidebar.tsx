@@ -1,30 +1,14 @@
 import * as React from "react"
 import {
-  IconFileAi,
-  IconFileDescription,
-  IconHelp,
   IconInnerShadowTop,
-  IconSearch,
-  IconSettings,
   IconHome,
-  IconList,
-  IconCalendar,
-  IconMessage,
-  IconChartLine,
-  IconCreditCard,
-  IconBell,
-  IconLock,
   IconUsers,
   IconBuilding,
   IconReceipt,
-  IconFileText,
-  IconMail,
-  IconChartBar,
 } from "@tabler/icons-react"
 
 import { AdminNavMain } from "@/components/admin-nav-main"
 import { NavGroup } from "@/components/nav-group"
-import { NavSecondary } from "@/components/nav-secondary"
 import { AdminNavUser } from "@/components/admin-nav-user"
 import {
   Sidebar,
@@ -51,56 +35,19 @@ const data = {
   ],
   navManagement: [
     {
-      title: "Host Management",
+      title: "Hosts",
       url: "/admin/hosts",
       icon: IconUsers,
     },
     {
-      title: "Property Listings",
+      title: "Properties",
       url: "/admin/properties",
       icon: IconBuilding,
     },
     {
-      title: "Renewals & Billing",
+      title: "Billing",
       url: "/admin/billing",
       icon: IconReceipt,
-    },
-  ],
-  navContent: [
-    {
-      title: "Content Management",
-      url: "/admin/content",
-      icon: IconFileText,
-    },
-    {
-      title: "Traveler Inquiries",
-      url: "/admin/inquiries",
-      icon: IconMail,
-    },
-    {
-      title: "Analytics & Reports",
-      url: "/admin/analytics",
-      icon: IconChartBar,
-    },
-  ],
-  navSecondary: [
-    {
-      title: "Settings",
-      url: "#",
-      icon: IconSettings,
-      lockIcon: IconLock,
-    },
-    {
-      title: "Get Help",
-      url: "#",
-      icon: IconHelp,
-      lockIcon: IconLock,
-    },
-    {
-      title: "Search",
-      url: "#",
-      icon: IconSearch,
-      lockIcon: IconLock,
     },
   ],
 }
@@ -126,8 +73,6 @@ export function AdminSidebar({ ...props }: React.ComponentProps<typeof Sidebar>)
       <SidebarContent>
         <AdminNavMain items={data.navMain} />
         <NavGroup items={data.navManagement} label="Management" />
-        <NavGroup items={data.navContent} label="Content & Support" />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
         <AdminNavUser user={data.user} />

@@ -1,4 +1,4 @@
-import { Head, Link, router, usePage } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import { type SharedData } from '@/types';
 import {
     IconMapPin,
@@ -9,7 +9,6 @@ import {
     IconHome,
     IconBeach,
     IconCamera,
-    IconHeart,
     IconShare,
     IconCheck,
     IconClock,
@@ -23,7 +22,6 @@ import {
     IconSmoking,
     IconMusic,
     IconUser,
-    IconHeartFilled,
 } from '@tabler/icons-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -64,7 +62,6 @@ interface ListingProperty {
 
 interface ListingDetailProps extends SharedData {
     property: ListingProperty;
-    savedListingIds: number[];
 }
 
 const amenityIcons: Record<string, ComponentType<{ className?: string }>> = {
@@ -143,8 +140,7 @@ function ImageGallery({ images, name }: { images: string[]; name: string }) {
 }
 
 export default function ListingDetail() {
-    const { auth, property, savedListingIds } = usePage<ListingDetailProps>().props;
-    const isSaved = savedListingIds?.includes(property.id) ?? false;
+    const { auth, property } = usePage<ListingDetailProps>().props;
 
     return (
         <>
@@ -161,7 +157,7 @@ export default function ListingDetail() {
                         </Link>
                         <nav className="flex items-center gap-3">
                             {auth.user ? (
-                                <Link href="/account" className="flex items-center gap-2 transition-opacity hover:opacity-80">
+                                <Link href="/dashboard" className="flex items-center gap-2 transition-opacity hover:opacity-80">
                                     <div className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-sm font-medium text-primary">
                                         {auth.user.name?.charAt(0).toUpperCase()}
                                     </div>
@@ -176,8 +172,8 @@ export default function ListingDetail() {
                                             Log in
                                         </Button>
                                     </Link>
-                                    <Link href="/register">
-                                        <Button size="sm">Sign up</Button>
+                                    <Link href="/host/register">
+                                        <Button size="sm">Become a Host</Button>
                                     </Link>
                                 </>
                             )}
@@ -198,32 +194,13 @@ export default function ListingDetail() {
                     {/* Image Gallery */}
                     <ImageGallery images={property.images} name={property.name} />
 
-                    {/* Action Buttons (mobile share/save) */}
+                    {/* Action Buttons (mobile share) */}
                     <div className="mt-4 flex items-center justify-between md:hidden">
                         <Badge variant="secondary">{property.type}</Badge>
-                        <div className="flex gap-2">
-                            <Button size="sm" variant="ghost">
-                                <IconShare className="mr-1 size-4" />
-                                Share
-                            </Button>
-                            {auth.user ? (
-                                <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    onClick={() => router.post(`/listing/${property.id}/save`, {}, { preserveScroll: true })}
-                                >
-                                    {isSaved ? <IconHeartFilled className="mr-1 size-4 text-red-500" /> : <IconHeart className="mr-1 size-4" />}
-                                    {isSaved ? 'Saved' : 'Save'}
-                                </Button>
-                            ) : (
-                                <Link href={`/login?redirect=/listing/${property.id}`}>
-                                    <Button size="sm" variant="ghost">
-                                        <IconHeart className="mr-1 size-4" />
-                                        Save
-                                    </Button>
-                                </Link>
-                            )}
-                        </div>
+                        <Button size="sm" variant="ghost">
+                            <IconShare className="mr-1 size-4" />
+                            Share
+                        </Button>
                     </div>
 
                     {/* Two-column layout */}
@@ -256,28 +233,11 @@ export default function ListingDetail() {
                                             )}
                                         </div>
                                     </div>
-                                    <div className="hidden gap-2 md:flex">
+                                    <div className="hidden md:flex">
                                         <Button size="sm" variant="outline">
                                             <IconShare className="mr-1 size-4" />
                                             Share
                                         </Button>
-                                        {auth.user ? (
-                                            <Button
-                                                size="sm"
-                                                variant="outline"
-                                                onClick={() => router.post(`/listing/${property.id}/save`, {}, { preserveScroll: true })}
-                                            >
-                                                {isSaved ? <IconHeartFilled className="mr-1 size-4 text-red-500" /> : <IconHeart className="mr-1 size-4" />}
-                                                {isSaved ? 'Saved' : 'Save'}
-                                            </Button>
-                                        ) : (
-                                            <Link href={`/login?redirect=/listing/${property.id}`}>
-                                                <Button size="sm" variant="outline">
-                                                    <IconHeart className="mr-1 size-4" />
-                                                    Save
-                                                </Button>
-                                            </Link>
-                                        )}
                                     </div>
                                 </div>
 
@@ -448,30 +408,11 @@ export default function ListingDetail() {
                                         </div>
                                     )}
 
-                                    {auth.user ? (
-                                        <Link href={`/listing/${property.id}/checkout`} className="block">
-                                            <Button className="w-full" size="lg">
-                                                Inquire Now
-                                            </Button>
-                                        </Link>
-                                    ) : (
-                                        <>
-                                            <Link href={`/login?redirect=/listing/${property.id}/checkout`} className="block">
-                                                <Button className="w-full" size="lg">
-                                                    Log in to inquire
-                                                </Button>
-                                            </Link>
-                                            <p className="text-center text-xs text-muted-foreground">
-                                                Don&apos;t have an account?{' '}
-                                                <Link
-                                                    href={`/register?redirect=/listing/${property.id}/checkout`}
-                                                    className="font-medium text-primary underline-offset-4 hover:underline"
-                                                >
-                                                    Sign up
-                                                </Link>
-                                            </p>
-                                        </>
-                                    )}
+                                    <Link href={`/listing/${property.id}/checkout`} className="block">
+                                        <Button className="w-full" size="lg">
+                                            Inquire Now
+                                        </Button>
+                                    </Link>
                                 </CardContent>
                             </Card>
                         </div>

@@ -1,20 +1,12 @@
 import * as React from "react"
 import {
-  IconCamera,
-  IconFileAi,
-  IconFileDescription,
-  IconHelp,
   IconInnerShadowTop,
-  IconSearch,
   IconSettings,
   IconHome,
   IconList,
   IconCalendar,
   IconMessage,
-  IconChartLine,
-  IconCreditCard,
-  IconBell,
-  IconLock,
+  IconUsers,
 } from "@tabler/icons-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -39,108 +31,40 @@ const data = {
   },
   navMain: [
     {
-      title: "Dashboard (Overview)",
+      title: "Dashboard",
       url: "/dashboard",
       icon: IconHome,
     },
   ],
   navPropertyManagement: [
     {
-      title: "Listings Management",
+      title: "Listings",
       url: "/listings",
       icon: IconList,
     },
     {
-      title: "Calendar & Availability",
+      title: "Calendar",
       url: "/calendar",
       icon: IconCalendar,
-    },
-    {
-      title: "Analytics & Insights",
-      url: "#",
-      icon: IconChartLine,
-      lockIcon: IconLock,
     },
   ],
   navCommunication: [
     {
-      title: "Inquiries & Messaging",
+      title: "Inquiries",
       url: "/inquiries",
       icon: IconMessage,
     },
     {
-      title: "Billing & Subscription",
-      url: "#",
-      icon: IconCreditCard,
-      lockIcon: IconLock,
-    },
-  ],
-  navClouds: [
-    {
-      title: "Capture",
-      icon: IconCamera,
-      isActive: true,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Proposal",
-      icon: IconFileDescription,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Prompts",
-      icon: IconFileAi,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
+      title: "Guest CRM",
+      url: "/crm",
+      icon: IconUsers,
     },
   ],
   navSecondary: [
     {
       title: "Settings",
-      url: "#",
+      url: "/settings",
       icon: IconSettings,
-      lockIcon: IconLock,
-    },
-    {
-      title: "Get Help",
-      url: "#",
-      icon: IconHelp,
-      lockIcon: IconLock,
-    },
-    {
-      title: "Search",
-      url: "#",
-      icon: IconSearch,
-      lockIcon: IconLock,
     },
   ],
 }
@@ -155,7 +79,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <a href="#">
+              <a href="/dashboard">
                 <IconInnerShadowTop className="!size-5" />
                 <span className="text-base font-semibold">Costa Rica Rental Hub</span>
               </a>

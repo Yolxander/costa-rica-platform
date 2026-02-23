@@ -1,22 +1,23 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\Host;
 
 use App\Http\Controllers\Controller;
+use App\Mail\HostAccessCodeMail;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class RegisteredUserController extends Controller
+class HostRegisteredUserController extends Controller
 {
     /**
-     * Show the registration page.
+     * Show the host registration (onboarding) page.
      */
     public function create(Request $request): Response
     {
@@ -24,11 +25,11 @@ class RegisteredUserController extends Controller
             $request->session()->put('url.intended', url($redirect));
         }
 
-        return Inertia::render('auth/register');
+        return Inertia::render('auth/host-register');
     }
 
     /**
-     * Handle an incoming registration request.
+     * Handle an incoming host registration request.
      *
      * @throws \Illuminate\Validation\ValidationException
      */
@@ -44,12 +45,14 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => 'host',
         ]);
 
         event(new Registered($user));
 
-        Auth::login($user);
+        $accessCode = config('host.access_code', 'Toronto2026');
+        Mail::to($user->email)->send(new HostAccessCodeMail($user, $accessCode));
 
-        return redirect()->intended('/');
+        return redirect()->route('login')->with('status', 'Registration successful. Check your email for the access code to complete setup.');
     }
 }
