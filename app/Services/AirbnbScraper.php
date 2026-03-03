@@ -234,6 +234,11 @@ class AirbnbScraper
             }
         }
 
+        // Strategy 4b: Extract price from HTML text patterns (e.g. "$150", "€120", "150 USD")
+        if ($data['base_price'] <= 0) {
+            $data = $this->extractPriceFromHtml($data, $html);
+        }
+
         // Try to extract capacity info from visible text patterns
         if ($data['guests'] <= 1) {
             if (preg_match('/(\d+)\s*guests?/i', $html, $m)) {
@@ -248,6 +253,15 @@ class AirbnbScraper
         if ($data['bathrooms'] <= 1) {
             if (preg_match('/(\d+)\s*bathrooms?/i', $html, $m)) {
                 $data['bathrooms'] = (int) $m[1];
+            }
+        }
+        if ($data['reviews'] <= 0) {
+            if (preg_match('/(\d+)\s*reviews?/i', $html, $m)) {
+                $data['reviews'] = (int) $m[1];
+            } elseif (preg_match('/["\']reviewCount["\']\s*:\s*(\d+)/i', $html, $m)) {
+                $data['reviews'] = (int) $m[1];
+            } elseif (preg_match('/["\']reviewsCount["\']\s*:\s*(\d+)/i', $html, $m)) {
+                $data['reviews'] = (int) $m[1];
             }
         }
 
@@ -311,6 +325,62 @@ class AirbnbScraper
             }
             if (!empty($listing['locationTitle'])) {
                 $data['location'] = $listing['locationTitle'];
+            }
+            if ($data['reviews'] <= 0) {
+                $reviews = $listing['reviewsCount'] ?? $listing['reviewCount'] ?? $listing['numberOfReviews']
+                    ?? $listing['reviews']['count'] ?? $listing['reviews'] ?? null;
+                if (is_numeric($reviews)) {
+                    $data['reviews'] = (int) $reviews;
+                } elseif (is_array($reviews) && isset($reviews['count'])) {
+                    $data['reviews'] = (int) $reviews['count'];
+                }
+            }
+            if (empty($data['rating']) && !empty($listing['starRating']) && is_numeric($listing['starRating'])) {
+                $data['rating'] = (float) $listing['starRating'];
+            }
+            if ($data['base_price'] <= 0) {
+                $price = $listing['price']['rate'] ?? $listing['price']['total'] ?? $listing['price'] ?? null;
+                if (is_numeric($price)) {
+                    $data['base_price'] = (float) $price;
+                } elseif (is_array($price) && isset($price['amount'])) {
+                    $data['base_price'] = (float) $price['amount'];
+                }
+                $pricingQuote = $listing['pricingQuote'] ?? $listing['priceDetails'] ?? null;
+                if (is_array($pricingQuote)) {
+                    $rate = $pricingQuote['rate']['amount'] ?? $pricingQuote['price']['total']['amount'] ?? $pricingQuote['rate'] ?? $pricingQuote['price'] ?? null;
+                    if (is_numeric($rate) && $data['base_price'] <= 0) {
+                        $data['base_price'] = (float) $rate;
+                    }
+                }
+                if (!empty($listing['currency'])) {
+                    $data['currency'] = $listing['currency'];
+                }
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * Extract price from HTML using common patterns.
+     */
+    protected function extractPriceFromHtml(array $data, string $html): array
+    {
+        $patterns = [
+            '/[\$€£]\s*(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)\s*(?:per\s+night|night|\/night)/i',
+            '/(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)\s*(?:USD|EUR|GBP|CAD|CRC)\s*(?:per\s+night|night|\/night)?/i',
+            '/price[^0-9]*[\$€£]?\s*(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)/i',
+            '/["\']price["\']\s*:\s*(\d+(?:\.\d+)?)/i',
+            '/"amount"\s*:\s*"(\d+(?:\.\d+)?)"/i',
+        ];
+
+        foreach ($patterns as $pattern) {
+            if (preg_match($pattern, $html, $m)) {
+                $price = (float) str_replace(',', '', $m[1]);
+                if ($price > 0 && $price < 100000) {
+                    $data['base_price'] = $price;
+                    break;
+                }
             }
         }
 

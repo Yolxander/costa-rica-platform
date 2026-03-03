@@ -39,6 +39,27 @@ import { Separator } from "@/components/ui/separator"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Progress } from "@/components/ui/progress"
 
+const CURRENCY_SYMBOLS: Record<string, string> = {
+    USD: "$",
+    EUR: "€",
+    GBP: "£",
+    CAD: "CA$",
+    CRC: "₡",
+}
+
+function formatPriceDisplay(pricing: {
+    base_price: number
+    price_format: string
+    currency: string
+}): string {
+    if (pricing.price_format) return pricing.price_format
+    if (pricing.base_price > 0) {
+        const sym = CURRENCY_SYMBOLS[pricing.currency] ?? pricing.currency + " "
+        return `${sym}${pricing.base_price.toLocaleString()}/night`
+    }
+    return "Price not set"
+}
+
 interface PropertyDetailsContentProps {
     property: {
         id: number
@@ -221,7 +242,7 @@ export function PropertyDetailsContent({ property }: PropertyDetailsContentProps
                         </div>
                         <div className="text-right">
                             <div className="text-3xl font-bold text-black dark:text-white">
-                                {property.pricing.price_format || 'Price not set'}
+                                {formatPriceDisplay(property.pricing)}
                             </div>
                         </div>
                     </div>

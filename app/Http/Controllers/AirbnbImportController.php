@@ -71,6 +71,10 @@ class AirbnbImportController extends Controller
             'reviews' => 'nullable|integer|min:0',
         ]);
 
+        $basePrice = (float) $validated['base_price'];
+        $currency = $validated['currency'] ?? 'USD';
+        $priceFormat = $this->formatPrice($basePrice, $currency);
+
         $property = Property::create([
             'user_id' => $request->user()->id,
             'name' => $validated['name'],
@@ -79,8 +83,9 @@ class AirbnbImportController extends Controller
             'status' => 'Active',
             'approval_status' => 'pending',
             'location' => $validated['location'] ?? 'Costa Rica',
-            'base_price' => $validated['base_price'],
-            'currency' => $validated['currency'] ?? 'USD',
+            'base_price' => $basePrice,
+            'price_format' => $priceFormat,
+            'currency' => $currency,
             'guests' => $validated['guests'],
             'bedrooms' => $validated['bedrooms'],
             'bathrooms' => $validated['bathrooms'],
@@ -91,6 +96,16 @@ class AirbnbImportController extends Controller
         ]);
 
         return redirect()->route('listings')->with('success', 'Listing imported successfully from Airbnb!');
+    }
+
+    private function formatPrice(float $basePrice, string $currency): string
+    {
+        if ($basePrice <= 0) {
+            return '';
+        }
+        $symbols = ['USD' => '$', 'EUR' => '€', 'GBP' => '£', 'CAD' => 'CA$', 'CRC' => '₡'];
+        $symbol = $symbols[strtoupper($currency)] ?? strtoupper($currency) . ' ';
+        return $symbol . number_format($basePrice, 0) . '/night';
     }
 
     private function normalizeListingUrl(string $url): string

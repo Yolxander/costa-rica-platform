@@ -187,6 +187,8 @@ class AirbnbImportTest extends TestCase
         $property = Property::where('user_id', $user->id)->first();
         $this->assertEquals(['WiFi', 'Pool', 'Kitchen'], $property->amenities);
         $this->assertCount(2, $property->images);
+        $this->assertEquals('$250/night', $property->price_format);
+        $this->assertEquals(250.00, $property->base_price);
     }
 
     public function test_store_uses_defaults_for_optional_fields()
@@ -209,6 +211,9 @@ class AirbnbImportTest extends TestCase
             'currency' => 'USD',
             'location' => 'Costa Rica',
         ]);
+
+        $property = Property::where('user_id', $user->id)->first();
+        $this->assertEquals('$100/night', $property->price_format);
     }
 
     // --- Scraper Unit Tests ---

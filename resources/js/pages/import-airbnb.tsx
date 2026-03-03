@@ -367,13 +367,21 @@ export default function ImportAirbnbPage() {
                                                 </div>
 
                                                 <div className="space-y-2">
-                                                    <Label htmlFor="edit-price">Nightly Price ({preview.currency})</Label>
+                                                    <Label htmlFor="edit-price">
+                                                        Nightly Price ({preview.currency})
+                                                        {preview.base_price <= 0 && (
+                                                            <span className="ml-1 text-muted-foreground font-normal">
+                                                                — enter manually if not detected
+                                                            </span>
+                                                        )}
+                                                    </Label>
                                                     <Input
                                                         id="edit-price"
                                                         type="number"
                                                         min={0}
                                                         step={0.01}
-                                                        value={editPrice}
+                                                        placeholder="e.g. 150"
+                                                        value={editPrice || ""}
                                                         onChange={(e) => setEditPrice(parseFloat(e.target.value) || 0)}
                                                     />
                                                 </div>
