@@ -12,7 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('properties', function (Blueprint $table) {
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            if (!Schema::hasColumn('properties', 'user_id')) {
+                $table->foreignId('user_id')->nullable()->after('id')->constrained()->onDelete('cascade');
+            } else {
+                $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            }
         });
     }
 

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\Admin\Auth\AdminAuthenticatedSessionController;
+use App\Http\Controllers\AirbnbImportController;
 
 Route::get('/', function () {
     $hostCount = \App\Models\User::where('role', 'host')->count();
@@ -165,6 +166,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('import-airbnb', function () {
         return Inertia::render('import-airbnb');
     })->name('import-airbnb');
+
+    Route::post('import-airbnb/preview', [AirbnbImportController::class, 'preview'])->name('import-airbnb.preview');
+    Route::post('import-airbnb', [AirbnbImportController::class, 'store'])->name('import-airbnb.store');
 
     Route::get('listings', function () {
         $properties = \App\Models\Property::where('user_id', auth()->id())->get()->map(function ($property) {

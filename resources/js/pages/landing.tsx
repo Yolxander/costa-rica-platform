@@ -338,7 +338,7 @@ export default function Landing() {
                         scrolled ? 'border-b border-border/50 bg-background/95 shadow-sm backdrop-blur' : ''
                     }`}
                 >
-                    <div className="mx-auto grid h-16 max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-4 px-4 sm:px-6 lg:px-8">
+                    <div className="mx-auto grid h-16 max-w-8xl grid-cols-[1fr_auto_1fr] items-center gap-4 px-4 sm:px-6 lg:px-8">
                         <Link href="/" className="flex items-center gap-2 justify-self-start">
                             <IconBeach className="size-7 text-primary" />
                             <span className="text-lg font-bold tracking-tight">Costa Rica Rental Hub</span>

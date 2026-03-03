@@ -7,16 +7,22 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // First change column to varchar to allow new values
-        DB::statement("ALTER TABLE inquiries MODIFY COLUMN status VARCHAR(20) NOT NULL DEFAULT 'pending'");
+        $driver = DB::connection()->getDriverName();
 
-        // Then update to new CRM status values
+        // MySQL needs MODIFY COLUMN; SQLite already uses varchar so just update data
+        if ($driver === 'mysql') {
+            DB::statement("ALTER TABLE inquiries MODIFY COLUMN status VARCHAR(20) NOT NULL DEFAULT 'pending'");
+        }
+
+        // Update to new CRM status values
         DB::table('inquiries')->where('status', 'pending')->update(['status' => 'new']);
         DB::table('inquiries')->where('status', 'responded')->update(['status' => 'contacted']);
         DB::table('inquiries')->where('status', 'confirmed')->update(['status' => 'booked']);
         DB::table('inquiries')->where('status', 'declined')->update(['status' => 'lost']);
 
-        DB::statement("ALTER TABLE inquiries MODIFY COLUMN status VARCHAR(20) NOT NULL DEFAULT 'new'");
+        if ($driver === 'mysql') {
+            DB::statement("ALTER TABLE inquiries MODIFY COLUMN status VARCHAR(20) NOT NULL DEFAULT 'new'");
+        }
     }
 
     public function down(): void
@@ -26,6 +32,9 @@ return new class extends Migration
         DB::table('inquiries')->where('status', 'booked')->update(['status' => 'confirmed']);
         DB::table('inquiries')->where('status', 'lost')->update(['status' => 'declined']);
 
-        DB::statement("ALTER TABLE inquiries MODIFY COLUMN status ENUM('pending','responded','confirmed','declined') NOT NULL DEFAULT 'pending'");
+        $driver = DB::connection()->getDriverName();
+        if ($driver === 'mysql') {
+            DB::statement("ALTER TABLE inquiries MODIFY COLUMN status ENUM('pending','responded','confirmed','declined') NOT NULL DEFAULT 'pending'");
+        }
     }
 };
