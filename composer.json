@@ -17,6 +17,7 @@
         "laravel/wayfinder": "^0.1.9"
     },
     "require-dev": {
+        "cweagans/composer-patches": "^2.0",
         "fakerphp/faker": "^1.23",
         "laravel/pail": "^1.2.2",
         "laravel/pint": "^1.18",
@@ -70,6 +71,11 @@
     "extra": {
         "laravel": {
             "dont-discover": []
+        },
+        "patches": {
+            "laravel/framework": {
+                "Fix PHP 8.5 PDO::MYSQL_ATTR_SSL_CA deprecation": "patches/laravel-php85-pdo-mysql-ssl-ca.patch"
+            }
         }
     },
     "config": {
@@ -78,7 +84,8 @@
         "sort-packages": true,
         "allow-plugins": {
             "pestphp/pest-plugin": true,
-            "php-http/discovery": true
+            "php-http/discovery": true,
+            "cweagans/composer-patches": true
         }
     },
     "minimum-stability": "stable",

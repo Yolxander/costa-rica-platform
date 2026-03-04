@@ -34,6 +34,9 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { EditPropertyModal } from "@/components/edit-property-modal"
+import { PropertySettingsModal } from "@/components/property-settings-modal"
+import { SharePropertyModal } from "@/components/share-property-modal"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -169,6 +172,9 @@ const getInquiryStatusColor = (status: string) => {
 
 export function PropertyDetailsContent({ property }: PropertyDetailsContentProps) {
     const [selectedImage, setSelectedImage] = React.useState(0)
+    const [editModalOpen, setEditModalOpen] = React.useState(false)
+    const [settingsModalOpen, setSettingsModalOpen] = React.useState(false)
+    const [shareModalOpen, setShareModalOpen] = React.useState(false)
     const mainImage = property.images && property.images.length > 0 ? property.images[0] : null
     const thumbnails = property.images && property.images.length > 1 ? property.images.slice(1, 6) : []
 
@@ -229,85 +235,80 @@ export function PropertyDetailsContent({ property }: PropertyDetailsContentProps
                 </div>
             </div>
 
-            {/* Main Content */}
-            <div className="space-y-8">
-                    {/* Property Header */}
-                    <div className="flex items-start justify-between">
-                        <div>
-                            <h1 className="text-4xl font-bold">{property.name}</h1>
-                            <div className="flex items-center gap-2 mt-2 text-muted-foreground">
-                                <IconMapPin className="size-4" />
-                                <span>{property.location}</span>
+            {/* Main Content - grid so Property Description and Property Management cards share same row/height */}
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-x-8 gap-y-8">
+                {/* Row 1: Property Header */}
+                <div className="lg:col-span-3">
+                    <h1 className="text-4xl font-bold">{property.name}</h1>
+                    <div className="flex items-center gap-2 mt-2 text-muted-foreground">
+                        <IconMapPin className="size-4" />
+                        <span>{property.location}</span>
+                    </div>
+                </div>
+                <div className="lg:col-span-1 flex items-start justify-end">
+                    <div className="text-3xl font-bold text-black dark:text-white">
+                        {formatPriceDisplay(property.pricing)}
+                    </div>
+                </div>
+
+                {/* Row 2: Key Stats */}
+                <div className="lg:col-span-3 flex items-center gap-8">
+                    <div className="flex items-center gap-2">
+                        <IconBed className="size-5 text-muted-foreground" />
+                        <span className="font-medium">{property.capacity.bedrooms} Beds</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <IconBath className="size-5 text-muted-foreground" />
+                        <span className="font-medium">{property.capacity.bathrooms} Baths</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <IconHome className="size-5 text-muted-foreground" />
+                        <span className="font-medium">{property.type}</span>
+                    </div>
+                    <Badge className={getStatusColor(property.status)}>
+                        {property.status}
+                    </Badge>
+                </div>
+                <div className="hidden lg:block lg:col-span-1" />
+
+                {/* Row 3: Property Description | Property Management - same row = same height */}
+                <div className="lg:col-span-3">
+                    <Card className="h-full">
+                        <CardHeader>
+                            <CardTitle>Property Description</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-muted-foreground leading-relaxed">{property.description}</p>
+                        </CardContent>
+                    </Card>
+                </div>
+                <div className="lg:col-span-1">
+                    <Card className="h-full sticky top-4 flex flex-col">
+                        <CardHeader>
+                            <CardTitle>Property Management</CardTitle>
+                        </CardHeader>
+                        <CardContent className="flex-1 space-y-4">
+                            <div className="space-y-2">
+                                <Button className="w-full" onClick={() => setEditModalOpen(true)}>
+                                    <IconEdit className="size-4 mr-2" />
+                                    Edit Property
+                                </Button>
+                                <Button variant="outline" className="w-full" onClick={() => setSettingsModalOpen(true)}>
+                                    <IconSettings className="size-4 mr-2" />
+                                    Property Settings
+                                </Button>
+                                <Button variant="outline" className="w-full" onClick={() => setShareModalOpen(true)}>
+                                    <IconShare className="size-4 mr-2" />
+                                    Share Property
+                                </Button>
                             </div>
-                        </div>
-                        <div className="text-right">
-                            <div className="text-3xl font-bold text-black dark:text-white">
-                                {formatPriceDisplay(property.pricing)}
-                            </div>
-                        </div>
-                    </div>
+                        </CardContent>
+                    </Card>
+                </div>
 
-                    {/* Key Stats */}
-                    <div className="flex items-center gap-8">
-                        <div className="flex items-center gap-2">
-                            <IconBed className="size-5 text-muted-foreground" />
-                            <span className="font-medium">{property.capacity.bedrooms} Beds</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <IconBath className="size-5 text-muted-foreground" />
-                            <span className="font-medium">{property.capacity.bathrooms} Baths</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <IconHome className="size-5 text-muted-foreground" />
-                            <span className="font-medium">{property.type}</span>
-                        </div>
-                        <Badge className={getStatusColor(property.status)}>
-                            {property.status}
-                        </Badge>
-                    </div>
-
-                    {/* Property Description and Management Actions */}
-                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                        <div className="lg:col-span-3">
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Property Description</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <p className="text-muted-foreground leading-relaxed">{property.description}</p>
-                                </CardContent>
-                            </Card>
-                        </div>
-
-                        <div className="lg:col-span-1">
-                            <Card className="sticky top-4">
-                                <CardHeader>
-                                    <CardTitle>Property Management</CardTitle>
-                                </CardHeader>
-                                <CardContent className="space-y-4">
-                                    <div className="space-y-2">
-                                        <Button className="w-full">
-                                            <IconEdit className="size-4 mr-2" />
-                                            Edit Property
-                                        </Button>
-                                        <Button variant="outline" className="w-full">
-                                            <IconSettings className="size-4 mr-2" />
-                                            Property Settings
-                                        </Button>
-                                        <Button variant="outline" className="w-full">
-                                            <IconShare className="size-4 mr-2" />
-                                            Share Property
-                                        </Button>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </div>
-                    </div>
-
-                    {/* Facts & Features and Property Management Row */}
-                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 ">
-                        <div className="lg:col-span-3">
-                            <Card>
+                {/* Row 4: Facts & Features */}
+                <div className="lg:col-span-3">
+                    <Card>
                                 <CardHeader>
                                     <CardTitle>Facts & Features</CardTitle>
                                 </CardHeader>
@@ -369,13 +370,24 @@ export function PropertyDetailsContent({ property }: PropertyDetailsContentProps
                                     )}
                                 </CardContent>
                             </Card>
-                        </div>
-
-                        <div className="lg:col-span-1">
-                            {/* Empty space to align with Property Management card above */}
-                        </div>
-                    </div>
+                </div>
+                <div className="hidden lg:block lg:col-span-1" />
             </div>
+
+            <EditPropertyModal
+                isOpen={editModalOpen}
+                onClose={() => setEditModalOpen(false)}
+                property={property}
+            />
+            <PropertySettingsModal
+                isOpen={settingsModalOpen}
+                onClose={() => setSettingsModalOpen(false)}
+            />
+            <SharePropertyModal
+                isOpen={shareModalOpen}
+                onClose={() => setShareModalOpen(false)}
+                propertyName={property.name}
+            />
         </div>
     )
 }

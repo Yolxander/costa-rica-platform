@@ -1,6 +1,5 @@
 import * as React from "react"
-import { useState } from "react"
-import { IconX } from "@tabler/icons-react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -20,22 +19,60 @@ import {
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 
+interface PropertyForModal {
+  id?: number
+  name: string
+  type: string
+  location: string
+  description: string
+  pricing: { base_price: number; price_format: string }
+  capacity: { guests: number; bedrooms: number; bathrooms: number }
+}
+
 interface AddPropertyModalProps {
   isOpen: boolean
   onClose: () => void
+  property?: PropertyForModal
+  onSave?: (data: Record<string, string>) => void
 }
 
-export function AddPropertyModal({ isOpen, onClose }: AddPropertyModalProps) {
-  const [formData, setFormData] = useState({
-    propertyName: "",
-    propertyType: "",
-    location: "",
-    description: "",
-    price: "",
-    bedrooms: "",
-    bathrooms: "",
-    maxGuests: "",
-  })
+const initialFormData = {
+  propertyName: "",
+  propertyType: "",
+  location: "",
+  description: "",
+  price: "",
+  bedrooms: "",
+  bathrooms: "",
+  maxGuests: "",
+}
+
+export function AddPropertyModal({ isOpen, onClose, property, onSave }: AddPropertyModalProps) {
+  const isEdit = !!property
+
+  const [formData, setFormData] = useState(initialFormData)
+
+  useEffect(() => {
+    if (property && isOpen) {
+      const bedroomsStr =
+        property.capacity.bedrooms >= 5 ? "5+" : String(property.capacity.bedrooms)
+      const bathroomsNum = property.capacity.bathrooms
+      const bathroomsStr =
+        bathroomsNum >= 3 ? "3+" : String(bathroomsNum)
+      setFormData({
+        propertyName: property.name,
+        propertyType: property.type?.toLowerCase() || "",
+        location: property.location,
+        description: property.description,
+        price: property.pricing.base_price ? String(property.pricing.base_price) : "",
+        bedrooms: bedroomsStr,
+        bathrooms: bathroomsStr,
+        maxGuests: String(property.capacity.guests),
+      })
+    } else if (!isEdit && isOpen) {
+      setFormData(initialFormData)
+    }
+  }, [property, isOpen, isEdit])
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -46,29 +83,27 @@ export function AddPropertyModal({ isOpen, onClose }: AddPropertyModalProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // TODO: Implement property creation logic
-    console.log("Property data:", formData)
+    if (isEdit && onSave) {
+      onSave(formData)
+    } else {
+      // TODO: Implement property creation logic
+      console.log("Property data:", formData)
+    }
     onClose()
-    // Reset form
-    setFormData({
-      propertyName: "",
-      propertyType: "",
-      location: "",
-      description: "",
-      price: "",
-      bedrooms: "",
-      bathrooms: "",
-      maxGuests: "",
-    })
+    if (!isEdit) {
+      setFormData(initialFormData)
+    }
   }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Add New Property</DialogTitle>
+          <DialogTitle>{isEdit ? "Edit Property" : "Add New Property"}</DialogTitle>
           <DialogDescription>
-            Fill in the details below to add a new property to your portfolio.
+            {isEdit
+              ? "Update your property details below."
+              : "Fill in the details below to add a new property to your portfolio."}
           </DialogDescription>
         </DialogHeader>
 
@@ -206,7 +241,7 @@ export function AddPropertyModal({ isOpen, onClose }: AddPropertyModalProps) {
               Cancel
             </Button>
             <Button type="submit">
-              Add Property
+              {isEdit ? "Update Property" : "Add Property"}
             </Button>
           </div>
         </form>
