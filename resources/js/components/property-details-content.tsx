@@ -1,4 +1,5 @@
 import * as React from "react"
+import { router } from "@inertiajs/react"
 import {
     IconMapPin,
     IconStar,
@@ -28,12 +29,21 @@ import {
     IconSmoking,
     IconMusic,
     IconUser,
-    IconPhone
+    IconPhone,
+    IconTrash
 } from "@tabler/icons-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
 import { EditPropertyModal } from "@/components/edit-property-modal"
 import { PropertySettingsModal } from "@/components/property-settings-modal"
 import { SharePropertyModal } from "@/components/share-property-modal"
@@ -175,6 +185,7 @@ export function PropertyDetailsContent({ property }: PropertyDetailsContentProps
     const [editModalOpen, setEditModalOpen] = React.useState(false)
     const [settingsModalOpen, setSettingsModalOpen] = React.useState(false)
     const [shareModalOpen, setShareModalOpen] = React.useState(false)
+    const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false)
     const mainImage = property.images && property.images.length > 0 ? property.images[0] : null
     const thumbnails = property.images && property.images.length > 1 ? property.images.slice(1, 6) : []
 
@@ -301,6 +312,14 @@ export function PropertyDetailsContent({ property }: PropertyDetailsContentProps
                                     <IconShare className="size-4 mr-2" />
                                     Share Property
                                 </Button>
+                                <Button
+                                    variant="outline"
+                                    className="w-full text-destructive hover:text-destructive hover:bg-destructive/10"
+                                    onClick={() => setDeleteDialogOpen(true)}
+                                >
+                                    <IconTrash className="size-4 mr-2" />
+                                    Delete Property
+                                </Button>
                             </div>
                         </CardContent>
                     </Card>
@@ -388,6 +407,30 @@ export function PropertyDetailsContent({ property }: PropertyDetailsContentProps
                 onClose={() => setShareModalOpen(false)}
                 propertyName={property.name}
             />
+            <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Delete Property</DialogTitle>
+                        <DialogDescription>
+                            Are you sure you want to delete &quot;{property.name}&quot;? This action cannot be undone.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="destructive"
+                            onClick={() => {
+                                setDeleteDialogOpen(false)
+                                router.delete(`/properties/${property.id}`)
+                            }}
+                        >
+                            Delete
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }

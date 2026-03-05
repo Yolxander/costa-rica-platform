@@ -265,6 +265,10 @@ class AirbnbScraper
             }
         }
 
+        // Extract amenities from HTML (supplements JSON-LD/bootstrap)
+        $data = $this->extractAmenitiesFromHtml($data, $html);
+        $data['amenities'] = $this->normalizeAmenities($data['amenities'] ?? []);
+
         // Extract property type from text
         $typePatterns = [
             'villa' => '/\bvilla\b/i',
@@ -320,6 +324,12 @@ class AirbnbScraper
                 }, $listing['photos']);
                 $data['images'] = array_merge($data['images'], array_filter($photos));
             }
+            if (empty($data['amenities'])) {
+                $amenitiesData = $listing['listingAmenities'] ?? $listing['listing_amenities'] ?? $listing['amenities'] ?? null;
+                if (!empty($amenitiesData)) {
+                    $data['amenities'] = $this->extractAmenitiesFromBootstrap($amenitiesData);
+                }
+            }
             if (!empty($listing['lat']) && !empty($listing['lng'])) {
                 // Keep existing location if we already have one
             }
@@ -359,6 +369,75 @@ class AirbnbScraper
         }
 
         return $data;
+    }
+
+    /**
+     * Extract amenity strings from Airbnb bootstrap listingAmenities/amenities.
+     */
+    protected function extractAmenitiesFromBootstrap(mixed $amenitiesData): array
+    {
+        $result = [];
+        if (is_array($amenitiesData)) {
+            foreach ($amenitiesData as $item) {
+                if (is_string($item)) {
+                    $result[] = trim($item);
+                } elseif (is_array($item)) {
+                    $name = $item['title'] ?? $item['name'] ?? $item['label'] ?? $item['value'] ?? null;
+                    if (is_string($name) && $name !== '') {
+                        $result[] = trim($name);
+                    }
+                }
+            }
+        }
+        return array_values(array_filter($result));
+    }
+
+    /**
+     * Extract amenities from HTML using common patterns.
+     */
+    protected function extractAmenitiesFromHtml(array $data, string $html): array
+    {
+        $commonAmenities = [
+            'WiFi', 'Wifi', 'Pool', 'Kitchen', 'Parking', 'Air conditioning',
+            'Gym', 'Washer', 'Dryer', 'TV', 'Workspace', 'Pets allowed',
+        ];
+        $found = [];
+        foreach ($commonAmenities as $amenity) {
+            if (preg_match('/' . preg_quote($amenity, '/') . '/i', $html)) {
+                $found[] = $amenity;
+            }
+        }
+        if (!empty($found)) {
+            $data['amenities'] = array_merge($data['amenities'] ?? [], $found);
+        }
+        if (preg_match_all('/data-amenity="([^"]+)"/i', $html, $m)) {
+            foreach ($m[1] as $txt) {
+                $txt = trim(html_entity_decode($txt, ENT_QUOTES, 'UTF-8'));
+                if (strlen($txt) > 0 && strlen($txt) <= 255) {
+                    $data['amenities'][] = $txt;
+                }
+            }
+        }
+        return $data;
+    }
+
+    /**
+     * Normalize and deduplicate amenities array.
+     */
+    protected function normalizeAmenities(array $amenities): array
+    {
+        $normalized = [];
+        $seen = [];
+        foreach ($amenities as $a) {
+            $a = trim((string) $a);
+            if ($a === '') continue;
+            $a = substr($a, 0, 255);
+            $key = strtolower($a);
+            if (isset($seen[$key])) continue;
+            $seen[$key] = true;
+            $normalized[] = $a;
+        }
+        return array_values($normalized);
     }
 
     /**

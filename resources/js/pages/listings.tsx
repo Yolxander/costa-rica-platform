@@ -1,7 +1,6 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,7 +26,7 @@ import {
   DollarSign,
   Download,
 } from "lucide-react"
-import { Link } from "@inertiajs/react"
+import { Link, router } from "@inertiajs/react"
 import { usePage } from "@inertiajs/react"
 import { SharedData } from "@/types"
 
@@ -72,24 +71,42 @@ export default function ListingsPage() {
     setShowModal(true)
   }
 
+  const parsePrice = (priceStr: string | number): number => {
+    if (typeof priceStr === "number") return priceStr
+    const match = String(priceStr).replace(/[^0-9.]/g, "")
+    return parseFloat(match) || 0
+  }
+
   const handleSaveProperty = (propertyData: any) => {
-    if (editingProperty) {
-      // Update existing property
-      setProperties(prev => prev.map(p =>
-        p.id === editingProperty.id ? { ...p, ...propertyData } : p
-      ))
-    } else {
-      // Add new property
-      const newProperty = {
-        id: Date.now(),
-        ...propertyData,
-        status: "active",
-        lastUpdated: "Just now"
-      }
-      setProperties(prev => [...prev, newProperty])
+    const payload: Record<string, unknown> = {
+      name: propertyData.title || propertyData.name || "",
+      description: propertyData.description ?? null,
+      type: "House",
+      location: propertyData.location ?? "Costa Rica",
+      base_price: parsePrice(propertyData.price ?? 0),
+      currency: "USD",
+      guests: 1,
+      bedrooms: parseInt(propertyData.bedrooms, 10) || 1,
+      bathrooms: parseFloat(propertyData.bathrooms) || 1,
+      amenities: propertyData.amenities ?? [],
+      house_rules: propertyData.houseRules ?? [],
+      policies: propertyData.policies ?? [],
+      image_urls: propertyData.photos ?? [],
     }
-    setShowModal(false)
-    setEditingProperty(null)
+    if (propertyData.image_files?.length) {
+      payload.image_files = propertyData.image_files
+    }
+    const options = {
+      onSuccess: () => {
+        setShowModal(false)
+        setEditingProperty(null)
+      },
+    }
+    if (editingProperty?.id) {
+      router.put(`/properties/${editingProperty.id}`, payload, options)
+    } else {
+      router.post("/properties", payload, options)
+    }
   }
 
   const handleCloseModal = () => {
@@ -130,13 +147,10 @@ export default function ListingsPage() {
               <div className="px-4 lg:px-6">
                 <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
                   <div className="flex items-center gap-4">
-                    <Badge variant="outline" className="px-3 py-1.5">
-                      Stripe: Not Connected
-                    </Badge>
-                    <Link href="/import-airbnb">
+                    <Link href="/import">
                       <Button variant="outline" className="flex items-center gap-2">
                         <Download className="h-4 w-4" />
-                        Import from Airbnb
+                        Import listing
                       </Button>
                     </Link>
                   </div>

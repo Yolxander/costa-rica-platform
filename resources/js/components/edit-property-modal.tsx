@@ -42,6 +42,7 @@ export function EditPropertyModal({
         type: property.type,
         location: property.location,
         description: property.description,
+        images: property.images ?? [],
         pricing: {
             base_price: property.pricing.base_price,
             price_format: property.pricing.price_format,

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 
 interface JoinProps extends SharedData {}
 
-const benefits = ['Own your guest list', 'No OTA commissions', 'Import from Airbnb', 'Direct Stripe payments', 'Guest CRM'];
+const benefits = ['Own your guest list', 'No OTA commissions', 'Import from Airbnb or Booking.com', 'Direct Stripe payments', 'Guest CRM'];
 
 export default function Join() {
     const { auth } = usePage<JoinProps>().props;

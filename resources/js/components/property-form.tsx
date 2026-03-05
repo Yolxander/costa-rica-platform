@@ -6,13 +6,9 @@ import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { ImageUpload } from "@/components/image-upload"
 import {
-  Upload,
-  X,
   MapPin,
-  Calendar,
-  DollarSign,
-  Home,
   Wifi,
   Car,
   Coffee,
@@ -21,7 +17,6 @@ import {
   Mountain,
   Dumbbell,
   Shield,
-  Clock
 } from "lucide-react"
 
 interface PropertyFormProps {
@@ -102,18 +97,12 @@ export function PropertyForm({ property, onSave, onCancel }: PropertyFormProps) 
     }))
   }
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || [])
-    setUploadedFiles(prev => [...prev, ...files])
-  }
-
-  const removeFile = (index: number) => {
-    setUploadedFiles(prev => prev.filter((_, i) => i !== index))
-  }
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    onSave(formData)
+    onSave({
+      ...formData,
+      image_files: uploadedFiles,
+    })
   }
 
   return (
@@ -214,66 +203,16 @@ export function PropertyForm({ property, onSave, onCancel }: PropertyFormProps) 
                 </div>
               </TabsContent>
 
-              {/* Photos & Video Tab */}
+              {/* Photos Tab */}
               <TabsContent value="media" className="space-y-6">
-                <div className="space-y-4">
-                  <div>
-                    <Label>Upload Photos & Videos</Label>
-                    <div className="mt-2 border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                      <Upload className="mx-auto h-12 w-12 text-gray-400" />
-                      <div className="mt-4">
-                        <label htmlFor="file-upload" className="cursor-pointer">
-                          <span className="mt-2 block text-sm font-medium text-gray-900">
-                            Drop files here or click to upload
-                          </span>
-                          <input
-                            id="file-upload"
-                            name="file-upload"
-                            type="file"
-                            multiple
-                            accept="image/*,video/*"
-                            className="sr-only"
-                            onChange={handleFileUpload}
-                          />
-                        </label>
-                        <p className="mt-1 text-xs text-gray-500">
-                          PNG, JPG, MP4 up to 10MB each
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {uploadedFiles.length > 0 && (
-                    <div className="grid grid-cols-4 gap-4">
-                      {uploadedFiles.map((file, index) => (
-                        <div key={index} className="relative group">
-                          <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
-                            {file.type.startsWith('image/') ? (
-                              <img
-                                src={URL.createObjectURL(file)}
-                                alt={`Upload ${index + 1}`}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center">
-                                <Tv className="h-8 w-8 text-gray-400" />
-                              </div>
-                            )}
-                          </div>
-                          <Button
-                            type="button"
-                            variant="destructive"
-                            size="sm"
-                            className="absolute -top-2 -right-2 h-6 w-6 rounded-full p-0 opacity-0 group-hover:opacity-100"
-                            onClick={() => removeFile(index)}
-                          >
-                            <X className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                <ImageUpload
+                  value={formData.photos}
+                  files={uploadedFiles}
+                  onChange={(urls, files) => {
+                    handleInputChange("photos", urls)
+                    setUploadedFiles(files)
+                  }}
+                />
               </TabsContent>
 
               {/* Amenities Tab */}

@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\Admin\Auth\AdminAuthenticatedSessionController;
 use App\Http\Controllers\AirbnbImportController;
+use App\Http\Controllers\PropertyController;
+use App\Http\Controllers\PropertyImportController;
 
 Route::get('/', function () {
     $hostCount = \App\Models\User::where('role', 'host')->count();
@@ -163,12 +165,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ]);
     })->name('dashboard');
 
-    Route::get('import-airbnb', function () {
-        return Inertia::render('import-airbnb');
-    })->name('import-airbnb');
+    Route::get('import', function () {
+        return Inertia::render('import-listing');
+    })->name('import');
 
-    Route::post('import-airbnb/preview', [AirbnbImportController::class, 'preview'])->name('import-airbnb.preview');
-    Route::post('import-airbnb', [AirbnbImportController::class, 'store'])->name('import-airbnb.store');
+    Route::post('import/preview', [PropertyImportController::class, 'preview'])->name('import.preview');
+    Route::post('import', [PropertyImportController::class, 'store'])->name('import.store');
+
+    Route::post('properties', [PropertyController::class, 'store'])->name('properties.store');
+    Route::put('properties/{id}', [PropertyController::class, 'update'])->name('properties.update');
+    Route::delete('properties/{id}', [PropertyController::class, 'destroy'])->name('properties.destroy');
+
+    Route::redirect('import-airbnb', 'import', 301);
 
     Route::get('listings', function () {
         $properties = \App\Models\Property::where('user_id', auth()->id())->get()->map(function ($property) {

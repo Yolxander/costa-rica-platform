@@ -17,25 +17,25 @@ class AirbnbImportTest extends TestCase
 
     public function test_guests_cannot_access_import_page()
     {
-        $this->get(route('import-airbnb'))->assertRedirect(route('login'));
+        $this->get(route('import'))->assertRedirect(route('login'));
     }
 
     public function test_authenticated_users_can_access_import_page()
     {
         $this->actingAs(User::factory()->create());
-        $this->get(route('import-airbnb'))->assertOk();
+        $this->get(route('import'))->assertOk();
     }
 
     public function test_guests_cannot_call_preview_endpoint()
     {
-        $this->postJson(route('import-airbnb.preview'), [
+        $this->postJson(route('import.preview'), [
             'url' => 'https://www.airbnb.com/rooms/12345',
         ])->assertUnauthorized();
     }
 
     public function test_guests_cannot_call_store_endpoint()
     {
-        $this->post(route('import-airbnb.store'), [
+        $this->post(route('import.store'), [
             'name' => 'Test',
             'type' => 'house',
             'base_price' => 100,
@@ -51,17 +51,17 @@ class AirbnbImportTest extends TestCase
     {
         $this->actingAs(User::factory()->create());
 
-        $this->postJson(route('import-airbnb.preview'), [])
+        $this->postJson(route('import.preview'), [])
             ->assertStatus(422)
             ->assertJsonValidationErrors('url');
     }
 
-    public function test_preview_rejects_non_airbnb_url()
+    public function test_preview_rejects_invalid_url()
     {
         $this->actingAs(User::factory()->create());
 
-        $this->postJson(route('import-airbnb.preview'), [
-            'url' => 'https://www.booking.com/hotel/12345',
+        $this->postJson(route('import.preview'), [
+            'url' => 'https://example.com/random-page',
         ])->assertStatus(422)
             ->assertJsonValidationErrors('url');
     }
@@ -70,7 +70,7 @@ class AirbnbImportTest extends TestCase
     {
         $this->actingAs(User::factory()->create());
 
-        $this->postJson(route('import-airbnb.preview'), [
+        $this->postJson(route('import.preview'), [
             'url' => 'https://www.airbnb.com/experiences/12345',
         ])->assertStatus(422)
             ->assertJsonValidationErrors('url');
@@ -80,7 +80,7 @@ class AirbnbImportTest extends TestCase
     {
         $this->actingAs(User::factory()->create());
 
-        $this->post(route('import-airbnb.store'), [])
+        $this->post(route('import.store'), [])
             ->assertSessionHasErrors(['name', 'type', 'base_price', 'guests', 'bedrooms', 'bathrooms']);
     }
 
@@ -103,7 +103,7 @@ class AirbnbImportTest extends TestCase
             'www.airbnb.com/*' => Http::response($fakeHtml, 200),
         ]);
 
-        $response = $this->postJson(route('import-airbnb.preview'), [
+        $response = $this->postJson(route('import.preview'), [
             'url' => 'https://www.airbnb.com/rooms/12345',
         ]);
 
@@ -129,7 +129,7 @@ class AirbnbImportTest extends TestCase
             'www.airbnb.com/*' => Http::response('', 404),
         ]);
 
-        $this->postJson(route('import-airbnb.preview'), [
+        $this->postJson(route('import.preview'), [
             'url' => 'https://www.airbnb.com/rooms/99999999999',
         ])->assertStatus(422)
             ->assertJson(['success' => false]);
@@ -143,7 +143,7 @@ class AirbnbImportTest extends TestCase
             'www.airbnb.com/*' => Http::response('<html><head><title></title></head><body>No data</body></html>', 200),
         ]);
 
-        $this->postJson(route('import-airbnb.preview'), [
+        $this->postJson(route('import.preview'), [
             'url' => 'https://www.airbnb.com/rooms/99999999999',
         ])->assertStatus(422)
             ->assertJson(['success' => false]);
@@ -156,7 +156,7 @@ class AirbnbImportTest extends TestCase
         $user = User::factory()->create();
         $this->actingAs($user);
 
-        $this->post(route('import-airbnb.store'), [
+        $this->post(route('import.store'), [
             'name' => 'Imported Villa',
             'description' => 'A beautiful imported villa.',
             'type' => 'villa',
@@ -196,7 +196,7 @@ class AirbnbImportTest extends TestCase
         $user = User::factory()->create();
         $this->actingAs($user);
 
-        $this->post(route('import-airbnb.store'), [
+        $this->post(route('import.store'), [
             'name' => 'Minimal Import',
             'type' => 'house',
             'base_price' => 100,
@@ -276,6 +276,56 @@ class AirbnbImportTest extends TestCase
         $this->assertEquals('cabin', $data['type']);
     }
 
+    public function test_scraper_extracts_amenities_from_json_ld()
+    {
+        $html = $this->buildFakeAirbnbHtml([
+            'name' => 'Villa with Amenities',
+            'description' => 'A great place.',
+            'image' => 'https://example.com/villa.jpg',
+            'location' => 'Costa Rica',
+            'rating' => 4.5,
+            'reviews' => 10,
+            'amenities' => ['WiFi', 'Pool', 'Kitchen'],
+        ]);
+
+        Http::fake(['*' => Http::response($html, 200)]);
+
+        $scraper = new AirbnbScraper();
+        $data = $scraper->scrape('https://www.airbnb.com/rooms/22222');
+
+        $this->assertEquals(['WiFi', 'Pool', 'Kitchen'], $data['amenities']);
+    }
+
+    public function test_scraper_extracts_amenities_from_html_fallback()
+    {
+        $html = <<<HTML
+        <html>
+        <head>
+            <title>Simple Place - Airbnb</title>
+            <meta property="og:title" content="Simple Place" />
+        </head>
+        <body>
+            <span>2 guests</span>
+            <span>1 bedroom</span>
+            <span>1 bathroom</span>
+            <div>WiFi</div>
+            <div>Pool</div>
+            <div>Kitchen</div>
+        </body>
+        </html>
+        HTML;
+
+        Http::fake(['*' => Http::response($html, 200)]);
+
+        $scraper = new AirbnbScraper();
+        $data = $scraper->scrape('https://www.airbnb.com/rooms/33333');
+
+        $this->assertNotEmpty($data['amenities']);
+        $this->assertContains('WiFi', $data['amenities']);
+        $this->assertContains('Pool', $data['amenities']);
+        $this->assertContains('Kitchen', $data['amenities']);
+    }
+
     public function test_scraper_extracts_capacity_from_text()
     {
         $html = <<<HTML
@@ -332,7 +382,8 @@ class AirbnbImportTest extends TestCase
 
     private function buildFakeAirbnbHtml(array $listing): string
     {
-        $jsonLd = json_encode([
+        $amenityFeature = isset($listing['amenities']) ? array_map(fn ($a) => ['name' => $a], $listing['amenities']) : [];
+        $jsonLdData = [
             '@context' => 'https://schema.org',
             '@type' => 'VacationRental',
             'name' => $listing['name'],
@@ -349,7 +400,11 @@ class AirbnbImportTest extends TestCase
                 'ratingValue' => $listing['rating'],
                 'reviewCount' => $listing['reviews'],
             ],
-        ]);
+        ];
+        if (!empty($amenityFeature)) {
+            $jsonLdData['amenityFeature'] = $amenityFeature;
+        }
+        $jsonLd = json_encode($jsonLdData);
 
         return <<<HTML
         <html>

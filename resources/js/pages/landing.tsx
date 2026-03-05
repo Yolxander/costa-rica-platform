@@ -376,7 +376,7 @@ export default function Landing() {
                                 </p>
                                 <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
                                     <Button size="lg" className="w-full gap-2 rounded-full px-8 sm:w-auto" onClick={scrollToImport}>
-                                        Import from Airbnb
+                                        Import listing
                                         <IconArrowRight className="size-4" />
                                     </Button>
                                     <Button variant="outline" size="lg" className="w-full rounded-full sm:w-auto" onClick={() => setDemoModalOpen(true)}>

@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 interface HowItWorksProps extends SharedData {}
 
 const steps = [
-    { icon: IconDownload, title: 'Import or Add', desc: 'Import from Airbnb or add your property manually.' },
+    { icon: IconDownload, title: 'Import or Add', desc: 'Import from Airbnb or Booking.com, or add your property manually.' },
     { icon: IconLink, title: 'Get Your Link', desc: 'Share your direct booking link with guests.' },
     { icon: IconCurrencyDollar, title: 'Collect Payment', desc: 'Connect Stripe and receive payments directly.' },
 ];
