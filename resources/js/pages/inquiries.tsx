@@ -230,10 +230,13 @@ export default function InquiriesPage() {
     function handleSend() {
         if (!replyText.trim() || !selected) return
 
+        const text = replyText.trim()
+        setReplyText("")
+
         const newMsg: Message = {
             id: `${selected.id}-local-${Date.now()}`,
             sender: "host",
-            text: replyText.trim(),
+            text,
             time: new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }),
         }
 
@@ -242,7 +245,11 @@ export default function InquiriesPage() {
             ...prev,
             [selected.id]: [...existing, newMsg],
         }))
-        setReplyText("")
+
+        router.post(`/inquiries/${selected.id}/reply`, { message: text }, {
+            preserveScroll: true,
+            preserveState: true,
+        })
     }
 
     return (

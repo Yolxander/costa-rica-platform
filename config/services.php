@@ -28,11 +28,31 @@ return [
         'key' => env('RESEND_KEY'),
     ],
 
+    'brevo' => [
+        'api_key' => env('BREVO_API_KEY'),
+        'sender' => [
+            'email' => env('BREVO_SENDER_EMAIL', 'noreply@example.com'),
+            'name' => env('BREVO_SENDER_NAME', 'Costa Rica Rental Hub'),
+        ],
+        'templates' => [
+            'new_inquiry' => env('BREVO_TEMPLATE_NEW_INQUIRY', 10),
+            'inquiry_confirmation' => env('BREVO_TEMPLATE_INQUIRY_CONFIRMATION', 12),
+            'inquiry_response' => env('BREVO_TEMPLATE_INQUIRY_RESPONSE', 23),
+        ],
+    ],
+
     'slack' => [
         'notifications' => [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
+    ],
+
+    'ai_ml' => [
+        'api_key' => env('AI_ML_API_KEY'),
+        'api_url' => env('AI_ML_API_URL'),
+        'model' => env('AI_ML_MODEL', 'gpt-4'),
+        'path' => env('AI_ML_API_PATH', '/chat/completions'),
     ],
 
 ];

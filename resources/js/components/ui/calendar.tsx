@@ -99,6 +99,7 @@ export type DateAvailability = {
   date: Date;
   status: 'available' | 'blocked' | 'pending-inquiry' | 'maintenance';
   reason?: string;
+  id?: number;
 };
 
 export type CalendarDateStatus = {

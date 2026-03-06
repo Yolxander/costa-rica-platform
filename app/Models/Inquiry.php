@@ -41,4 +41,9 @@ class Inquiry extends Model
     {
         return $this->belongsTo(User::class, 'traveler_user_id');
     }
+
+    public function responses()
+    {
+        return $this->hasMany(InquiryResponse::class);
+    }
 }

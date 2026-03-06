@@ -4,8 +4,12 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\Admin\Auth\AdminAuthenticatedSessionController;
 use App\Http\Controllers\AirbnbImportController;
+use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\InquiryController;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\PropertyImportController;
+use App\Http\Controllers\CrmController;
+use App\Http\Controllers\MarketingController;
 
 Route::get('/', function () {
     $hostCount = \App\Models\User::where('role', 'host')->count();
@@ -106,36 +110,7 @@ Route::get('/listing/{id}/checkout', function (\Illuminate\Http\Request $request
     ]);
 })->name('listing.checkout');
 
-Route::post('/listing/{id}/inquire', function (\Illuminate\Http\Request $request, $id) {
-    $property = \App\Models\Property::findOrFail($id);
-
-    $validated = $request->validate([
-        'traveler_name' => 'required|string|max:255',
-        'traveler_email' => 'required|email|max:255',
-        'traveler_phone' => 'nullable|string|max:50',
-        'check_in' => 'required|date|after_or_equal:today',
-        'check_out' => 'required|date|after:check_in',
-        'guests' => 'required|integer|min:1|max:' . $property->guests,
-        'message' => 'required|string|max:2000',
-    ]);
-
-    \App\Models\Inquiry::create([
-        'property_id' => $property->id,
-        'user_id' => $property->user_id,
-        'traveler_user_id' => null,
-        'traveler_name' => $validated['traveler_name'],
-        'traveler_email' => $validated['traveler_email'],
-        'traveler_phone' => $validated['traveler_phone'] ?? null,
-        'check_in' => $validated['check_in'],
-        'check_out' => $validated['check_out'],
-        'guests' => $validated['guests'],
-        'message' => $validated['message'],
-        'status' => 'new',
-        'sent_at' => now(),
-    ]);
-
-    return back()->with('success', 'Your inquiry has been sent! The host will get back to you soon.');
-})->name('listing.inquire');
+Route::post('/listing/{id}/inquire', [InquiryController::class, 'store'])->name('listing.inquire');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
@@ -198,15 +173,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ]);
     })->name('listings');
 
-    Route::get('calendar', function () {
-        // Get events data from database if needed
-        $events = [];
+    Route::get('calendar', [CalendarController::class, 'index'])->name('calendar');
+    Route::post('calendar/availability', [CalendarController::class, 'storeAvailability'])->name('calendar.availability.store');
+    Route::delete('calendar/availability/{id}', [CalendarController::class, 'destroyAvailability'])->name('calendar.availability.destroy');
 
-        return Inertia::render('calendar', [
-            'events' => $events
-        ]);
-    })->name('calendar');
-
+    Route::post('inquiries/{id}/reply', [InquiryController::class, 'reply'])->name('inquiries.reply');
     Route::patch('inquiries/{id}', function ($id) {
         $inquiry = \App\Models\Inquiry::where('user_id', auth()->id())->findOrFail($id);
         $validated = request()->validate(['status' => 'required|in:new,contacted,booked,lost']);
@@ -341,6 +312,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ]);
     })->name('inquiries');
 
+    Route::get('marketing', [MarketingController::class, 'index'])->name('marketing');
+    Route::post('marketing/social/generate-caption', [MarketingController::class, 'generateCaption'])->name('marketing.social.generate-caption');
+
     Route::get('crm', function () {
         $user = auth()->user();
         $properties = \App\Models\Property::where('user_id', $user->id)->get(['id', 'name']);
@@ -374,6 +348,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'properties' => $properties->map(fn ($p) => ['id' => $p->id, 'name' => $p->name])->toArray(),
         ]);
     })->name('crm');
+
+    Route::get('crm/guests/{email}', [CrmController::class, 'show'])->name('crm.guests.show')->where('email', '.+');
+    Route::post('crm/guests/{email}/notes', [CrmController::class, 'storeNote'])->name('crm.guests.notes.store')->where('email', '.+');
+    Route::patch('crm/guests/{email}/tags', [CrmController::class, 'updateTags'])->name('crm.guests.tags.update')->where('email', '.+');
+    Route::post('crm/tags', [CrmController::class, 'storeTag'])->name('crm.tags.store');
 
     Route::get('property/{id}', function ($id) {
         $propertyModel = \App\Models\Property::find($id);

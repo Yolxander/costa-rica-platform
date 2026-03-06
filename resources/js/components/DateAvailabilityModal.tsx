@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -10,7 +10,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -39,7 +38,7 @@ interface DateAvailabilityModalProps {
   selectedDate: Date | null;
   currentAvailability: DateAvailability | null;
   onSave: (date: Date, availability: DateAvailability) => void;
-  onRemove: (date: Date) => void;
+  onRemove: (date: Date, id?: number) => void;
 }
 
 export function DateAvailabilityModal({
@@ -55,6 +54,11 @@ export function DateAvailabilityModal({
   );
   const [reason, setReason] = useState(currentAvailability?.reason || '');
 
+  useEffect(() => {
+    setStatus(currentAvailability?.status || 'available');
+    setReason(currentAvailability?.reason || '');
+  }, [selectedDate, currentAvailability]);
+
   const handleSave = () => {
     if (selectedDate) {
       onSave(selectedDate, {
@@ -68,7 +72,7 @@ export function DateAvailabilityModal({
 
   const handleRemove = () => {
     if (selectedDate) {
-      onRemove(selectedDate);
+      onRemove(selectedDate, currentAvailability?.id);
       onClose();
     }
   };
@@ -175,18 +179,6 @@ export function DateAvailabilityModal({
                 </SelectItem>
               </SelectContent>
             </Select>
-          </div>
-
-          {/* Reason Input */}
-          <div className="space-y-2">
-            <Label htmlFor="reason">Reason (Optional)</Label>
-            <Textarea
-              id="reason"
-              placeholder="Enter reason for this status..."
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              rows={3}
-            />
           </div>
 
           {/* Quick Actions */}

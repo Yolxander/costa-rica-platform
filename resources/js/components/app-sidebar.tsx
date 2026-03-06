@@ -7,6 +7,7 @@ import {
   IconCalendar,
   IconMessage,
   IconUsers,
+  IconBrandInstagram,
 } from "@tabler/icons-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -58,6 +59,11 @@ const data = {
       title: "Guest CRM",
       url: "/crm",
       icon: IconUsers,
+    },
+    {
+      title: "Marketing",
+      url: "/marketing",
+      icon: IconBrandInstagram,
     },
   ],
   navSecondary: [

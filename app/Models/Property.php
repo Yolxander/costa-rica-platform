@@ -63,4 +63,12 @@ class Property extends Model
     {
         return $this->hasMany(Inquiry::class);
     }
+
+    /**
+     * Get the availability records for the property.
+     */
+    public function availabilities()
+    {
+        return $this->hasMany(Availability::class);
+    }
 }
