@@ -4,20 +4,16 @@ import {
     IconBeach,
     IconCalculator,
     IconLink,
-    IconCreditCard,
     IconChevronLeft,
     IconChevronRight,
-    IconShare,
     IconCheck,
     IconArrowRight,
     IconChevronDown,
     IconUsers,
-    IconBrandWhatsapp,
     IconBrandInstagram,
     IconBrandX,
     IconBrandFacebook,
     IconChartLine,
-    IconCurrencyDollar,
     IconMapPin,
     IconCalendar,
     IconMail,
@@ -31,6 +27,7 @@ import {
     CollapsibleContent,
     CollapsibleTrigger,
 } from '@/components/ui/collapsible';
+import { PublicHeader } from '@/components/public-header';
 import { useState, useRef, useEffect } from 'react';
 
 interface LandingProps extends SharedData {
@@ -280,20 +277,13 @@ const WHAT_YOU_GET_CARDS = [
 ];
 
 export default function Landing() {
-    const { auth, hostCount = 0 } = usePage<LandingProps>().props;
+    const { hostCount = 0 } = usePage<LandingProps>().props;
     const [demoModalOpen, setDemoModalOpen] = useState(false);
-    const [scrolled, setScrolled] = useState(false);
     const regionsRef = useRef<HTMLDivElement>(null);
     const hostCountRef = useRef<HTMLDivElement>(null);
     const [hostCountInView, setHostCountInView] = useState(false);
     const displayedHostCount = useCountUp(hostCount, 2000, hostCountInView);
     const [finalCtaPulse, setFinalCtaPulse] = useState(false);
-
-    useEffect(() => {
-        const onScroll = () => setScrolled(window.scrollY > 16);
-        window.addEventListener('scroll', onScroll, { passive: true });
-        return () => window.removeEventListener('scroll', onScroll);
-    }, []);
 
     useEffect(() => {
         const ob = new IntersectionObserver(([e]) => setHostCountInView(e.isIntersecting), { threshold: 0.5 });
@@ -313,55 +303,40 @@ export default function Landing() {
         }
     };
 
-    const freeFeatures = [
-        'Direct listing page',
-        'Inquiry capture form',
-        'Calendar & availability management',
-        'Guest CRM',
-        'Money saved tracker',
+    const starterFeatures = [
+        '1 property listing',
+        'Booking calendar',
+        'Guest inquiries',
+        'Direct payments (coming soon)',
+        'Email notifications',
+        'Basic analytics',
     ];
 
-    const proFeatures = [
-        'Everything in Free, plus:',
-        'Marketing (email campaigns + social posts)',
-        'Stripe payment processing (coming soon)',
-        'Custom domain (coming soon)',
-        'Priority support (coming soon)',
+    const proHostFeatures = [
+        'Up to 10 properties',
+        'Direct bookings',
+        'Automated emails',
+        'Guest messaging',
+        'Booking management dashboard',
+        'Channel sync (coming soon)',
+        'Performance analytics',
+    ];
+
+    const professionalFeatures = [
+        'Unlimited properties',
+        'Team members (coming soon)',
+        'Multi-calendar',
+        'Guest CRM',
+        'Automated promotions',
+        'Website integration (coming soon)',
+        'Advanced analytics',
     ];
 
     return (
         <>
             <Head title="Own Your Direct Bookings in Costa Rica" />
             <div className="min-h-screen bg-background">
-                {/* Header - styling visible when user scrolls */}
-                <header
-                    className={`sticky top-0 z-50 transition-all duration-300 ${
-                        scrolled ? 'border-b border-border/50 bg-background/95 shadow-sm backdrop-blur' : ''
-                    }`}
-                >
-                    <div className="mx-auto grid h-16 max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-4 px-4 sm:px-6 lg:px-8">
-                        <Link href="/" className="flex items-center gap-2 justify-self-start">
-                            <IconBeach className="size-7 text-primary" />
-                            <span className="text-lg font-bold tracking-tight">Costa Rica Rental Hub</span>
-                        </Link>
-                        <nav className="hidden items-center justify-center gap-6 md:flex">
-                            <a href="#airbnb-import" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Import</a>
-                            <Link href="/pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</Link>
-                            <Link href="/how-it-works" className="text-sm text-muted-foreground hover:text-foreground transition-colors">How it works</Link>
-                        </nav>
-                        <div className="flex items-center justify-end gap-3 justify-self-end">
-
-                            {auth?.user ? (
-                                <Link href="/dashboard"><Button className="rounded-full">Dashboard</Button></Link>
-                            ) : (
-                                <>
-                                    <Link href="/login"><Button variant="ghost" className="rounded-full">Log in</Button></Link>
-                                    <Link href="/host/register"><Button className="rounded-full">Become a Host</Button></Link>
-                                </>
-                            )}
-                        </div>
-                    </div>
-                </header>
+                <PublicHeader transparentUntilScroll />
 
                 <main>
                     {/* 1. HERO */}
@@ -544,68 +519,91 @@ export default function Landing() {
 
                     {/* 7. PRICING */}
                     <section className="border-t px-4 py-16 sm:px-6 lg:px-8">
-                        <div className="mx-auto max-w-7xl">
-                            <h2 className="text-center text-2xl font-bold sm:text-3xl">Simple Pricing</h2>
-                            <p className="mt-2 text-center text-muted-foreground">Start free. Upgrade when you&apos;re ready.</p>
-                            <div className="mt-10 grid gap-6 lg:grid-cols-12">
-                                <div className="lg:col-span-4">
-                                    <Card className="flex h-full min-h-[320px] flex-col rounded-2xl border-0 bg-foreground p-6 text-primary-foreground shadow-xl dark:bg-card dark:text-card-foreground sm:p-8">
-                                        <div className="flex-1">
-                                            <CardTitle className="text-xl text-white dark:text-card-foreground sm:text-2xl">Why Upgrade?</CardTitle>
-                                            <CardDescription className="mt-2 text-white/80 dark:text-card-foreground/80">
-                                                Accept payments, own your guest list, and track savings. Upgrade when you&apos;re ready.
-                                            </CardDescription>
+                        <div className="mx-auto max-w-6xl">
+                            <h2 className="text-center text-2xl font-bold sm:text-3xl">Simple pricing tiers</h2>
+                            <p className="mt-2 text-center text-muted-foreground">Hosts hate complicated pricing. We keep it simple.</p>
+                            <div className="mt-10 grid gap-6 lg:grid-cols-3">
+                                {/* Starter */}
+                                <Card className="flex flex-col rounded-2xl border-0 shadow-lg">
+                                    <CardHeader className="pb-4">
+                                        <CardTitle>Starter</CardTitle>
+                                        <CardDescription>Best for new hosts</CardDescription>
+                                        <div className="mt-4 flex items-baseline gap-1">
+                                            <span className="text-3xl font-bold">$0</span>
+                                            <span className="text-muted-foreground">/month</span>
                                         </div>
-                                        <Button variant="secondary" className="mt-6 h-11 w-full rounded-xl dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90 dark:border-0" onClick={scrollToImport}>
-                                            Compare plans
-                                        </Button>
-                                    </Card>
-                                </div>
-                                <div className="grid gap-6 sm:grid-cols-2 lg:col-span-8">
-                                    <Card className="flex min-h-[320px] flex-col rounded-2xl border-0 shadow-lg">
-                                        <CardHeader className="pb-4">
-                                            <CardTitle>Free</CardTitle>
-                                            <div className="flex items-baseline gap-1">
-                                                <span className="text-3xl font-bold">$0</span>
-                                                <span className="text-muted-foreground">/mo</span>
-                                            </div>
-                                            <CardDescription>Get started</CardDescription>
-                                        </CardHeader>
-                                        <CardContent className="flex flex-1 flex-col pt-0">
-                                            <ul className="flex-1 space-y-2.5">
-                                                {freeFeatures.map((f) => (
-                                                    <li key={f} className="flex items-start gap-2 text-sm">
-                                                        <IconCheck className="mt-0.5 size-4 shrink-0 text-green-500" />
-                                                        {f}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                            <Button variant="outline" className="mt-6 h-11 w-full rounded-xl" onClick={scrollToImport}>Start Free</Button>
-                                        </CardContent>
-                                    </Card>
-                                    <Card className="relative flex min-h-[320px] flex-col rounded-2xl border-2 border-primary shadow-xl">
-                                        <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 rounded-full bg-primary px-4 py-1 text-xs font-medium text-primary-foreground">Most Popular</div>
-                                        <CardHeader className="pt-7 pb-4">
-                                            <CardTitle>Pro</CardTitle>
-                                            <div className="flex items-baseline gap-1">
-                                                <span className="text-3xl font-bold">$49</span>
-                                                <span className="text-muted-foreground">/mo</span>
-                                            </div>
-                                            <CardDescription>Full features</CardDescription>
-                                        </CardHeader>
-                                        <CardContent className="flex flex-1 flex-col pt-0">
-                                            <ul className="flex-1 space-y-2.5">
-                                                {proFeatures.map((f) => (
-                                                    <li key={f} className="flex items-start gap-2 text-sm">
-                                                        <IconCheck className="mt-0.5 size-4 shrink-0 text-green-500" />
-                                                        {f}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                            <Button className="mt-6 h-11 w-full rounded-xl" onClick={scrollToImport}>Start Free Trial</Button>
-                                        </CardContent>
-                                    </Card>
-                                </div>
+                                        <p className="mt-2 text-sm font-medium text-primary">5% per booking</p>
+                                    </CardHeader>
+                                    <CardContent className="flex flex-1 flex-col pt-0">
+                                        <ul className="flex-1 space-y-2.5">
+                                            {starterFeatures.map((f) => (
+                                                <li key={f} className="flex items-start gap-2 text-sm">
+                                                    <IconCheck className="mt-0.5 size-4 shrink-0 text-green-500" />
+                                                    {f}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                        <Link href="/host/register" className="mt-6 block">
+                                            <Button variant="outline" className="h-11 w-full rounded-xl">Start Free</Button>
+                                        </Link>
+                                    </CardContent>
+                                </Card>
+                                {/* Pro Host */}
+                                <Card className="relative flex flex-col rounded-2xl border-2 border-primary shadow-xl">
+                                    <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 rounded-full bg-primary px-4 py-1 text-xs font-medium text-primary-foreground">Most Popular</div>
+                                    <CardHeader className="pt-7 pb-4">
+                                        <CardTitle>Pro Host</CardTitle>
+                                        <CardDescription>Best for serious hosts</CardDescription>
+                                        <div className="mt-4 flex items-baseline gap-1">
+                                            <span className="text-3xl font-bold">$24</span>
+                                            <span className="text-muted-foreground">/month</span>
+                                        </div>
+                                        <p className="mt-2 text-sm font-medium text-primary">2–3% per booking</p>
+                                    </CardHeader>
+                                    <CardContent className="flex flex-1 flex-col pt-0">
+                                        <ul className="flex-1 space-y-2.5">
+                                            {proHostFeatures.map((f) => (
+                                                <li key={f} className="flex items-start gap-2 text-sm">
+                                                    <IconCheck className="mt-0.5 size-4 shrink-0 text-green-500" />
+                                                    {f}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                        <Link href="/host/register" className="mt-6 block">
+                                            <Button className="h-11 w-full rounded-xl">Upgrade</Button>
+                                        </Link>
+                                    </CardContent>
+                                </Card>
+                                {/* Professional */}
+                                <Card className="flex flex-col rounded-2xl border-0 shadow-lg">
+                                    <CardHeader className="pb-4">
+                                        <CardTitle>Professional</CardTitle>
+                                        <CardDescription>Best for property managers</CardDescription>
+                                        <div className="mt-4 flex items-baseline gap-1">
+                                            <span className="text-3xl font-bold">$64</span>
+                                            <span className="text-muted-foreground">/month</span>
+                                        </div>
+                                        <p className="mt-2 text-sm font-medium text-primary">0–1% per booking</p>
+                                    </CardHeader>
+                                    <CardContent className="flex flex-1 flex-col pt-0">
+                                        <ul className="flex-1 space-y-2.5">
+                                            {professionalFeatures.map((f) => (
+                                                <li key={f} className="flex items-start gap-2 text-sm">
+                                                    <IconCheck className="mt-0.5 size-4 shrink-0 text-green-500" />
+                                                    {f}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                        <Link href="/host/register" className="mt-6 block">
+                                            <Button variant="outline" className="h-11 w-full rounded-xl">Start Trial</Button>
+                                        </Link>
+                                    </CardContent>
+                                </Card>
+                            </div>
+                            <div className="mt-8 text-center">
+                                <Link href="/pricing" className="text-sm font-medium text-primary hover:underline">
+                                    Compare plans →
+                                </Link>
                             </div>
                         </div>
                     </section>
