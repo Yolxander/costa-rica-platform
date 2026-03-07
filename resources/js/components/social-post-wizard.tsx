@@ -57,7 +57,7 @@ export function SocialPostWizard({
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4">
             {/* Step indicator */}
             <div className="flex items-center justify-center gap-1 sm:gap-4 flex-wrap">
                 {STEPS.map((s, i) => (
@@ -91,7 +91,7 @@ export function SocialPostWizard({
             </div>
 
             {/* Step content */}
-            <div className="space-y-6">
+            <div className="space-y-4">
                 {step === 1 && (
                     <SocialImagePicker
                             properties={properties}
@@ -124,7 +124,7 @@ export function SocialPostWizard({
                 )}
 
                 {/* Navigation */}
-                <div className="flex items-center justify-between pt-4">
+                <div className="flex items-center justify-between pt-2">
                         <Button
                             variant="outline"
                             onClick={goBack}

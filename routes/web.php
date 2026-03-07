@@ -314,6 +314,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('marketing', [MarketingController::class, 'index'])->name('marketing');
     Route::post('marketing/social/generate-caption', [MarketingController::class, 'generateCaption'])->name('marketing.social.generate-caption');
+    Route::post('marketing/email/understand', [MarketingController::class, 'understandEmailIntent'])->name('marketing.email.understand');
+    Route::post('marketing/email/generate-content', [MarketingController::class, 'generateEmailContent'])->name('marketing.email.generate-content');
 
     Route::get('crm', function () {
         $user = auth()->user();

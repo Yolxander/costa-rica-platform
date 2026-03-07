@@ -67,8 +67,8 @@ export function SocialPostPreview({
     const charCount = mainCaption.length + (firstComment ? firstCommentText.length : 0)
 
     return (
-        <Card>
-            <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <Card className="gap-4 py-4">
+            <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-2">
                 <div>
                     <CardTitle>Preview</CardTitle>
                     <CardDescription>
@@ -104,10 +104,10 @@ export function SocialPostPreview({
                     </button>
                 </div>
             </CardHeader>
-            <CardContent>
-                <div className="flex flex-col lg:flex-row gap-6">
+            <CardContent className="px-4 sm:px-6 pt-0">
+                <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-4 lg:gap-6 lg:items-start">
                     {/* Preview options - toggles on the left, 2 columns when space allows */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 lg:w-fit lg:shrink-0 content-start">
+                    <div className="grid grid-cols-2 gap-2 content-start">
                         <Toggle
                             size="sm"
                             variant="outline"
@@ -178,7 +178,7 @@ export function SocialPostPreview({
                             </p>
                         </div>
                     ) : (
-                        <div className="flex-1 flex justify-center lg:justify-end min-w-0">
+                        <div className="flex justify-center min-w-0">
                             <div
                                 className={cn(
                                     "overflow-hidden rounded-lg border bg-white text-black dark:bg-zinc-900 dark:text-white shrink-0",

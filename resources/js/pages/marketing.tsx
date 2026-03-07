@@ -6,9 +6,9 @@ import {
 } from "@/components/ui/sidebar"
 import { Head, usePage } from "@inertiajs/react"
 import { SharedData } from "@/types"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { SocialPostWizard } from "@/components/social-post-wizard"
+import { EmailCampaignWizard } from "@/components/email-campaign-wizard"
 import type { PropertyForSocial } from "@/components/social-image-picker"
 import { IconMail, IconBrandInstagram } from "@tabler/icons-react"
 import { toast } from "sonner"
@@ -23,6 +23,8 @@ function getCsrfToken(): string {
 
 interface MarketingProps extends SharedData {
     properties: PropertyForSocial[]
+    emailSegments: Record<string, number>
+    emailPropertyCounts: Record<number, number>
 }
 
 function truncate(str: string, maxLen: number): string {
@@ -72,7 +74,7 @@ function generateHashtags(property: PropertyForSocial): string {
 }
 
 export default function MarketingPage() {
-    const { properties } = usePage<MarketingProps>().props
+    const { properties, emailSegments = {}, emailPropertyCounts = {}, auth } = usePage<MarketingProps>().props
     const [selectedPropertyId, setSelectedPropertyId] = useState<number | null>(
         properties.length > 0 ? properties[0].id : null
     )
@@ -169,19 +171,12 @@ export default function MarketingPage() {
                                     </div>
 
                                     <TabsContent value="email" className="mt-6">
-                                        <Card>
-                                            <CardHeader>
-                                                <CardTitle>Email campaigns</CardTitle>
-                                                <CardDescription>
-                                                    Re-engage past inquirers and nurture guests for repeat stays.
-                                                </CardDescription>
-                                            </CardHeader>
-                                            <CardContent>
-                                                <p className="text-muted-foreground">
-                                                    Email campaigns coming soon.
-                                                </p>
-                                            </CardContent>
-                                        </Card>
+                                        <EmailCampaignWizard
+                                            segments={emailSegments}
+                                            propertyCounts={emailPropertyCounts}
+                                            properties={properties}
+                                            hostName={auth?.user?.name}
+                                        />
                                     </TabsContent>
 
                                     <TabsContent value="social" className="mt-6">
