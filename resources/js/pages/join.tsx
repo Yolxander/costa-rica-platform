@@ -12,13 +12,13 @@ export default function Join() {
 
     return (
         <>
-            <Head title="Join - Costa Rica Rental Hub" />
+            <Head title="Join - Brisa" />
             <div className="min-h-screen bg-background">
                 <header className="border-b">
                     <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
                         <Link href="/" className="flex items-center gap-2">
                             <IconBeach className="size-7 text-primary" />
-                            <span className="font-bold">Costa Rica Rental Hub</span>
+                            <span className="font-bold">Brisa</span>
                         </Link>
                         <nav className="flex gap-4">
                             <Link href="/" className="text-sm text-muted-foreground hover:text-foreground">Home</Link>
@@ -29,7 +29,7 @@ export default function Join() {
                     </div>
                 </header>
                 <main className="mx-auto max-w-2xl px-4 py-16 sm:px-6 lg:px-8 text-center">
-                    <h1 className="text-3xl font-bold">Join Costa Rica Rental Hub</h1>
+                    <h1 className="text-3xl font-bold">Join Brisa</h1>
                     <p className="mt-4 text-muted-foreground">Start your free trial. No credit card required.</p>
                     <ul className="mt-8 space-y-3 text-left max-w-md mx-auto">
                         {benefits.map((b) => <li key={b} className="flex items-center gap-2"><IconCheck className="size-5 text-green-500 shrink-0" />{b}</li>)}

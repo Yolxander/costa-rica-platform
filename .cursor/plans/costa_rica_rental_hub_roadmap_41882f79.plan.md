@@ -1,11 +1,11 @@
 ---
-name: Costa Rica Rental Hub Roadmap
-overview: An execution plan for Costa Rica Rental Hub aligned to the three-phase roadmap. Phase 1 (Host Growth MVP) focuses on the next 6 priority features to reach product-market fit with 10-50 early hosts in ~8 weeks.
+name: Brisa Roadmap
+overview: An execution plan for Brisa aligned to the three-phase roadmap. Phase 1 (Host Growth MVP) focuses on the next 6 priority features to reach product-market fit with 10-50 early hosts in ~8 weeks.
 todos: []
 isProject: false
 ---
 
-# Costa Rica Rental Hub — Product Roadmap Execution Plan
+# Brisa — Product Roadmap Execution Plan
 
 The platform evolves through **three phases**: Phase 1 (Host Growth MVP), Phase 2 (Direct Booking Platform), Phase 3 (Host Ecosystem). This plan focuses on **Phase 1 execution** — the next 6 features that unlock host growth and position the platform as **the growth layer for hosts** (not competing with Airbnb/Guesty directly).
 

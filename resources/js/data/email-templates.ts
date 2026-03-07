@@ -1,5 +1,5 @@
 /**
- * HTML email templates for Costa Rica Rental Hub.
+ * HTML email templates for Brisa.
  * Use {{ params.PLACEHOLDER }} for substitution. Available placeholders:
  * - PROPERTY_NAME, PROPERTY_IMAGE, PROPERTY_LOCATION, PROPERTY_DESCRIPTION
  * - FIRST_NAME, HOST_NAME, LISTING_URL
@@ -17,7 +17,7 @@ export const EMAIL_TEMPLATES = {
 <body style="margin:0;font-family:'Segoe UI',sans-serif;background:#f5f5f5;padding:24px">
 <div style="max-width:560px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,.08)">
   <div style="background:linear-gradient(135deg,#047857 0%,#059669 100%);padding:28px;text-align:center">
-    <h1 style="margin:0;color:#fff;font-size:22px;font-weight:600">Costa Rica Rental Hub</h1>
+    <h1 style="margin:0;color:#fff;font-size:22px;font-weight:600">Brisa</h1>
     <p style="margin:8px 0 0;color:rgba(255,255,255,.9);font-size:14px">Last-minute availability</p>
   </div>
   <div style="padding:28px">
@@ -31,7 +31,7 @@ export const EMAIL_TEMPLATES = {
     <p style="margin:28px 0 0;font-size:15px;color:#6b7280">Best,<br><strong>{{ params.HOST_NAME }}</strong></p>
   </div>
   <div style="background:#f9fafb;padding:16px;text-align:center;font-size:12px;color:#9ca3af">
-    Costa Rica Rental Hub · Unsubscribe
+    Brisa · Unsubscribe
   </div>
 </div>
 </body>
@@ -61,7 +61,7 @@ export const EMAIL_TEMPLATES = {
     <p style="margin:28px 0 0;font-size:15px;color:#6b7280">Best,<br><strong>{{ params.HOST_NAME }}</strong></p>
   </div>
   <div style="background:#f9fafb;padding:16px;text-align:center;font-size:12px;color:#9ca3af">
-    Costa Rica Rental Hub · Unsubscribe
+    Brisa · Unsubscribe
   </div>
 </div>
 </body>
@@ -91,7 +91,7 @@ export const EMAIL_TEMPLATES = {
     <p style="margin:28px 0 0;font-size:15px;color:#6b7280">Pura vida,<br><strong>{{ params.HOST_NAME }}</strong></p>
   </div>
   <div style="background:#f9fafb;padding:16px;text-align:center;font-size:12px;color:#9ca3af">
-    Costa Rica Rental Hub · Unsubscribe
+    Brisa · Unsubscribe
   </div>
 </div>
 </body>

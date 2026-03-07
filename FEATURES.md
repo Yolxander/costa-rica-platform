@@ -1,4 +1,4 @@
-# Costa Rica Rental Hub — Feature Status
+# Brisa — Feature Status
 
 > Last updated: March 6, 2026
 

@@ -1,4 +1,4 @@
-# Costa Rica Rental Hub — Product Roadmap Execution Plan
+# Brisa — Product Roadmap Execution Plan
 
 > Aligned to the three-phase roadmap. Phase 1 focuses on the next 6 priority features to reach product-market fit with 10-50 early hosts in ~8 weeks.
 
@@ -128,7 +128,7 @@ The **next 6 features** (1–6 above) are the immediate build. The full Phase 1 
 - Host growth analytics
 - Integration marketplace (smart locks, cleaning, pricing, tours)
 
-**Vision:** Costa Rica Rental Hub becomes the growth infrastructure for independent hosts — not just a PMS.
+**Vision:** Brisa becomes the growth infrastructure for independent hosts — not just a PMS.
 
 ---
 

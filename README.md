@@ -1,4 +1,4 @@
-# Costa Rica Rental Hub
+# Brisa
 
 A community-driven vacation rental platform built to connect travelers directly with property hosts across Costa Rica. Unlike traditional booking sites (Airbnb, Booking.com), this platform charges no commission fees -- instead, hosts pay a simple flat yearly subscription to list their property.
 

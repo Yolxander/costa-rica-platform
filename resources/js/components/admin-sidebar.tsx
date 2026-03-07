@@ -22,7 +22,7 @@ import {
 
 const data = {
   user: {
-    name: "Costa Rica Rental Hub",
+    name: "Brisa",
     email: "admin@costaricarentalhub.com",
     avatar: "/avatars/shadcn.jpg",
   },
@@ -64,7 +64,7 @@ export function AdminSidebar({ ...props }: React.ComponentProps<typeof Sidebar>)
             >
               <a href="#">
                 <IconInnerShadowTop className="!size-5" />
-                <span className="text-base font-semibold">Costa Rica Rental Hub</span>
+                <span className="text-base font-semibold">Brisa</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>

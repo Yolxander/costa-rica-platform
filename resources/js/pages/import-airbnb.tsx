@@ -190,7 +190,7 @@ export default function ImportAirbnbPage() {
 
     return (
         <>
-            <Head title="Import from Airbnb - Costa Rica Rental Hub" />
+            <Head title="Import from Airbnb - Brisa" />
             <SidebarProvider
                 style={
                     {

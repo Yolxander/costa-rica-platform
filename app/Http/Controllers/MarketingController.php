@@ -182,7 +182,7 @@ class MarketingController extends Controller
 
     /**
      * Generate HTML email content for the blank template using the AI/ML API.
-     * Wraps AI output in Costa Rica Rental Hub template styling.
+     * Wraps AI output in Brisa template styling.
      * Returns both subject and html.
      */
     public function generateEmailContent(Request $request)
@@ -283,7 +283,7 @@ class MarketingController extends Controller
     }
 
     /**
-     * Wrap inner HTML body in Costa Rica Rental Hub email template styling.
+     * Wrap inner HTML body in Brisa email template styling.
      */
     private function wrapEmailInTemplate(string $innerHtml): string
     {
@@ -293,14 +293,14 @@ class MarketingController extends Controller
 <body style="margin:0;font-family:\'Segoe UI\',sans-serif;background:#f5f5f5;padding:24px">
 <div style="max-width:560px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,.08)">
   <div style="background:linear-gradient(135deg,#047857 0%,#059669 100%);padding:28px;text-align:center">
-    <h1 style="margin:0;color:#fff;font-size:22px;font-weight:600">Costa Rica Rental Hub</h1>
+    <h1 style="margin:0;color:#fff;font-size:22px;font-weight:600">Brisa</h1>
     <p style="margin:8px 0 0;color:rgba(255,255,255,.9);font-size:14px">Your message</p>
   </div>
   <div style="padding:28px">
     ' . $innerHtml . '
   </div>
   <div style="background:#f9fafb;padding:16px;text-align:center;font-size:12px;color:#9ca3af">
-    Costa Rica Rental Hub · Unsubscribe
+    Brisa · Unsubscribe
   </div>
 </div>
 </body>

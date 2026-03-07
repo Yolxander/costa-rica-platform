@@ -319,7 +319,7 @@ export default function CrmPage() {
 
     return (
         <>
-            <Head title="Guest CRM - Costa Rica Rental Hub" />
+            <Head title="Guest CRM - Brisa" />
             <SidebarProvider
                 style={{
                     "--sidebar-width": "calc(var(--spacing) * 72)",

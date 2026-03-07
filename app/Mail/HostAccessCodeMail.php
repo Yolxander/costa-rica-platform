@@ -27,7 +27,7 @@ class HostAccessCodeMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Your Host Access Code - Costa Rica Rental Hub',
+            subject: 'Your Host Access Code - Brisa',
             from: config('mail.from.address'),
             replyTo: [config('mail.from.address')],
         );

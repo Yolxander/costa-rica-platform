@@ -191,7 +191,7 @@ export default function ImportPage() {
 
     return (
         <>
-            <Head title="Import Listing - Costa Rica Rental Hub" />
+            <Head title="Import Listing - Brisa" />
             <SidebarProvider
                 style={
                     {

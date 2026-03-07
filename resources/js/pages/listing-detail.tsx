@@ -144,7 +144,7 @@ export default function ListingDetail() {
 
     return (
         <>
-            <Head title={`${property.name} - Costa Rica Rental Hub`} />
+            <Head title={`${property.name} - Brisa`} />
             <div className="min-h-screen bg-background">
                 {/* Header */}
                 <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -152,7 +152,7 @@ export default function ListingDetail() {
                         <Link href="/" className="flex items-center gap-2">
                             <IconBeach className="size-7 text-primary" />
                             <span className="text-lg font-bold tracking-tight">
-                                Costa Rica Rental Hub
+                                Brisa
                             </span>
                         </Link>
                         <nav className="flex items-center gap-3">
@@ -425,7 +425,7 @@ export default function ListingDetail() {
                         <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                 <IconBeach className="size-5 text-primary" />
-                                <span>&copy; {new Date().getFullYear()} Costa Rica Rental Hub</span>
+                                <span>&copy; {new Date().getFullYear()} Brisa</span>
                             </div>
                             <div className="flex gap-6 text-sm text-muted-foreground">
                                 <span>Privacy</span>

@@ -117,7 +117,7 @@ function PricingFAQ() {
 export default function Pricing() {
     return (
         <>
-            <Head title="Pricing - Costa Rica Rental Hub" />
+            <Head title="Pricing - Brisa" />
             <div className="min-h-screen bg-background">
                 <PublicHeader />
 
@@ -131,14 +131,9 @@ export default function Pricing() {
                                 <span className="text-muted-foreground">Airbnb: 14–18%</span>
                                 <span className="text-muted-foreground">Booking.com: 15–20%</span>
                                 <span className="text-muted-foreground">Vrbo: 8–12%</span>
-                                <span className="rounded-full bg-primary/10 px-3 py-1 font-semibold text-primary">Your platform: 0–5%</span>
+                                <span className="rounded-full bg-primary/10 px-3 py-1 font-semibold text-primary">Brisa: 0–5%</span>
                             </div>
-                            <Link href="/host/register" className="mt-8 inline-block">
-                                <Button size="lg" className="h-12 gap-2 rounded-xl px-8">
-                                    Start Free
-                                    <IconArrowRight className="size-4" />
-                                </Button>
-                            </Link>
+
                         </div>
                     </section>
 
@@ -269,7 +264,7 @@ export default function Pricing() {
                                     <CardHeader className="pb-3">
                                         <CardTitle className="flex items-center gap-2 text-base text-primary">
                                             <IconCurrencyDollar className="size-5" />
-                                            With Costa Rica Rental Hub (3% fee)
+                                            With Brisa (3% fee)
                                         </CardTitle>
                                         <CardDescription>Direct bookings, more in your pocket</CardDescription>
                                     </CardHeader>

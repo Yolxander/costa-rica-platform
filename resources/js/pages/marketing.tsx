@@ -137,7 +137,7 @@ export default function MarketingPage() {
 
     return (
         <>
-            <Head title="Marketing - Costa Rica Rental Hub" />
+            <Head title="Marketing - Brisa" />
             <SidebarProvider
                 style={{
                     "--sidebar-width": "calc(var(--spacing) * 72)",

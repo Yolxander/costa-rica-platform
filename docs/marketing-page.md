@@ -1,6 +1,6 @@
 # Marketing Page — Product Spec
 
-> Costa Rica Rental Hub — Host marketing tools for email campaigns and social promotion.
+> Brisa — Host marketing tools for email campaigns and social promotion.
 
 **Route:** `/marketing` (Host Dashboard)
 

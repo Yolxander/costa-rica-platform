@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Costa Rica Rental Hub'),
+    'name' => env('APP_NAME', 'Brisa'),
 
     /*
     |--------------------------------------------------------------------------

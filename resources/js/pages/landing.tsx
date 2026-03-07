@@ -659,7 +659,7 @@ export default function Landing() {
                         <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                 <IconBeach className="size-5 text-primary" />
-                                <span>&copy; {new Date().getFullYear()} Costa Rica Rental Hub</span>
+                                <span>&copy; {new Date().getFullYear()} Brisa</span>
                             </div>
                             <div className="flex gap-6 text-sm text-muted-foreground">
                                 <Link href="/pricing" className="hover:text-foreground transition-colors">Pricing</Link>
