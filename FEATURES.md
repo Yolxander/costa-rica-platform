@@ -1,6 +1,6 @@
 # Costa Rica Rental Hub — Feature Status
 
-> Last updated: March 2, 2026
+> Last updated: March 6, 2026
 
 This document tracks every feature in the platform, organized by completion status: **completed**, **partially built** (needs finishing), and **not yet built** (planned).
 
@@ -25,9 +25,11 @@ These features are fully functional with backend logic, database support, and a 
 
 - **Dashboard Overview** — Displays key metrics (direct bookings, revenue processed, guest emails captured, money saved vs OTAs) and a property summary table. Data is pulled live from the database. Revenue is a placeholder until Stripe Connect is integrated.
 - **Listings Management** — Lists all host properties with title, location, status, price, bedrooms, bathrooms, thumbnail, and last updated. Data sourced from `properties` table.
-- **Inquiries Page** — Displays all inquiries sent to the host, pulled from the `inquiries` table with property relationship. Shows traveler name, email, phone, property, dates, guests, message, and status. Includes status update (`PATCH /inquiries/{id}`) to mark inquiries as `new`, `contacted`, `booked`, or `lost`. Falls back to sample data when no real inquiries exist.
+- **Inquiries Page** — Displays all inquiries sent to the host, pulled from the `inquiries` table with property relationship. Shows traveler name, email, phone, property, dates, guests, message, and status. Includes status update (`PATCH /inquiries/{id}`) to mark inquiries as `new`, `contacted`, `booked`, or `lost`. Reply actions: Email (`mailto:`), WhatsApp (with pre-filled message), and Call links. Falls back to sample data when no real inquiries exist.
 - **Guest CRM** — Aggregates inquiries by traveler email to build a guest database. Shows name, email, phone, property, booking count, total spent, and last booking date. Supports filtering by property and CSV export. Data is derived from the `inquiries` table.
 - **Property Details Page** — Deep-dive view for a single property showing all details (description, amenities, images, pricing, capacity, availability rules) plus performance metrics (views, inquiries, bookings, rating). Recent inquiries and upcoming bookings sections use hardcoded sample data.
+- **Property CRUD (Create, Edit, Delete)** — Hosts can create, edit, and delete properties via `PropertyController`. Routes: `POST /properties`, `PUT /properties/{id}`, `DELETE /properties/{id}`. Add/Edit modals (`AddPropertyModal`, `EditPropertyModal`) with full form validation. Image upload supports both file uploads (Laravel Storage) and URL input.
+- **Calendar & Availability** — Full calendar at `/calendar` with month/week/year views and backend persistence. `availability` table stores date status (available, blocked, maintenance, pending-inquiry). `CalendarController` provides `POST /calendar/availability` (bulk upsert) and `DELETE /calendar/availability/{id}`. Loads real events from booked inquiries and date availability from DB. `DateAvailabilityModal` for managing individual dates.
 - **Settings: Profile** — Edit name and email. Handles email re-verification when changed.
 - **Settings: Password** — Change password with current password confirmation.
 - **Settings: Appearance** — Theme/appearance preferences page.
@@ -42,11 +44,19 @@ These features are fully functional with backend logic, database support, and a 
 - **Blog Page** — Static blog layout (placeholder content, no CMS backend).
 - **Join Page** — CTA page encouraging hosts to sign up.
 
+### Marketing & Communication
+
+- **Email Notifications for Inquiries** — When a traveler submits an inquiry, host receives email via `SendNewInquiryMail` job (queued). Uses Brevo transactional templates. Dispatched from `InquiryController` after `Inquiry::create()`.
+- **Host Messaging Reply** — Inquiries page includes Reply actions: Email (`mailto:`), WhatsApp (pre-filled message with property context), and Call. No backend required; opens native mail/phone apps.
+- **Airbnb Import** — Two-step import flow at `/import-airbnb`. Hosts paste Airbnb listing URL; `AirbnbScraper` fetches and extracts listing data. Preview card for review/edit before save. Creates new Property (status: Active, approval: pending). Backend: `AirbnbImportController`, `AirbnbScraper`. 18 feature tests.
+- **Marketing Page (Social Tab)** — At `/marketing` with Email and Social tabs. Social tab: image picker (property photos), AI caption generation via `generateCaption`, hashtag suggestions, copy-to-clipboard. AI/ML API config via `AI_ML_API_KEY`, `AI_ML_API_URL`.
+
 ### Database & Models
 
 - **Users** — Full migration with name, email, password, role, email verification, 2FA columns.
 - **Properties** — Complete schema: name, type, status, approval_status, location, description, amenities (JSON), images (JSON), house_rules (JSON), policies (JSON), pricing fields, capacity fields, availability fields, performance counters. Belongs to User.
 - **Inquiries** — Complete schema: property_id, user_id (host), traveler_user_id, traveler details, check-in/out dates, guests, message, status, sent_at. Belongs to Property, Host, and Traveler.
+- **Availability** — Table for calendar: property_id, date, status (available, blocked, maintenance, pending-inquiry), reason. Unique (property_id, date). Belongs to Property.
 - **Guests** — Standalone table with name, email, phone, property_id, booking_count, total_spent, last_booking_date. Currently unused — CRM derives guest data from Inquiries instead.
 
 ---
@@ -55,10 +65,10 @@ These features are fully functional with backend logic, database support, and a 
 
 These features have some code in place but are incomplete or rely on hardcoded/placeholder data.
 
-### Calendar & Availability
+### Marketing — Email Campaigns (Inquiry Recovery)
 
-- **What exists:** Full calendar UI at `/calendar` with month/week/year views, date availability modal, color-coded statuses (available, blocked, pending inquiry, maintenance). Frontend state management for adding/removing availability.
-- **What's missing:** No backend persistence. Availability changes are only logged to `console.log()`. No API endpoints to save/load date availability or blocked dates. No database table for availability data. Events are passed as empty array `[]` from the backend. Sample data is hardcoded in the frontend.
+- **What exists:** Marketing page at `/marketing` with Email tab. Full 3-step wizard: (1) Audience — segment selection (Didn't book, Booked before, Recent 30/60/90 days, By property, All), property filter, recipient counts from backend; (2) Compose — subject, HTML body, templates (Last-minute availability, Seasonal promo, Blank), AI chat to generate content via `understandEmailIntent` and `generateEmailContent`; (3) Preview — HTML preview with param substitution, recipient count.
+- **What's missing:** Send/Schedule/Test buttons show "coming soon" toast. No `email_campaigns` or `email_unsubscribes` tables. No backend endpoint to send or schedule campaigns. No actual email delivery (SMTP/Resend not wired for campaigns).
 
 ### Property Details — Inquiries & Bookings
 
@@ -101,19 +111,6 @@ These features are referenced in the UI, pricing page, or codebase comments but 
 - **Stripe Connect Integration** — Referenced in dashboard (`$revenueProcessed = 0; // Placeholder until Stripe Connect`) and pricing page (Growth tier: "Stripe Connect"). No Stripe package installed, no payment models, no checkout flow.
 - **Direct Booking System** — The platform currently only supports inquiries. There is no actual booking confirmation, payment collection, or booking management. The `bookings` field on properties is a simple counter with no backing `bookings` table.
 
-### Airbnb Import
-
-- **What exists:** Fully functional two-step import flow at `/import-airbnb`. Hosts paste an Airbnb listing URL, the server-side `AirbnbScraper` service fetches the page and extracts listing data (name, description, images, location, capacity, amenities, rating) via JSON-LD structured data, Open Graph meta tags, and HTML text pattern fallbacks. A preview card lets hosts review and edit all fields before confirming. On confirm, the listing is saved as a new Property (status: Active, approval: pending) and the host is redirected to their listings page.
-- **Backend:** `AirbnbImportController` (preview + store endpoints), `AirbnbScraper` service, URL validation enforcing `airbnb.com/rooms/{id}` format.
-- **Tests:** 18 feature tests covering auth guards, validation, scraping strategies, property creation, and error handling.
-
-### Property CRUD (Host-Side)
-
-- **Add New Property** — There is no form or endpoint for hosts to create a new property listing. Properties can only exist if seeded or inserted directly into the database.
-- **Edit Property** — No edit form or `PUT`/`PATCH` endpoint for updating property details (name, description, images, pricing, etc.).
-- **Delete Property** — No delete action or endpoint.
-- **Image Upload** — Property images are stored as JSON URLs. There is no file upload mechanism or storage integration (e.g., S3, local disk).
-
 ### Subscription & Billing System
 
 - **Host Subscriptions** — The `host_subscriptions` table was created then dropped. No subscription model, no billing cycle, no payment gateway. The pricing page shows tiers but none are functional.
@@ -133,9 +130,8 @@ These features are referenced in the UI, pricing page, or codebase comments but 
 
 ### Communication
 
-- **WhatsApp Integration** — Listed on the pricing page (Growth tier) but not implemented.
-- **Host-Traveler Messaging** — No in-app messaging system. Hosts see inquiry messages but cannot reply through the platform.
-- **Email Notifications for Inquiries** — When a traveler submits an inquiry, no email is sent to the host. The inquiry is only stored in the database.
+- **WhatsApp Integration** — Inquiries page has WhatsApp reply link (`wa.me`) for one-to-one replies. Full integration (bulk messaging, automation) listed on pricing page (Growth tier) not implemented.
+- **Per-Listing Social Connections (Facebook/Instagram)** — Plan exists (`.cursor/plans/per-listing_social_connections`). OAuth flow to connect Facebook Pages and Instagram Business accounts per property. `property_social_accounts` table, Meta Developer app. Would enable future direct posting from Marketing social wizard. Not implemented.
 
 ### Internationalization
 
@@ -159,17 +155,16 @@ These features are referenced in the UI, pricing page, or codebase comments but 
 | Category | Completed | Needs Finishing | Not Built |
 |----------|:---------:|:---------------:|:---------:|
 | Auth & Security | 8 | 0 | 0 |
-| Host Dashboard | 7 | 3 | 0 |
+| Host Dashboard | 9 | 2 | 0 |
 | Public Pages | 7 | 0 | 0 |
 | Admin Panel | 1 | 4 | 0 |
-| Property CRUD | 0 | 0 | 4 |
+| Property CRUD | 4 | 0 | 0 |
+| Marketing & Communication | 4 | 1 | 1 |
 | Payments & Booking | 0 | 0 | 2 |
 | Search & Discovery | 0 | 0 | 3 |
 | Traveler Features | 0 | 0 | 3 |
-| Communication | 0 | 0 | 3 |
-| Airbnb Import | 0 | 0 | 1 |
 | Subscriptions | 0 | 0 | 2 |
 | i18n | 0 | 0 | 1 |
 | Analytics | 0 | 0 | 3 |
 | Content/SEO | 0 | 0 | 2 |
-| **Total** | **23** | **7** | **24** |
+| **Total** | **33** | **7** | **17** |

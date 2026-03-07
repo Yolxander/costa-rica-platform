@@ -19,6 +19,8 @@ import {
     IconChartLine,
     IconCurrencyDollar,
     IconMapPin,
+    IconCalendar,
+    IconMail,
 } from '@tabler/icons-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -248,25 +250,25 @@ const REGIONS = [
 
 const WHAT_YOU_GET_CARDS = [
     {
-        icon: IconCurrencyDollar,
-        title: 'Direct Payments',
-        subtitle: '2.9% + $0.30 per transaction',
-        desc: 'Accept payments via Stripe with no OTA markup. Funds deposit straight to your Costa Rican bank (Banco Nacional, BAC, BCR) within 2 business days. We handle IVA (13% sales tax) automatically so you stay compliant.',
-        features: ['Secure Stripe Connect', 'Costa Rica bank deposits', 'IVA collection included', 'No hidden fees'],
+        icon: IconMail,
+        title: 'Marketing',
+        subtitle: 'Reach guests without OTAs',
+        desc: 'Launch email campaigns and social posts to attract your first direct guests. Promote your property to past OTA guests, social followers, or new audiences. AI-powered captions and templates help you get started even before you have a big list.',
+        features: ['Email campaigns with smart segments', 'Social post wizard (Instagram, Facebook)', 'AI-generated captions & hashtags', 'One-click sharing to your network'],
     },
     {
         icon: IconUsers,
         title: 'Guest CRM',
-        subtitle: 'Unlimited contacts',
-        desc: 'Build and own your guest list with unlimited contacts. Capture emails at checkout, track inquiry and booking history, and reach out for repeat bookings whenever you want. Your data, your relationships.',
-        features: ['Email capture at booking', 'Inquiry & booking history', 'Status tracking (New, Contacted, Booked)', 'Repeat-booking outreach'],
+        subtitle: 'Build your first guest list',
+        desc: 'From day one, capture every inquiry and booking contact in one place. Track who’s interested, who’s booked, and who’s coming back—no spreadsheet needed. Your guest list grows with you so you can nurture relationships and drive repeat bookings.',
+        features: ['Inquiry capture from your listing', 'Status tracking (New, Contacted, Booked)', 'Booking history per guest', 'Ready for repeat-booking outreach'],
     },
     {
-        icon: IconBrandWhatsapp,
-        title: 'WhatsApp',
-        subtitle: 'Instant guest communication',
-        desc: 'Connect with guests through WhatsApp Business. Send check-in instructions, answer questions, share local tips, and manage bookings without switching apps. Quick-reply templates speed up common responses.',
-        features: ['WhatsApp Business integration', 'One-tap guest messaging', 'Check-in & house rules sharing', 'Quick-reply templates'],
+        icon: IconCalendar,
+        title: 'Calendar',
+        subtitle: 'Sync availability from day one',
+        desc: 'Import your existing Airbnb calendar so your direct listing shows real-time availability. Block dates, manage bookings, and keep everything in sync—no double-bookings. Start taking direct reservations without losing your OTA visibility.',
+        features: ['Airbnb calendar sync (read-only)', 'Block dates & manage availability', 'Prevent double-bookings', 'Single source of truth for availability'],
     },
     {
         icon: IconChartLine,
@@ -314,18 +316,17 @@ export default function Landing() {
     const freeFeatures = [
         'Direct listing page',
         'Inquiry capture form',
-        'Calendar sync (read-only from Airbnb)',
-        'Basic analytics (views only)',
+        'Calendar & availability management',
+        'Guest CRM',
+        'Money saved tracker',
     ];
 
     const proFeatures = [
         'Everything in Free, plus:',
-        'Stripe payment processing',
-        'Guest CRM with email capture',
-        'WhatsApp Business integration',
-        'Money saved tracker',
-        'Custom domain (bookdirect.yourproperty.com)',
-        'Priority WhatsApp support',
+        'Marketing (email campaigns + social posts)',
+        'Stripe payment processing (coming soon)',
+        'Custom domain (coming soon)',
+        'Priority support (coming soon)',
     ];
 
     return (
@@ -394,7 +395,7 @@ export default function Landing() {
                                 <div className="lg:col-span-5 lg:sticky lg:top-24">
                                     <h2 className="text-2xl font-bold leading-tight sm:text-3xl">Why Costa Rica Hosts Choose Direct Bookings</h2>
                                     <p className="mt-4 text-muted-foreground leading-relaxed sm:text-base">
-                                        Import your Airbnb listing in minutes. Connect Stripe. Share your direct link. Own your guest list and stop paying OTA commissions.
+                                        Get your direct booking page live in minutes—no website needed. Add your listing, sync your calendar, and start reaching guests with email and social. Connect Stripe when you&apos;re ready to take payments.
                                     </p>
                                     <div className="mt-6 flex gap-3">
                                         <a href="#" className="flex size-10 items-center justify-center rounded-full border border-input bg-background text-muted-foreground transition-colors hover:bg-muted hover:text-foreground" aria-label="Instagram"><IconBrandInstagram className="size-5" /></a>
@@ -404,9 +405,9 @@ export default function Landing() {
                                 </div>
                                 <div className="lg:col-span-7 space-y-4">
                                     {[
-                                        { icon: IconLink, title: 'Paste your Airbnb link', desc: 'Import photos, title, description, and amenities in seconds.' },
-                                        { icon: IconCreditCard, title: 'Connect Stripe', desc: 'Set up in 2 minutes. Deposits to your Costa Rican bank.' },
-                                        { icon: IconShare, title: 'Share your direct link', desc: 'Send to past guests, social, or your website.' },
+                                        { icon: IconLink, title: 'Add your listing', desc: 'Import photos, title, description, and amenities. Your direct listing goes live—free to start, no credit card required.' },
+                                        { icon: IconCalendar, title: 'Sync your calendar', desc: 'Import your calendar so your direct page shows real-time availability. Block dates, prevent double-bookings, and keep one source of truth from day one.' },
+                                        { icon: IconMail, title: 'Reach guests without OTAs', desc: 'Build your guest list from inquiries, run email campaigns to past guests, and post to social with AI captions. Get your first direct booking.' },
                                     ].map((item, i) => (
                                         <Card key={i} className="flex flex-row items-start gap-5 rounded-2xl border-0 bg-muted/40 p-6 shadow-sm transition-all hover:shadow-md">
                                             <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10">
@@ -548,14 +549,14 @@ export default function Landing() {
                             <p className="mt-2 text-center text-muted-foreground">Start free. Upgrade when you&apos;re ready.</p>
                             <div className="mt-10 grid gap-6 lg:grid-cols-12">
                                 <div className="lg:col-span-4">
-                                    <Card className="flex h-full min-h-[320px] flex-col rounded-2xl border-0 bg-foreground p-6 text-primary-foreground shadow-xl sm:p-8">
+                                    <Card className="flex h-full min-h-[320px] flex-col rounded-2xl border-0 bg-foreground p-6 text-primary-foreground shadow-xl dark:bg-card dark:text-card-foreground sm:p-8">
                                         <div className="flex-1">
-                                            <CardTitle className="text-xl text-white sm:text-2xl">Why Upgrade?</CardTitle>
-                                            <CardDescription className="mt-2 text-white/80">
+                                            <CardTitle className="text-xl text-white dark:text-card-foreground sm:text-2xl">Why Upgrade?</CardTitle>
+                                            <CardDescription className="mt-2 text-white/80 dark:text-card-foreground/80">
                                                 Accept payments, own your guest list, and track savings. Upgrade when you&apos;re ready.
                                             </CardDescription>
                                         </div>
-                                        <Button variant="secondary" className="mt-6 h-11 w-full rounded-xl" onClick={scrollToImport}>
+                                        <Button variant="secondary" className="mt-6 h-11 w-full rounded-xl dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90 dark:border-0" onClick={scrollToImport}>
                                             Compare plans
                                         </Button>
                                     </Card>

@@ -8,8 +8,11 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-    --font-size-xs: 0.875rem;
-    --font-size-xs--line-height: 1.25rem;
+    /* Platform minimum font size: 14px. text-xs and text-sm both 14px. */
+    --text-xs: 0.875rem;
+    --text-xs--line-height: 1.25rem;
+    --text-sm: 0.985rem;
+    --text-sm--line-height: 1.25rem;
 
     --font-sans:
         'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
