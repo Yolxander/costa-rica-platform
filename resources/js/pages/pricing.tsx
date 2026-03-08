@@ -296,7 +296,7 @@ export default function Pricing() {
                     </section>
 
                     {/* 6. Website Add-On (Sempre Studios) */}
-                    <section className="border-t bg-muted/20 px-4 py-16 sm:px-6 lg:px-8">
+                    <section id="website" className="border-t bg-muted/20 px-4 py-16 sm:px-6 lg:px-8">
                         <div className="mx-auto max-w-5xl">
                             <h2 className="text-center text-2xl font-bold sm:text-3xl">Get your own booking website</h2>
                             <p className="mt-4 text-center text-muted-foreground">Turn your property into a professional website where guests can book directly.</p>

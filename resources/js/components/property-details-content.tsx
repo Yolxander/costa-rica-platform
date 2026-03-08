@@ -1,5 +1,5 @@
 import * as React from "react"
-import { router } from "@inertiajs/react"
+import { Link, router } from "@inertiajs/react"
 import {
     IconMapPin,
     IconStar,
@@ -303,6 +303,12 @@ export function PropertyDetailsContent({ property }: PropertyDetailsContentProps
                                 <Button className="w-full" onClick={() => setEditModalOpen(true)}>
                                     <IconEdit className="size-4 mr-2" />
                                     Edit Property
+                                </Button>
+                                <Button variant="outline" className="w-full" asChild>
+                                    <Link href={`/listing/${property.id}`}>
+                                        <IconEye className="size-4 mr-2" />
+                                        View Public Page
+                                    </Link>
                                 </Button>
                                 <Button variant="outline" className="w-full" onClick={() => setSettingsModalOpen(true)}>
                                     <IconSettings className="size-4 mr-2" />

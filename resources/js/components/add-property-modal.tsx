@@ -20,7 +20,25 @@ import {
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Checkbox } from "@/components/ui/checkbox"
 import { ImageUpload } from "@/components/image-upload"
+
+const AMENITY_OPTIONS = [
+  { id: "wifi", label: "WiFi" },
+  { id: "parking", label: "Parking" },
+  { id: "pool", label: "Pool" },
+  { id: "kitchen", label: "Kitchen" },
+  { id: "tv", label: "TV" },
+  { id: "mountain_view", label: "Mountain View" },
+  { id: "gym", label: "Gym" },
+  { id: "security", label: "Security" },
+  { id: "air_conditioning", label: "Air Conditioning" },
+  { id: "washer", label: "Washer" },
+  { id: "dryer", label: "Dryer" },
+  { id: "hot_tub", label: "Hot Tub" },
+  { id: "pet_friendly", label: "Pet Friendly" },
+  { id: "no_smoking", label: "No Smoking" },
+]
 
 interface PropertyForModal {
   id?: number
@@ -29,6 +47,7 @@ interface PropertyForModal {
   location: string
   description: string
   images?: string[]
+  amenities?: string[]
   pricing: { base_price: number; price_format: string }
   capacity: { guests: number; bedrooms: number; bathrooms: number }
 }
@@ -69,6 +88,7 @@ export function AddPropertyModal({ isOpen, onClose, property, onSave }: AddPrope
   const [formData, setFormData] = useState(initialFormData)
   const [imageUrls, setImageUrls] = useState<string[]>([])
   const [imageFiles, setImageFiles] = useState<File[]>([])
+  const [amenities, setAmenities] = useState<string[]>([])
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
@@ -102,11 +122,28 @@ export function AddPropertyModal({ isOpen, onClose, property, onSave }: AddPrope
     }
   }, [property?.images, isEdit, isOpen])
 
+  useEffect(() => {
+    if (property?.amenities && Array.isArray(property.amenities)) {
+      const normalized = property.amenities
+        .map((a) => AMENITY_OPTIONS.find((o) => o.id.toLowerCase() === String(a).toLowerCase())?.id)
+        .filter((id): id is string => !!id)
+      setAmenities(normalized)
+    } else if (!isEdit && isOpen) {
+      setAmenities([])
+    }
+  }, [property?.amenities, isEdit, isOpen])
+
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
     }))
+  }
+
+  const handleAmenityToggle = (amenityId: string) => {
+    setAmenities(prev =>
+      prev.includes(amenityId) ? prev.filter((id) => id !== amenityId) : [...prev, amenityId]
+    )
   }
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -123,6 +160,7 @@ export function AddPropertyModal({ isOpen, onClose, property, onSave }: AddPrope
       guests: parseInt(formData.maxGuests, 10) || 1,
       bedrooms: parseBedrooms(formData.bedrooms),
       bathrooms: parseBathrooms(formData.bathrooms),
+      amenities,
       image_urls: imageUrls,
     }
     if (imageFiles.length > 0) {
@@ -157,9 +195,10 @@ export function AddPropertyModal({ isOpen, onClose, property, onSave }: AddPrope
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <Tabs defaultValue="basic" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="basic">Basic Info</TabsTrigger>
               <TabsTrigger value="details">Details & Photos</TabsTrigger>
+              <TabsTrigger value="amenities">Amenities</TabsTrigger>
             </TabsList>
             <TabsContent value="basic" className="space-y-6 mt-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -292,6 +331,27 @@ export function AddPropertyModal({ isOpen, onClose, property, onSave }: AddPrope
                   setImageFiles(files)
                 }}
               />
+            </TabsContent>
+            <TabsContent value="amenities" className="space-y-6 mt-6">
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Select the amenities your property offers. Check or uncheck to add or remove.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {AMENITY_OPTIONS.map((amenity) => (
+                    <label
+                      key={amenity.id}
+                      className="flex items-center gap-3 p-3 rounded-lg border cursor-pointer hover:bg-accent/50 transition-colors"
+                    >
+                      <Checkbox
+                        checked={amenities.includes(amenity.id)}
+                        onCheckedChange={() => handleAmenityToggle(amenity.id)}
+                      />
+                      <span className="text-sm font-medium">{amenity.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
             </TabsContent>
           </Tabs>
 

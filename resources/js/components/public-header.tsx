@@ -52,7 +52,6 @@ export function PublicHeader({ transparentUntilScroll = false }: PublicHeaderPro
                     {navLink('/', 'Home', isActive('/'))}
                     {navLink('/pricing', 'Pricing', isActive('/pricing'))}
                     {navLink('/how-it-works', 'How it works', isActive('/how-it-works'))}
-                    {navLink('/join', 'Join', isActive('/join'))}
                 </nav>
                 <div className="flex items-center justify-end gap-3 justify-self-end">
                     {auth?.user ? (
