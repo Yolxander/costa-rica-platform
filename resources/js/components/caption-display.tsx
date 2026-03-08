@@ -28,7 +28,7 @@ export function CaptionDisplay({
     const [copiedText, copy] = useClipboard()
 
     const listingUrl = property
-        ? `${typeof window !== "undefined" ? window.location.origin : ""}/listing/${property.id}`
+        ? `${typeof window !== "undefined" ? window.location.origin : ""}/${property.slug}`
         : ""
 
     const fullText = [caption, hashtags].filter(Boolean).join("\n\n")

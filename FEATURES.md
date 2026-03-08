@@ -37,8 +37,8 @@ These features are fully functional with backend logic, database support, and a 
 ### Public Pages
 
 - **Landing Page** — Public homepage at `/` displaying host count from database. Marketing-oriented layout.
-- **Listing Detail** — Public property page at `/listing/{id}` showing all property info (images, amenities, pricing, house rules, policies, host info). Data loaded from database with user relationship.
-- **Listing Checkout / Inquiry Form** — Full inquiry submission flow at `/listing/{id}/checkout`. Travelers fill in name, email, phone, dates, guests, and message. Submits to `POST /listing/{id}/inquire` which validates and creates an `Inquiry` record. Shows confirmation screen on success. Pre-fills fields for logged-in users.
+- **Listing Detail** — Public property page at `/{slug}` (e.g. `/beachfront-villa`) showing all property info (images, amenities, pricing, house rules, policies, host info). Data loaded from database with user relationship. Slugs are URL-safe property names.
+- **Listing Checkout / Inquiry Form** — Full inquiry submission flow at `/{slug}/checkout`. Travelers fill in name, email, phone, dates, guests, and message. Submits to `POST /{slug}/inquire` which validates and creates an `Inquiry` record. Shows confirmation screen on success. Pre-fills fields for logged-in users.
 - **Pricing Page** — Static page showing three subscription tiers (Starter $29, Growth $59, Scale $99) with feature lists.
 - **How It Works Page** — Static informational page explaining the platform.
 - **Blog Page** — Static blog layout (placeholder content, no CMS backend).

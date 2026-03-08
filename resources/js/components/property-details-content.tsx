@@ -76,6 +76,7 @@ function formatPriceDisplay(pricing: {
 interface PropertyDetailsContentProps {
     property: {
         id: number
+        slug: string
         name: string
         type: string
         status: string
@@ -305,7 +306,7 @@ export function PropertyDetailsContent({ property }: PropertyDetailsContentProps
                                     Edit Property
                                 </Button>
                                 <Button variant="outline" className="w-full" asChild>
-                                    <Link href={`/listing/${property.id}`}>
+                                    <Link href={`/${property.slug}`}>
                                         <IconEye className="size-4 mr-2" />
                                         View Public Page
                                     </Link>

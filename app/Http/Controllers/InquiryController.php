@@ -12,9 +12,9 @@ use Illuminate\Http\Request;
 
 class InquiryController extends Controller
 {
-    public function store(Request $request, $id)
+    public function store(Request $request, $slug)
     {
-        $property = Property::findOrFail($id);
+        $property = Property::where('slug', $slug)->firstOrFail();
 
         $validated = $request->validate([
             'traveler_name' => 'required|string|max:255',

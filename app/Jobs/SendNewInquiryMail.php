@@ -41,7 +41,7 @@ class SendNewInquiryMail implements ShouldQueue
             'PROPERTY_IMAGE' => $this->propertyImage($property),
             'DASHBOARD_URL' => url(route('dashboard', [], false)),
             'CONVERSATION_URL' => url(route('inquiries', [], false)),
-            'LISTING_URL' => url(route('listing.detail', ['id' => $inquiry->property_id], false)),
+            'LISTING_URL' => $property?->slug ? url(route('listing.detail', ['slug' => $property->slug], false)) : config('app.url'),
             'SUPPORT_URL' => config('app.url') . '/support',
         ];
 

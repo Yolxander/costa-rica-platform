@@ -32,7 +32,7 @@ class SendInquiryConfirmationMail implements ShouldQueue
             'CHECKOUT_DATE' => $inquiry->check_out->format('M j, Y'),
             'GUEST_COUNT' => (string) $inquiry->guests,
             'TRAVELER_MESSAGE' => $inquiry->message,
-            'LISTING_URL' => url(route('listing.detail', ['id' => $inquiry->property_id], false)),
+            'LISTING_URL' => $property?->slug ? url(route('listing.detail', ['slug' => $property->slug], false)) : config('app.url'),
             'BROWSE_URL' => config('app.url'),
             'HOST_URL' => url(route('join', [], false)),
             'SUPPORT_URL' => config('app.url') . '/support',

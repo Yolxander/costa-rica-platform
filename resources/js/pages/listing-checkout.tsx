@@ -28,6 +28,7 @@ import { toast } from 'sonner';
 
 interface CheckoutProperty {
     id: number;
+    slug: string;
     name: string;
     type: string;
     status: string;
@@ -81,7 +82,7 @@ export default function ListingCheckout() {
 
     function handleSubmit(e: FormEvent) {
         e.preventDefault();
-        form.post(`/listing/${property.id}/inquire`, {
+        form.post(`/${property.slug}/inquire`, {
             preserveScroll: true,
             onSuccess: () => {
                 setSubmitted(true);
@@ -108,7 +109,7 @@ export default function ListingCheckout() {
                         </Link>
                         <nav className="flex items-center gap-3">
                             <Link
-                                href={`/listing/${property.id}`}
+                                href={`/${property.slug}`}
                                 className="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
                             >
                                 <IconArrowLeft className="size-4" />
@@ -127,7 +128,7 @@ export default function ListingCheckout() {
                                 {flash?.success || 'Your inquiry has been sent to the host. They will get back to you soon.'}
                             </p>
                             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
-                                <Link href={`/listing/${property.id}`}>
+                                <Link href={`/${property.slug}`}>
                                     <Button variant="outline">Back to listing</Button>
                                 </Link>
                                 <Link href="/">

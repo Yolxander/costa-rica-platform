@@ -34,8 +34,8 @@ function truncate(str: string, maxLen: number): string {
 
 function generateCaption(property: PropertyForSocial): string {
     const listingUrl = typeof window !== "undefined"
-        ? `${window.location.origin}/listing/${property.id}`
-        : `/listing/${property.id}`
+        ? `${window.location.origin}/${property.slug}`
+        : `/${property.slug}`
     const desc = truncate(property.description || "", 120)
     const amenities = (property.amenities || []).slice(0, 3)
     const amenityStr = amenities.length > 0 ? amenities.join(", ") : ""

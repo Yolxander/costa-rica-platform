@@ -21,6 +21,7 @@ const STEPS = [
 
 export interface PropertyForEmail {
     id: number
+    slug: string
     name: string
     location: string
     description?: string
@@ -43,11 +44,11 @@ function getCsrfToken(): string {
     return match ? decodeURIComponent(match[1]) : ""
 }
 
-function getListingUrl(propertyId: number): string {
+function getListingUrl(slug: string): string {
     if (typeof window !== "undefined") {
-        return `${window.location.origin}/listing/${propertyId}`
+        return `${window.location.origin}/${slug}`
     }
-    return `/listing/${propertyId}`
+    return `/${slug}`
 }
 
 export function EmailCampaignWizard({
@@ -86,7 +87,7 @@ export function EmailCampaignWizard({
             ? selectedProperty.description.slice(0, 200) + "..."
             : "",
         PROPERTY_IMAGE: selectedProperty?.images?.[0] ?? "",
-        LISTING_URL: selectedProperty ? getListingUrl(selectedProperty.id) : "",
+        LISTING_URL: selectedProperty ? getListingUrl(selectedProperty.slug) : "",
         MAX_GUESTS: selectedProperty?.guests?.toString() ?? "",
         RATING: selectedProperty?.rating?.toString() ?? "",
         AVAILABLE_DATES: "",

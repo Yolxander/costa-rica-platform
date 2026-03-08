@@ -23,6 +23,7 @@ class MarketingController extends Controller
             ->map(function ($property) {
                 return [
                     'id' => $property->id,
+                    'slug' => $property->slug,
                     'name' => $property->name,
                     'location' => $property->location ?? 'Costa Rica',
                     'description' => $property->description ?? '',
@@ -64,7 +65,7 @@ class MarketingController extends Controller
             ], 503);
         }
 
-        $listingUrl = url(route('listing.detail', ['id' => $property->id]));
+        $listingUrl = url(route('listing.detail', ['slug' => $property->slug]));
         $amenities = is_array($property->amenities) ? implode(', ', array_slice($property->amenities, 0, 5)) : '';
 
         $prompt = "Generate a short, engaging Instagram-style caption for a vacation rental in Costa Rica. "

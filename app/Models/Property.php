@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Property extends Model
 {
     protected $fillable = [
         'user_id',
         'name',
+        'slug',
         'type',
         'status',
         'approval_status',
@@ -47,6 +49,40 @@ class Property extends Model
         'service_fee' => 'decimal:2',
         'rating' => 'decimal:2',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (Property $property) {
+            if (empty($property->slug)) {
+                $property->slug = static::generateUniqueSlug(Str::slug($property->name) ?: 'property', $property->id);
+            }
+        });
+
+        static::updating(function (Property $property) {
+            if ($property->isDirty('name') && ! $property->isDirty('slug')) {
+                $property->slug = static::generateUniqueSlug(Str::slug($property->name) ?: 'property', $property->id);
+            }
+        });
+    }
+
+    protected static function generateUniqueSlug(string $base, ?int $excludeId = null): string
+    {
+        $slug = $base;
+        $counter = 1;
+        $query = static::where('slug', $slug);
+        if ($excludeId) {
+            $query->where('id', '!=', $excludeId);
+        }
+        while ($query->exists()) {
+            $slug = $base . '-' . $counter;
+            $counter++;
+            $query = static::where('slug', $slug);
+            if ($excludeId) {
+                $query->where('id', '!=', $excludeId);
+            }
+        }
+        return $slug;
+    }
 
     /**
      * Get the user that owns the property.

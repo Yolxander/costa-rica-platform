@@ -32,85 +32,15 @@ Route::get('/join', function () {
     return Inertia::render('join');
 })->name('join');
 
-Route::get('/listing/{id}', function ($id) {
-    $property = \App\Models\Property::where('id', $id)
-        ->with('user')
-        ->firstOrFail();
-
-    return Inertia::render('listing-detail', [
-        'property' => [
-            'id' => $property->id,
-            'name' => $property->name,
-            'type' => $property->type,
-            'status' => $property->status,
-            'location' => $property->location,
-            'description' => $property->description,
-            'amenities' => $property->amenities ?? [],
-            'images' => $property->images ?? [],
-            'house_rules' => $property->house_rules ?? [],
-            'policies' => $property->policies ?? [],
-            'base_price' => (float) $property->base_price,
-            'price_format' => $property->price_format,
-            'currency' => $property->currency,
-            'cleaning_fee' => (float) $property->cleaning_fee,
-            'service_fee' => (float) $property->service_fee,
-            'guests' => $property->guests,
-            'bedrooms' => $property->bedrooms,
-            'bathrooms' => $property->bathrooms,
-            'check_in_time' => $property->check_in_time,
-            'check_out_time' => $property->check_out_time,
-            'minimum_stay' => $property->minimum_stay,
-            'rating' => (float) $property->rating,
-            'reviews' => $property->reviews,
-            'host' => [
-                'name' => $property->user?->name ?? 'Host',
-                'avatar' => $property->user?->avatar ?? null,
-                'id' => $property->user?->id,
-            ],
-        ],
-    ]);
-})->name('listing.detail');
-
-Route::get('/listing/{id}/checkout', function (\Illuminate\Http\Request $request, $id) {
-    $property = \App\Models\Property::where('id', $id)
-        ->with('user')
-        ->firstOrFail();
-
-    return Inertia::render('listing-checkout', [
-        'property' => [
-            'id' => $property->id,
-            'name' => $property->name,
-            'type' => $property->type,
-            'status' => $property->status,
-            'location' => $property->location,
-            'description' => $property->description,
-            'amenities' => $property->amenities ?? [],
-            'images' => $property->images ?? [],
-            'house_rules' => $property->house_rules ?? [],
-            'policies' => $property->policies ?? [],
-            'base_price' => (float) $property->base_price,
-            'price_format' => $property->price_format,
-            'currency' => $property->currency,
-            'cleaning_fee' => (float) $property->cleaning_fee,
-            'service_fee' => (float) $property->service_fee,
-            'guests' => $property->guests,
-            'bedrooms' => $property->bedrooms,
-            'bathrooms' => $property->bathrooms,
-            'check_in_time' => $property->check_in_time,
-            'check_out_time' => $property->check_out_time,
-            'minimum_stay' => $property->minimum_stay,
-            'rating' => (float) $property->rating,
-            'reviews' => $property->reviews,
-            'host' => [
-                'name' => $property->user?->name ?? 'Host',
-                'avatar' => $property->user?->avatar ?? null,
-                'id' => $property->user?->id,
-            ],
-        ],
-    ]);
-})->name('listing.checkout');
-
-Route::post('/listing/{id}/inquire', [InquiryController::class, 'store'])->name('listing.inquire');
+Route::get('/listing/{identifier}', function ($identifier) {
+    $property = is_numeric($identifier)
+        ? \App\Models\Property::find($identifier)
+        : \App\Models\Property::where('slug', $identifier)->first();
+    if ($property?->slug) {
+        return redirect()->to('/' . $property->slug, 301);
+    }
+    abort(404);
+})->name('listing.redirect');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
@@ -157,6 +87,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         $properties = \App\Models\Property::where('user_id', auth()->id())->get()->map(function ($property) {
             return [
                 'id' => $property->id,
+                'slug' => $property->slug,
                 'title' => $property->name,
                 'location' => $property->location,
                 'status' => strtolower($property->status),
@@ -278,6 +209,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Transform the model data to match the frontend structure
         $property = [
             'id' => $propertyModel->id,
+            'slug' => $propertyModel->slug,
             'name' => $propertyModel->name,
             'type' => $propertyModel->type,
             'status' => $propertyModel->status,
@@ -453,6 +385,92 @@ Route::middleware('auth')->group(function () {
     Route::post('admin/logout', [AdminAuthenticatedSessionController::class, 'destroy'])
         ->name('admin.logout');
 });
+
+$reservedPaths = 'pricing|how-it-works|blog|join|dashboard|listings|calendar|inquiries|marketing|crm|import|login|register|host|admin|settings|property|properties|forgot-password|reset-password|verify-email|two-factor|confirm-password|password|user';
+
+Route::get('/{slug}', function ($slug) {
+    $property = \App\Models\Property::where('slug', $slug)
+        ->with('user')
+        ->firstOrFail();
+
+    return Inertia::render('listing-detail', [
+        'property' => [
+            'id' => $property->id,
+            'slug' => $property->slug,
+            'name' => $property->name,
+            'type' => $property->type,
+            'status' => $property->status,
+            'location' => $property->location,
+            'description' => $property->description,
+            'amenities' => $property->amenities ?? [],
+            'images' => $property->images ?? [],
+            'house_rules' => $property->house_rules ?? [],
+            'policies' => $property->policies ?? [],
+            'base_price' => (float) $property->base_price,
+            'price_format' => $property->price_format,
+            'currency' => $property->currency,
+            'cleaning_fee' => (float) $property->cleaning_fee,
+            'service_fee' => (float) $property->service_fee,
+            'guests' => $property->guests,
+            'bedrooms' => $property->bedrooms,
+            'bathrooms' => $property->bathrooms,
+            'check_in_time' => $property->check_in_time,
+            'check_out_time' => $property->check_out_time,
+            'minimum_stay' => $property->minimum_stay,
+            'rating' => (float) $property->rating,
+            'reviews' => $property->reviews,
+            'host' => [
+                'name' => $property->user?->name ?? 'Host',
+                'avatar' => $property->user?->avatar ?? null,
+                'id' => $property->user?->id,
+            ],
+        ],
+    ]);
+})->where('slug', "^(?!({$reservedPaths})(?:\\/|\$))[^/]+")->name('listing.detail');
+
+Route::get('/{slug}/checkout', function (\Illuminate\Http\Request $request, $slug) {
+    $property = \App\Models\Property::where('slug', $slug)
+        ->with('user')
+        ->firstOrFail();
+
+    return Inertia::render('listing-checkout', [
+        'property' => [
+            'id' => $property->id,
+            'slug' => $property->slug,
+            'name' => $property->name,
+            'type' => $property->type,
+            'status' => $property->status,
+            'location' => $property->location,
+            'description' => $property->description,
+            'amenities' => $property->amenities ?? [],
+            'images' => $property->images ?? [],
+            'house_rules' => $property->house_rules ?? [],
+            'policies' => $property->policies ?? [],
+            'base_price' => (float) $property->base_price,
+            'price_format' => $property->price_format,
+            'currency' => $property->currency,
+            'cleaning_fee' => (float) $property->cleaning_fee,
+            'service_fee' => (float) $property->service_fee,
+            'guests' => $property->guests,
+            'bedrooms' => $property->bedrooms,
+            'bathrooms' => $property->bathrooms,
+            'check_in_time' => $property->check_in_time,
+            'check_out_time' => $property->check_out_time,
+            'minimum_stay' => $property->minimum_stay,
+            'rating' => (float) $property->rating,
+            'reviews' => $property->reviews,
+            'host' => [
+                'name' => $property->user?->name ?? 'Host',
+                'avatar' => $property->user?->avatar ?? null,
+                'id' => $property->user?->id,
+            ],
+        ],
+    ]);
+})->where('slug', "^(?!({$reservedPaths})(?:\\/|\$))[^/]+")->name('listing.checkout');
+
+Route::post('/{slug}/inquire', [InquiryController::class, 'store'])
+    ->where('slug', "^(?!({$reservedPaths})(?:\\/|\$))[^/]+")
+    ->name('listing.inquire');
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

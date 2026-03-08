@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils"
 
 export interface PropertyForSocial {
     id: number
+    slug: string
     name: string
     location: string
     description: string

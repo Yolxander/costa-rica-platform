@@ -60,6 +60,7 @@ import {
 
 export const listingSchema = z.object({
   id: z.number(),
+  slug: z.string(),
   title: z.string(),
   location: z.string(),
   status: z.string(),
@@ -189,7 +190,7 @@ const columns: ColumnDef<z.infer<typeof listingSchema>>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => {
-              const url = `${window.location.origin}/listing/${row.original.id}`
+              const url = `${window.location.origin}/${row.original.slug}`
               navigator.clipboard.writeText(url)
               meta?.onCopyLink?.()
             }}>

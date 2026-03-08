@@ -173,8 +173,8 @@ database/migrations/            # All migration files
 | Route | Auth | Description |
 |-------|------|-------------|
 | `GET /` | No | Home page with property search and grid |
-| `GET /listing/{id}` | No | Property detail page |
-| `POST /listing/{id}/inquire` | No | Submit inquiry to host |
+| `GET /{slug}` | No | Property detail page (e.g. /beachfront-villa) |
+| `POST /{slug}/inquire` | No | Submit inquiry to host |
 | `POST /listing/{id}/save` | Yes | Toggle save/unsave a listing |
 | `GET /account` | Yes | Traveler account page |
 | `GET /dashboard` | Yes | Host dashboard |

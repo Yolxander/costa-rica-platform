@@ -31,6 +31,7 @@ import { type ComponentType } from 'react';
 
 interface ListingProperty {
     id: number;
+    slug: string;
     name: string;
     type: string;
     status: string;
@@ -408,7 +409,7 @@ export default function ListingDetail() {
                                         </div>
                                     )}
 
-                                    <Link href={`/listing/${property.id}/checkout`} className="block">
+                                    <Link href={`/${property.slug}/checkout`} className="block">
                                         <Button className="w-full" size="lg">
                                             Inquire Now
                                         </Button>
