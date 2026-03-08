@@ -14,6 +14,8 @@ interface EmailPreviewStepProps {
     html: string
     recipientCount: number
     params?: EmailTemplateParams
+    /** Selected property name from Audience step — ensures {{ params.PROPERTY_NAME }} is replaced correctly */
+    selectedPropertyName?: string | null
 }
 
 export function EmailPreviewStep({
@@ -21,23 +23,36 @@ export function EmailPreviewStep({
     html,
     recipientCount,
     params = {},
+    selectedPropertyName,
 }: EmailPreviewStepProps) {
+    const propertyName = selectedPropertyName ?? params.PROPERTY_NAME ?? "your favorite rental"
+    const mergedParams = useMemo(
+        () => ({
+            ...params,
+            PROPERTY_NAME: propertyName,
+        }),
+        [params, propertyName]
+    )
+
+    const replacePropertyName = (str: string) =>
+        str.replace(/\{\{\s*params\.PROPERTY_NAME\s*\}\}/g, propertyName)
+
     const previewHtml = useMemo(() => {
-        const withImage = params.PROPERTY_IMAGE
+        const withImage = mergedParams.PROPERTY_IMAGE
             ? html.replace(
                 /\{\{\s*params\.PROPERTY_IMAGE\s*\}\}/g,
-                buildPropertyImageHtml(params.PROPERTY_IMAGE as string)
+                buildPropertyImageHtml(mergedParams.PROPERTY_IMAGE as string)
             )
             : html.replace(
                 /\{\{\s*params\.PROPERTY_IMAGE\s*\}\}/g,
                 ""
             )
-        return substituteParams(withImage, params)
-    }, [html, params])
+        return replacePropertyName(substituteParams(withImage, mergedParams))
+    }, [html, mergedParams, propertyName])
 
     const previewSubject = useMemo(
-        () => substituteParams(subject, params),
-        [subject, params]
+        () => replacePropertyName(substituteParams(subject, mergedParams)),
+        [subject, mergedParams, propertyName]
     )
 
     const handleTestSend = () => {

@@ -186,123 +186,35 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('inquiries.update');
 
     Route::get('inquiries', function () {
+        $propertyFilter = request()->query('property_id');
         $dbInquiries = \App\Models\Inquiry::where('user_id', auth()->id())
-            ->with('property')
+            ->with(['property', 'responses'])
+            ->when($propertyFilter, fn ($q) => $q->where('property_id', $propertyFilter))
             ->orderByDesc('sent_at')
             ->get();
 
-        if ($dbInquiries->isNotEmpty()) {
-            $inquiries = $dbInquiries->map(function ($inquiry) {
-                return [
-                    'id' => $inquiry->id,
-                    'traveler_name' => $inquiry->traveler_name,
-                    'traveler_email' => $inquiry->traveler_email,
-                    'traveler_phone' => $inquiry->traveler_phone,
-                    'property_id' => $inquiry->property_id,
-                    'property_name' => $inquiry->property?->name ?? 'Unknown',
-                    'check_in' => $inquiry->check_in->format('Y-m-d'),
-                    'check_out' => $inquiry->check_out->format('Y-m-d'),
-                    'guests' => $inquiry->guests,
-                    'message' => $inquiry->message,
-                    'status' => in_array($inquiry->status, ['new', 'contacted', 'booked', 'lost']) ? $inquiry->status : 'new',
-                    'sent_at' => $inquiry->sent_at->format('M d, Y'),
-                ];
-            })->toArray();
-        } else {
-            $inquiries = [
-                [
-                    'id' => 1,
-                    'traveler_name' => 'Sarah Johnson',
-                    'traveler_email' => 'sarah.j@email.com',
-                    'traveler_phone' => '+1 (555) 234-5678',
-                    'property_name' => 'Beachfront Villa - Malibu',
-                    'check_in' => '2026-03-15',
-                    'check_out' => '2026-03-22',
-                    'guests' => 2,
-                    'message' => 'Hi! We are planning a romantic getaway and your beachfront villa looks absolutely perfect. Could you tell me more about the ocean views and nearby restaurants?',
-                    'status' => 'booked',
-                    'sent_at' => 'Feb 18, 2026',
-                ],
-                [
-                    'id' => 2,
-                    'traveler_name' => 'Mike Chen',
-                    'traveler_email' => 'mike.chen@email.com',
-                    'traveler_phone' => '+1 (555) 876-5432',
-                    'property_name' => 'Mountain Retreat - Aspen',
-                    'check_in' => '2026-04-01',
-                    'check_out' => '2026-04-07',
-                    'guests' => 4,
-                    'message' => 'Hello! Our family of four is looking for a mountain retreat for spring break. Is the hot tub available during April? Also wondering about ski shuttle availability.',
-                    'status' => 'contacted',
-                    'sent_at' => 'Feb 19, 2026',
-                ],
-                [
-                    'id' => 3,
-                    'traveler_name' => 'Emma Wilson',
-                    'traveler_email' => 'emma.wilson@email.com',
-                    'traveler_phone' => null,
-                    'property_name' => 'Downtown Loft - Austin',
-                    'check_in' => '2026-03-20',
-                    'check_out' => '2026-03-25',
-                    'guests' => 1,
-                    'message' => 'I\'m attending SXSW and your downtown loft is in the perfect location. Is it available for those dates? I\'m a quiet guest and very respectful of house rules.',
-                    'status' => 'new',
-                    'sent_at' => 'Feb 20, 2026',
-                ],
-                [
-                    'id' => 4,
-                    'traveler_name' => 'Carlos Rivera',
-                    'traveler_email' => 'carlos.r@email.com',
-                    'traveler_phone' => '+506 8845-1234',
-                    'property_name' => 'Beachfront Villa - Malibu',
-                    'check_in' => '2026-05-10',
-                    'check_out' => '2026-05-17',
-                    'guests' => 6,
-                    'message' => 'Hola! I\'m organizing a group trip from Costa Rica. We need space for 6 people. Does the villa have enough beds, or would some of us need to share? Also, is the pool heated?',
-                    'status' => 'contacted',
-                    'sent_at' => 'Feb 20, 2026',
-                ],
-                [
-                    'id' => 5,
-                    'traveler_name' => 'Anje Keizer',
-                    'traveler_email' => 'anje.k@email.com',
-                    'traveler_phone' => '+31 6 12345678',
-                    'property_name' => 'Jungle Canopy Treehouse',
-                    'check_in' => '2026-04-15',
-                    'check_out' => '2026-04-20',
-                    'guests' => 2,
-                    'message' => 'The treehouse looks magical! My partner and I are celebrating our anniversary. Is it truly secluded? We want total privacy and nature immersion.',
-                    'status' => 'new',
-                    'sent_at' => 'Feb 21, 2026',
-                ],
-                [
-                    'id' => 6,
-                    'traveler_name' => 'Darren Adams',
-                    'traveler_email' => 'darren.a@email.com',
-                    'traveler_phone' => '+1 (555) 999-0011',
-                    'property_name' => 'Lakefront Cabin - Tahoe',
-                    'check_in' => '2026-06-01',
-                    'check_out' => '2026-06-08',
-                    'guests' => 3,
-                    'message' => 'Hey there! Looking for a week-long stay at the lake cabin for some fishing and relaxation. Do you provide kayaks or canoes? What\'s the fishing like in June?',
-                    'status' => 'lost',
-                    'sent_at' => 'Feb 17, 2026',
-                ],
-                [
-                    'id' => 7,
-                    'traveler_name' => 'Priya Sharma',
-                    'traveler_email' => 'priya.s@email.com',
-                    'traveler_phone' => '+91 98765 43210',
-                    'property_name' => 'Mountain Retreat - Aspen',
-                    'check_in' => '2026-03-28',
-                    'check_out' => '2026-04-02',
-                    'guests' => 2,
-                    'message' => 'Hi! Is the mountain retreat suitable for remote work? I need reliable WiFi as I\'ll be working during the mornings. The rest of the time we\'ll be exploring!',
-                    'status' => 'booked',
-                    'sent_at' => 'Feb 16, 2026',
-                ],
+        $inquiries = $dbInquiries->map(function ($inquiry) {
+            return [
+                'id' => $inquiry->id,
+                'traveler_name' => $inquiry->traveler_name,
+                'traveler_email' => $inquiry->traveler_email,
+                'traveler_phone' => $inquiry->traveler_phone,
+                'property_id' => $inquiry->property_id,
+                'property_name' => $inquiry->property?->name ?? 'Unknown',
+                'check_in' => $inquiry->check_in->format('Y-m-d'),
+                'check_out' => $inquiry->check_out->format('Y-m-d'),
+                'guests' => $inquiry->guests,
+                'message' => $inquiry->message,
+                'status' => in_array($inquiry->status, ['new', 'contacted', 'booked', 'lost']) ? $inquiry->status : 'new',
+                'sent_at' => $inquiry->sent_at->format('M d, Y'),
+                'responses' => $inquiry->responses->map(fn ($r) => [
+                    'id' => $r->id,
+                    'sender' => $r->sender,
+                    'message' => $r->message,
+                    'created_at' => $r->created_at->format('M d, Y g:i A'),
+                ])->toArray(),
             ];
-        }
+        })->toArray();
 
         $properties = \App\Models\Property::where('user_id', auth()->id())->get(['id', 'name'])->map(fn ($p) => ['id' => $p->id, 'name' => $p->name])->toArray();
 

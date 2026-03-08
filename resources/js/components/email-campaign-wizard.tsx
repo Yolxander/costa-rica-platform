@@ -202,7 +202,7 @@ export function EmailCampaignWizard({
         setPendingPrompt(null)
     }, [])
 
-    const canProceedFromStep1 = !!segmentId && (segmentId !== "by_property" || !!propertyId)
+    const canProceedFromStep1 = !!segmentId && !!propertyId
     const hasGeneratedBlank = chatMessages.some(
         (m) => m.role === "assistant" && m.type === "ready"
     )
@@ -278,8 +278,6 @@ export function EmailCampaignWizard({
                         templateId={templateId}
                         onTemplateChange={handleTemplateChange}
                         senderName={hostName}
-                        selectedPropertyName={selectedProperty?.name ?? null}
-                        selectedPropertyId={propertyId ?? selectedProperty?.id ?? null}
                         chatMessages={chatMessages}
                         onChatSend={handleChatSend}
                         onChatConfirm={handleChatConfirm}
@@ -295,6 +293,7 @@ export function EmailCampaignWizard({
                         html={html}
                         recipientCount={recipientCount}
                         params={templateParams}
+                        selectedPropertyName={selectedProperty?.name}
                     />
                 )}
 

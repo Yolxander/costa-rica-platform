@@ -64,7 +64,7 @@ export function EmailAudienceStep({
         { id: "recent_60", label: SEGMENT_LABELS.recent_60, count: segments.recent_60 ?? 0 },
         { id: "recent_90", label: SEGMENT_LABELS.recent_90, count: segments.recent_90 ?? 0 },
         { id: "all", label: SEGMENT_LABELS.all, count: segments.all ?? 0 },
-        { id: "by_property", label: SEGMENT_LABELS.by_property, count: 0 },
+        { id: "by_property", label: SEGMENT_LABELS.by_property, count: propertyId ? (propertyCounts[propertyId] ?? 0) : 0 },
     ]
 
     return (
@@ -79,49 +79,46 @@ export function EmailAudienceStep({
                 </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-                <div className="space-y-2">
-                    <Label>Segment</Label>
-                    <Select
-                        value={segmentId || undefined}
-                        onValueChange={(v) => {
-                            onSegmentChange((v || "") as EmailSegmentId | "")
-                            if (v !== "by_property") onPropertyChange(null)
-                        }}
-                    >
-                        <SelectTrigger>
-                            <SelectValue placeholder="Select a segment" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {segmentOptions.map((opt) => (
-                                <SelectItem key={opt.id} value={opt.id}>
-                                    {opt.label}
-                                    {opt.id !== "by_property" && ` (${opt.count})`}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </div>
-
-                {segmentId === "by_property" && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
                         <Label>Property</Label>
                         <Select
                             value={propertyId ? String(propertyId) : ""}
                             onValueChange={(v) => onPropertyChange(v ? Number(v) : null)}
                         >
-                            <SelectTrigger>
+                            <SelectTrigger className="w-full">
                                 <SelectValue placeholder="Select a property" />
                             </SelectTrigger>
                             <SelectContent>
                                 {properties.map((p) => (
                                     <SelectItem key={p.id} value={String(p.id)}>
-                                        {p.name} ({propertyCounts[p.id] ?? 0})
+                                        {p.name}
+                                        {segmentId === "by_property" ? ` (${propertyCounts[p.id] ?? 0})` : ""}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
                     </div>
-                )}
+
+                    <div className="space-y-2">
+                        <Label>Segment</Label>
+                        <Select
+                            value={segmentId || undefined}
+                            onValueChange={(v) => onSegmentChange((v || "") as EmailSegmentId | "")}
+                        >
+                            <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select a segment" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {segmentOptions.map((opt) => (
+                                    <SelectItem key={opt.id} value={opt.id}>
+                                        {opt.label} ({opt.count})
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </div>
 
                 <div className="rounded-lg border bg-muted/30 px-4 py-3">
                     <p className="text-sm font-medium">

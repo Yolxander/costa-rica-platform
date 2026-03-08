@@ -21,8 +21,6 @@ interface EmailComposeStepProps {
     templateId: string
     onTemplateChange: (id: string) => void
     senderName?: string
-    selectedPropertyName?: string | null
-    selectedPropertyId?: number | null
     chatMessages?: ChatMessage[]
     onChatSend?: (prompt: string) => void
     onChatConfirm?: () => void
@@ -39,8 +37,6 @@ export function EmailComposeStep({
     templateId,
     onTemplateChange,
     senderName = "Your name",
-    selectedPropertyName,
-    selectedPropertyId,
     chatMessages = [],
     onChatSend,
     onChatConfirm,
@@ -71,17 +67,6 @@ export function EmailComposeStep({
                 </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-                {/* Personalization preview */}
-                <div className="rounded-lg border bg-muted/40 px-4 py-3 space-y-2">
-                    <p className="text-sm font-medium text-foreground">Personalization</p>
-                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
-                        <span><strong className="text-foreground">First name</strong> — per recipient</span>
-                        <span><strong className="text-foreground">Host</strong> — {senderName || "—"}</span>
-                        <span><strong className="text-foreground">Property</strong> — {selectedPropertyName || "—"}</span>
-                        <span><strong className="text-foreground">Listing URL</strong> — added per property</span>
-                    </div>
-                </div>
-
                 <div className="space-y-2">
                     <Label htmlFor="template">Template</Label>
                     <Select value={templateId} onValueChange={applyTemplate}>
