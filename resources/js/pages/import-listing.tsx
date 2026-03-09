@@ -214,61 +214,87 @@ export default function ImportPage() {
                                     Back to listings
                                 </Link>
 
-                                <Card>
-                                    <CardHeader>
-                                        <div className="flex items-center gap-2">
-                                            <IconDownload className="size-6 text-primary" />
-                                            <CardTitle>Import Listing</CardTitle>
-                                        </div>
-                                        <CardDescription>
-                                            Paste your Airbnb or Booking.com listing URL and we&apos;ll import photos, title, description, and amenities. Airbnb imports work reliably. Booking.com often blocks automated access—if import fails, use &quot;Add Property&quot; on the Listings page to add it manually.
-                                        </CardDescription>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <form onSubmit={handlePreview} className="space-y-4">
+                                <Card className="overflow-hidden">
+                                    <CardHeader className="space-y-3 pb-4">
+                                        <div className="flex items-center gap-3">
+                                            <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10">
+                                                <IconDownload className="size-5 text-primary" />
+                                            </div>
                                             <div>
-                                                <Label htmlFor="listing-url">Listing URL</Label>
+                                                <CardTitle className="text-lg">Import Listing</CardTitle>
+                                                <CardDescription className="mt-0.5">
+                                                    Import photos, description, and amenities from your existing listing
+                                                </CardDescription>
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-wrap gap-2">
+                                            <Badge variant="secondary" className="font-normal">Airbnb</Badge>
+                                            <Badge variant="secondary" className="font-normal">Booking.com</Badge>
+                                        </div>
+                                        <p className="text-xs text-muted-foreground">
+                                            Airbnb imports work best. If Booking.com blocks access, use &quot;Add Property&quot; to add it manually.
+                                        </p>
+                                    </CardHeader>
+                                    <CardContent className="pt-0">
+                                        <form onSubmit={handlePreview} className="space-y-4">
+                                            <div className="space-y-2">
+                                                <Label htmlFor="listing-url" className="text-sm font-medium">
+                                                    Paste listing URL
+                                                </Label>
                                                 <Input
                                                     id="listing-url"
                                                     type="url"
-                                                    placeholder="https://www.airbnb.com/rooms/12345 or https://www.booking.com/hotel/cr/hotel-daleese.en-gb.html"
-                                                    className="mt-2"
+                                                    placeholder="https://www.airbnb.com/rooms/12345"
+                                                    className="h-11 font-mono text-sm"
                                                     value={url}
                                                     onChange={(e) => setUrl(e.target.value)}
                                                     disabled={loading || !!preview}
                                                     required
                                                 />
+                                                <p className="text-xs text-muted-foreground">
+                                                    e.g. airbnb.com/rooms/12345 or booking.com/hotel/cr/hotel-name.en-gb.html
+                                                </p>
                                             </div>
 
                                             {error && (
-                                                <Alert variant="destructive">
-                                                    <IconAlertCircle className="size-4" />
+                                                <Alert variant="destructive" className="py-3">
+                                                    <IconAlertCircle className="size-4 shrink-0" />
                                                     <AlertDescription>{error}</AlertDescription>
                                                 </Alert>
                                             )}
 
-                                            {!preview && (
-                                                <Button type="submit" disabled={loading || !url.trim()}>
-                                                    {loading ? (
-                                                        <>
-                                                            <IconLoader2 className="mr-2 size-4 animate-spin" />
-                                                            Fetching listing...
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            <IconDownload className="mr-2 size-4" />
-                                                            Import Listing
-                                                        </>
-                                                    )}
-                                                </Button>
-                                            )}
-
-                                            {preview && (
-                                                <Button type="button" variant="outline" onClick={handleReset}>
-                                                    <IconArrowLeft className="mr-2 size-4" />
-                                                    Import a different listing
-                                                </Button>
-                                            )}
+                                            <div className="flex flex-wrap gap-3 pt-1">
+                                                {!preview ? (
+                                                    <Button
+                                                        type="submit"
+                                                        size="lg"
+                                                        disabled={loading || !url.trim()}
+                                                        className="min-w-[140px]"
+                                                    >
+                                                        {loading ? (
+                                                            <>
+                                                                <IconLoader2 className="mr-2 size-4 animate-spin" />
+                                                                Fetching...
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <IconDownload className="mr-2 size-4" />
+                                                                Import Listing
+                                                            </>
+                                                        )}
+                                                    </Button>
+                                                ) : (
+                                                    <Button
+                                                        type="button"
+                                                        variant="outline"
+                                                        size="lg"
+                                                        onClick={handleReset}
+                                                    >
+                                                        <IconArrowLeft className="mr-2 size-4" />
+                                                        Import different listing
+                                                    </Button>
+                                                )}
+                                            </div>
                                         </form>
                                     </CardContent>
                                 </Card>

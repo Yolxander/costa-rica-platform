@@ -9,6 +9,7 @@ import { SharedData } from "@/types"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import { Separator } from "@/components/ui/separator"
 import {
     Select,
@@ -91,6 +92,25 @@ function getAvatarColor(name: string) {
         hash = name.charCodeAt(i) + ((hash << 5) - hash)
     }
     return colors[Math.abs(hash) % colors.length]
+}
+
+function formatDateRange(checkIn: string, checkOut: string): string {
+    const fmt = (s: string) => {
+        const d = new Date(s + "T12:00:00")
+        return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+    }
+    return `${fmt(checkIn)} – ${fmt(checkOut)}`
+}
+
+function formatPhone(phone: string): string {
+    const digits = phone.replace(/\D/g, "")
+    if (digits.length === 11 && digits.startsWith("1")) {
+        return `+1 (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7)}`
+    }
+    if (digits.length === 10) {
+        return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`
+    }
+    return phone
 }
 
 export default function InquiriesPage() {
@@ -199,8 +219,19 @@ export default function InquiriesPage() {
                                             />
                                         </div>
                                         <Select value={propertyFilter} onValueChange={setPropertyFilter}>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Filter by property" />
+                                            <SelectTrigger className="w-full min-w-0">
+                                                {propertyFilter === "all" ? (
+                                                    <span className="truncate">All properties</span>
+                                                ) : (() => {
+                                                    const prop = properties.find((p) => String(p.id) === propertyFilter)
+                                                    const name = prop?.name ?? ""
+                                                    if (!name) return <span className="truncate">Filter by property</span>
+                                                    return (
+                                                        <span className="block min-w-0 truncate" title={name}>
+                                                            {name}
+                                                        </span>
+                                                    )
+                                                })()}
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectItem value="all">All properties</SelectItem>
@@ -280,8 +311,8 @@ export default function InquiriesPage() {
                                             <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4">
                                                 <div className="mx-auto w-full max-w-2xl space-y-4">
                                                     <div className="rounded-lg border bg-card p-4">
-                                                        <p className="text-sm font-medium text-muted-foreground mb-2">
-                                                            {selected.check_in} → {selected.check_out} · {selected.guests} guest{selected.guests !== 1 ? "s" : ""}
+                                                        <p className="mb-2 text-sm font-medium text-muted-foreground">
+                                                            {formatDateRange(selected.check_in, selected.check_out)} · {selected.guests} guest{selected.guests !== 1 ? "s" : ""}
                                                         </p>
                                                         <p className="whitespace-pre-wrap">{selected.message}</p>
                                                     </div>
@@ -329,12 +360,13 @@ export default function InquiriesPage() {
                                             {/* Reply via Brisa (secondary) */}
                                             <div className="border-t p-4">
                                                 <p className="mb-2 text-xs text-muted-foreground">Or reply via Brisa (sends email to guest)</p>
-                                                <div className="flex items-center gap-2">
-                                                    <Input
+                                                <div className="flex items-end gap-2">
+                                                    <Textarea
                                                         placeholder="Type your reply..."
                                                         value={replyText}
                                                         onChange={(e) => setReplyText(e.target.value)}
-                                                        className="flex-1"
+                                                        className="flex-1 resize-none"
+                                                        rows={2}
                                                         onKeyDown={(e) => {
                                                             if (e.key === "Enter" && !e.shiftKey) {
                                                                 e.preventDefault()
@@ -344,6 +376,7 @@ export default function InquiriesPage() {
                                                     />
                                                     <Button
                                                         size="icon"
+                                                        className="shrink-0"
                                                         onClick={handleSend}
                                                         disabled={!replyText.trim()}
                                                     >
@@ -360,29 +393,31 @@ export default function InquiriesPage() {
                                 </div>
 
                                 {/* Right panel — contact details */}
-                                <div className="hidden w-72 shrink-0 flex-col border-l lg:flex xl:w-80">
+                                <div className="hidden w-72 shrink-0 flex-col border-l bg-muted/30 lg:flex xl:w-80">
                                     {selected ? (
                                         <div className="flex flex-1 flex-col overflow-y-auto">
                                             <div className="flex flex-col items-center px-4 py-6">
-                                                <Avatar className="size-20">
+                                                <Avatar className="size-16">
                                                     <AvatarFallback
-                                                        className={`text-2xl text-white ${getAvatarColor(selected.traveler_name)}`}
+                                                        className={`text-xl text-white ${getAvatarColor(selected.traveler_name)}`}
                                                     >
                                                         {getInitials(selected.traveler_name)}
                                                     </AvatarFallback>
                                                 </Avatar>
-                                                <h3 className="mt-3 text-lg font-semibold">
+                                                <h3 className="mt-3 text-base font-semibold">
                                                     {selected.traveler_name}
                                                 </h3>
-                                                <p className="text-sm text-muted-foreground">Guest</p>
-                                                <div className="mt-2 flex flex-col gap-2">
+                                                <span className="mt-1 rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+                                                    Guest
+                                                </span>
+                                                <div className="mt-4 w-full space-y-2">
                                                     <Select
                                                         value={selected.status}
                                                         onValueChange={(value) => {
                                                             router.patch(`/inquiries/${selected.id}`, { status: value }, { preserveScroll: true })
                                                         }}
                                                     >
-                                                        <SelectTrigger>
+                                                        <SelectTrigger className="w-full">
                                                             <SelectValue />
                                                         </SelectTrigger>
                                                         <SelectContent>
@@ -395,13 +430,14 @@ export default function InquiriesPage() {
                                                     <Button
                                                         variant="outline"
                                                         size="sm"
+                                                        className="w-full"
                                                         onClick={() => router.patch(`/inquiries/${selected.id}`, { status: "booked" }, { preserveScroll: true })}
                                                     >
-                                                        <IconCircleCheck className="mr-1 size-4" />
+                                                        <IconCircleCheck className="mr-1.5 size-4" />
                                                         Mark as Booked
                                                     </Button>
                                                 </div>
-                                                <Button variant="ghost" size="sm" className="mt-2" asChild>
+                                                <Button variant="ghost" size="sm" className="mt-3" asChild>
                                                     <Link href="/crm">
                                                         <IconUser className="mr-1.5 size-4" />
                                                         View in CRM
@@ -411,32 +447,48 @@ export default function InquiriesPage() {
 
                                             <Separator />
 
-                                            <div className="flex flex-col gap-3 p-4">
-                                                <h4 className="text-sm font-semibold text-muted-foreground">Contact</h4>
-                                                <div className="flex items-center gap-3">
+                                            <div className="space-y-3 p-4">
+                                                <h4 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                                                    Contact
+                                                </h4>
+                                                <a
+                                                    href={`mailto:${selected.traveler_email}`}
+                                                    className="flex items-center gap-3 rounded-md py-1.5 transition-colors hover:bg-muted/50"
+                                                >
                                                     <IconMail className="size-4 shrink-0 text-muted-foreground" />
-                                                    <span className="truncate text-sm">{selected.traveler_email}</span>
-                                                </div>
+                                                    <span className="min-w-0 truncate text-sm" title={selected.traveler_email}>
+                                                        {selected.traveler_email}
+                                                    </span>
+                                                </a>
                                                 {selected.traveler_phone && (
-                                                    <div className="flex items-center gap-3">
+                                                    <a
+                                                        href={`tel:${selected.traveler_phone}`}
+                                                        className="flex items-center gap-3 rounded-md py-1.5 transition-colors hover:bg-muted/50"
+                                                    >
                                                         <IconPhone className="size-4 shrink-0 text-muted-foreground" />
-                                                        <span className="text-sm">{selected.traveler_phone}</span>
-                                                    </div>
+                                                        <span className="text-sm tabular-nums">
+                                                            {formatPhone(selected.traveler_phone)}
+                                                        </span>
+                                                    </a>
                                                 )}
                                             </div>
 
                                             <Separator />
 
-                                            <div className="flex flex-col gap-3 p-4">
-                                                <h4 className="text-sm font-semibold text-muted-foreground">Inquiry Details</h4>
-                                                <div className="flex items-center gap-3">
-                                                    <IconHome className="size-4 shrink-0 text-muted-foreground" />
-                                                    <span className="text-sm">{selected.property_name}</span>
+                                            <div className="space-y-3 p-4">
+                                                <h4 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                                                    Inquiry Details
+                                                </h4>
+                                                <div className="flex items-start gap-3">
+                                                    <IconHome className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+                                                    <span className="min-w-0 truncate text-sm leading-snug" title={selected.property_name}>
+                                                        {selected.property_name}
+                                                    </span>
                                                 </div>
                                                 <div className="flex items-center gap-3">
                                                     <IconCalendar className="size-4 shrink-0 text-muted-foreground" />
                                                     <span className="text-sm">
-                                                        {selected.check_in} → {selected.check_out}
+                                                        {formatDateRange(selected.check_in, selected.check_out)}
                                                     </span>
                                                 </div>
                                                 <div className="flex items-center gap-3">
@@ -449,7 +501,7 @@ export default function InquiriesPage() {
 
                                             <Separator />
 
-                                            <div className="flex flex-col gap-2 p-4">
+                                            <div className="space-y-2 p-4">
                                                 {selected.traveler_phone ? (
                                                     <Button variant="default" className="w-full" asChild>
                                                         <a
@@ -478,7 +530,7 @@ export default function InquiriesPage() {
                                                 )}
                                                 <Button variant="outline" className="w-full" asChild>
                                                     <a
-                                                        href={`mailto:${selected.traveler_email}?subject=${encodeURIComponent(`Re: ${selected.property_name} - ${selected.check_in} to ${selected.check_out}`)}`}
+                                                        href={`mailto:${selected.traveler_email}?subject=${encodeURIComponent(`Re: ${selected.property_name} - ${formatDateRange(selected.check_in, selected.check_out)}`)}`}
                                                     >
                                                         <IconMail className="mr-1.5 size-4" />
                                                         Email

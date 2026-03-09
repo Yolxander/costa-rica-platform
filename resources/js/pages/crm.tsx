@@ -8,7 +8,15 @@ import { Head, usePage } from "@inertiajs/react"
 import { SharedData } from "@/types"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table"
 import {
     Select,
     SelectContent,
@@ -30,7 +38,6 @@ import {
     IconMail,
     IconPhone,
     IconUser,
-    IconHome,
     IconDownload,
     IconCalendar,
     IconTag,
@@ -377,50 +384,70 @@ export default function CrmPage() {
                                         </CardContent>
                                     </Card>
                                 ) : (
-                                    <div className="grid gap-4">
-                                        {filteredGuests.map((guest, i) => (
-                                            <Card
-                                                key={i}
-                                                className="cursor-pointer transition-colors hover:bg-muted/50"
-                                                onClick={() => openGuestSheet(guest)}
-                                            >
-                                                <CardHeader className="pb-2">
-                                                    <div className="flex items-start justify-between">
-                                                        <div>
-                                                            <CardTitle className="text-lg">{guest.name}</CardTitle>
-                                                            <CardDescription>{guest.email}</CardDescription>
-                                                        </div>
-                                                        <Badge variant="secondary">{guest.booking_count} booking{guest.booking_count !== 1 ? "s" : ""}</Badge>
-                                                    </div>
-                                                </CardHeader>
-                                                <CardContent className="space-y-2">
-                                                    {guest.phone && (
-                                                        <div className="flex items-center gap-2 text-sm">
-                                                            <IconPhone className="size-4 text-muted-foreground" />
-                                                            {guest.phone}
-                                                        </div>
-                                                    )}
-                                                    <div className="flex items-center gap-2 text-sm">
-                                                        <IconHome className="size-4 text-muted-foreground" />
-                                                        {guest.property_name}
-                                                    </div>
-                                                    {guest.last_booking_date && (
-                                                        <p className="text-sm text-muted-foreground">
-                                                            Last booking: {guest.last_booking_date}
-                                                        </p>
-                                                    )}
-                                                    <div className="flex gap-2 pt-2">
-                                                        <Button variant="outline" size="sm" asChild>
-                                                            <a href={`mailto:${guest.email}`} onClick={(e) => e.stopPropagation()}>
-                                                                <IconMail className="mr-1 size-4" />
-                                                                Email
-                                                            </a>
-                                                        </Button>
-                                                    </div>
-                                                </CardContent>
-                                            </Card>
-                                        ))}
-                                    </div>
+                                    <Card>
+                                        <CardContent className="p-0">
+                                        <Table>
+                                            <TableHeader>
+                                                <TableRow>
+                                                    <TableHead>Name</TableHead>
+                                                    <TableHead>Email</TableHead>
+                                                    <TableHead className="hidden sm:table-cell">Phone</TableHead>
+                                                    <TableHead className="hidden md:table-cell">Property</TableHead>
+                                                    <TableHead className="w-[100px]">Bookings</TableHead>
+                                                    <TableHead className="hidden lg:table-cell">Total Spent</TableHead>
+                                                    <TableHead className="hidden md:table-cell">Last Booking</TableHead>
+                                                    <TableHead className="w-[80px] text-right">Actions</TableHead>
+                                                </TableRow>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {filteredGuests.map((guest, i) => (
+                                                    <TableRow
+                                                        key={i}
+                                                        className="cursor-pointer"
+                                                        onClick={() => openGuestSheet(guest)}
+                                                    >
+                                                        <TableCell>
+                                                            <div className="font-medium">{guest.name}</div>
+                                                        </TableCell>
+                                                        <TableCell className="text-muted-foreground">{guest.email}</TableCell>
+                                                        <TableCell className="text-muted-foreground hidden sm:table-cell">
+                                                            {guest.phone ?? "—"}
+                                                        </TableCell>
+                                                        <TableCell className="hidden md:table-cell max-w-[180px]">
+                                                            <span
+                                                                className="block truncate"
+                                                                title={guest.property_name}
+                                                            >
+                                                                {guest.property_name.length > 35
+                                                                    ? `${guest.property_name.slice(0, 35)}…`
+                                                                    : guest.property_name}
+                                                            </span>
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <Badge variant="secondary" className="font-normal">
+                                                                {guest.booking_count}
+                                                            </Badge>
+                                                        </TableCell>
+                                                        <TableCell className="hidden lg:table-cell">
+                                                            {guest.total_spent > 0 ? `$${guest.total_spent}` : "—"}
+                                                        </TableCell>
+                                                        <TableCell className="text-muted-foreground hidden md:table-cell">
+                                                            {guest.last_booking_date ?? "—"}
+                                                        </TableCell>
+                                                        <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
+                                                            <Button variant="outline" size="sm" asChild>
+                                                                <a href={`mailto:${guest.email}`}>
+                                                                    <IconMail className="size-4 sm:mr-1" />
+                                                                    <span className="hidden sm:inline">Email</span>
+                                                                </a>
+                                                            </Button>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
+                                        </CardContent>
+                                    </Card>
                                 )}
                             </div>
                         </div>

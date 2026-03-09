@@ -274,7 +274,7 @@ export default function ListingCheckout() {
 
                                 {/* Right: Property Summary */}
                                 <div className="lg:sticky lg:top-24 lg:self-start">
-                                    <Card>
+                                    <Card className="overflow-hidden p-0 gap-0">
                                         <CardContent className="p-0">
                                             {/* Property image */}
                                             <div className="aspect-[16/10] overflow-hidden rounded-t-xl bg-muted">
