@@ -84,7 +84,7 @@ function getAvatarColor(name: string) {
         "bg-amber-500",
         "bg-rose-500",
         "bg-cyan-500",
-        "bg-pink-500",
+        "bg-secondary",
         "bg-indigo-500",
     ]
     let hash = 0

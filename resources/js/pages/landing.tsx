@@ -85,7 +85,7 @@ function CommissionCalculator() {
     return (
         <section ref={sectionRef} className="px-4 py-16 sm:px-6 lg:px-8">
             <div className="mx-auto max-w-2xl">
-                <Card className="overflow-hidden rounded-2xl border-0 bg-muted/40 shadow-lg">
+                <Card className="overflow-hidden rounded-2xl border-0 border-secondary/30 bg-secondary/5 shadow-lg">
                     <CardHeader className="space-y-1 pb-4">
                         <div className="flex items-center gap-2">
                             <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10">
@@ -207,7 +207,7 @@ const faqItems = [
 function FAQSection() {
     const [openIndex, setOpenIndex] = useState<number | null>(null);
     return (
-        <section className="border-t bg-muted/20 px-4 py-16 sm:px-6 lg:px-8">
+        <section className="border-t bg-secondary/5 px-4 py-16 sm:px-6 lg:px-8">
             <div className="mx-auto max-w-2xl">
                 <h2 className="text-center text-2xl font-bold sm:text-3xl">Frequently Asked Questions</h2>
                 <div className="mt-10 space-y-3">
@@ -355,7 +355,7 @@ export default function Landing() {
                                         Import listing
                                         <IconArrowRight className="size-4" />
                                     </Button>
-                                    <Button variant="outline" size="lg" className="w-full rounded-full sm:w-auto" onClick={() => setDemoModalOpen(true)}>
+                                    <Button variant="secondary" size="lg" className="w-full rounded-full sm:w-auto" onClick={() => setDemoModalOpen(true)}>
                                         Watch Demo
                                     </Button>
                                 </div>
@@ -373,9 +373,9 @@ export default function Landing() {
                                         Get your direct booking page live in minutes—no website needed. Add your listing, sync your calendar, and start reaching guests with email and social. Connect Stripe when you&apos;re ready to take payments.
                                     </p>
                                     <div className="mt-6 flex gap-3">
-                                        <a href="#" className="flex size-10 items-center justify-center rounded-full border border-input bg-background text-muted-foreground transition-colors hover:bg-muted hover:text-foreground" aria-label="Instagram"><IconBrandInstagram className="size-5" /></a>
-                                        <a href="#" className="flex size-10 items-center justify-center rounded-full border border-input bg-background text-muted-foreground transition-colors hover:bg-muted hover:text-foreground" aria-label="X"><IconBrandX className="size-5" /></a>
-                                        <a href="#" className="flex size-10 items-center justify-center rounded-full border border-input bg-background text-muted-foreground transition-colors hover:bg-muted hover:text-foreground" aria-label="Facebook"><IconBrandFacebook className="size-5" /></a>
+                                        <a href="#" className="flex size-10 items-center justify-center rounded-full bg-secondary/20 text-secondary-foreground transition-colors hover:bg-secondary" aria-label="Instagram"><IconBrandInstagram className="size-5" /></a>
+                                        <a href="#" className="flex size-10 items-center justify-center rounded-full bg-secondary/20 text-secondary-foreground transition-colors hover:bg-secondary" aria-label="X"><IconBrandX className="size-5" /></a>
+                                        <a href="#" className="flex size-10 items-center justify-center rounded-full bg-secondary/20 text-secondary-foreground transition-colors hover:bg-secondary" aria-label="Facebook"><IconBrandFacebook className="size-5" /></a>
                                     </div>
                                 </div>
                                 <div className="lg:col-span-7 space-y-4">
@@ -385,8 +385,8 @@ export default function Landing() {
                                         { icon: IconMail, title: 'Reach guests without OTAs', desc: 'Build your guest list from inquiries, run email campaigns to past guests, and post to social with AI captions. Get your first direct booking.' },
                                     ].map((item, i) => (
                                         <Card key={i} className="flex flex-row items-start gap-5 rounded-2xl border-0 bg-muted/40 p-6 shadow-sm transition-all hover:shadow-md">
-                                            <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10">
-                                                <item.icon className="size-6 text-primary" />
+                                            <div className={`flex size-12 shrink-0 items-center justify-center rounded-xl ${i === 1 ? 'bg-secondary/20' : 'bg-primary/10'}`}>
+                                                <item.icon className={`size-6 ${i === 1 ? 'text-secondary' : 'text-primary'}`} />
                                             </div>
                                             <div className="min-w-0 flex-1">
                                                 <h3 className="font-semibold">{item.title}</h3>
@@ -400,26 +400,26 @@ export default function Landing() {
                     </section>
 
                     {/* 3. STATS */}
-                    <section ref={hostCountRef} className="border-t bg-muted/20 px-4 py-14 sm:px-6 lg:px-8">
+                    <section ref={hostCountRef} className="border-t bg-secondary/5 px-4 py-14 sm:px-6 lg:px-8">
                         <div className="mx-auto max-w-5xl">
                             <div className="grid gap-10 sm:grid-cols-3 sm:gap-8">
-                                <div className="flex flex-col items-center rounded-2xl bg-background/60 px-6 py-8 text-center shadow-sm">
-                                    <div className="flex size-14 items-center justify-center rounded-full bg-primary/10">
-                                        <IconUsers className="size-7 text-primary" />
+                                <div className="flex flex-col items-center rounded-2xl bg-background/60 px-6 py-8 text-center shadow-sm border border-secondary/20">
+                                    <div className="flex size-14 items-center justify-center rounded-full bg-secondary/20">
+                                        <IconUsers className="size-7 text-secondary" />
                                     </div>
                                     <span className="mt-4 text-2xl font-bold sm:text-3xl">{displayedHostCount}+</span>
                                     <p className="mt-2 text-sm leading-snug text-muted-foreground">Hosts booking direct</p>
                                 </div>
-                                <div className="flex flex-col items-center rounded-2xl bg-background/60 px-6 py-8 text-center shadow-sm">
-                                    <div className="flex size-14 items-center justify-center rounded-full bg-primary/10">
-                                        <IconChartLine className="size-7 text-primary" />
+                                <div className="flex flex-col items-center rounded-2xl bg-background/60 px-6 py-8 text-center shadow-sm border border-secondary/20">
+                                    <div className="flex size-14 items-center justify-center rounded-full bg-secondary/20">
+                                        <IconChartLine className="size-7 text-secondary" />
                                     </div>
                                     <span className="mt-4 text-2xl font-bold sm:text-3xl">$588</span>
                                     <p className="mt-2 text-sm leading-snug text-muted-foreground">Per year</p>
                                 </div>
-                                <div className="flex flex-col items-center rounded-2xl bg-background/60 px-6 py-8 text-center shadow-sm">
-                                    <div className="flex size-14 items-center justify-center rounded-full bg-primary/10">
-                                        <IconMapPin className="size-7 text-primary" />
+                                <div className="flex flex-col items-center rounded-2xl bg-background/60 px-6 py-8 text-center shadow-sm border border-secondary/20">
+                                    <div className="flex size-14 items-center justify-center rounded-full bg-secondary/20">
+                                        <IconMapPin className="size-7 text-secondary" />
                                     </div>
                                     <span className="mt-4 text-2xl font-bold sm:text-3xl">4+</span>
                                     <p className="mt-2 text-sm leading-snug text-muted-foreground">Regions</p>
@@ -439,7 +439,7 @@ export default function Landing() {
                                     <h2 className="text-2xl font-bold sm:text-3xl">Popular Regions</h2>
                                     <p className="mt-2 text-sm text-muted-foreground">Hosts across Costa Rica are taking back their bookings.</p>
                                 </div>
-                                <button onClick={scrollToImport} className="text-sm font-medium text-primary hover:underline sm:shrink-0">View all →</button>
+                                <button onClick={scrollToImport} className="text-sm font-medium text-secondary hover:underline sm:shrink-0">View all →</button>
                             </div>
                             <div className="relative -mx-4 mt-8 sm:mx-0">
                                 <div
@@ -453,7 +453,7 @@ export default function Landing() {
                                         >
                                             <div className="relative aspect-[4/3] w-full overflow-hidden">
                                                 <img src={r.img} alt={r.name} className="h-full w-full object-cover" />
-                                                <span className="absolute right-3 top-3 rounded-full bg-foreground/80 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm">Popular</span>
+                                                <span className="absolute right-3 top-3 rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground backdrop-blur-sm">Popular</span>
                                             </div>
                                             <div className="flex flex-col gap-1 p-5">
                                                 <h3 className="font-semibold">{r.name}</h3>
@@ -479,7 +479,7 @@ export default function Landing() {
                     </section>
 
                     {/* 6. WHAT YOU GET */}
-                    <section className="border-t bg-muted/20 px-4 py-16 sm:px-6 lg:px-8">
+                    <section className="border-t bg-secondary/5 px-4 py-16 sm:px-6 lg:px-8">
                         <div className="mx-auto max-w-6xl">
                             <h2 className="text-center text-2xl font-bold sm:text-3xl">What You Get</h2>
                             <p className="mt-2 text-center text-muted-foreground">Everything you need to grow direct bookings</p>
@@ -489,15 +489,15 @@ export default function Landing() {
                                         key={f.title}
                                         className={`flex ${i % 2 === 0 ? 'justify-start' : 'justify-end'} ${i > 0 ? '-mt-8' : ''}`}
                                     >
-                                        <Card className="flex w-full max-w-lg flex-col rounded-2xl border-0 bg-background p-6 shadow-sm transition-all hover:shadow-md sm:p-8">
+                                        <Card className={`flex w-full max-w-lg flex-col rounded-2xl border-0 bg-background p-6 shadow-sm transition-all hover:shadow-md sm:p-8 ${i % 2 === 1 ? 'border-l-4 border-l-secondary' : ''}`}>
                                             <div className="flex items-center gap-3">
-                                                <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10">
-                                                    <f.icon className="size-6 text-primary" />
+                                                <div className={`flex size-12 shrink-0 items-center justify-center rounded-xl ${i % 2 === 1 ? 'bg-secondary/20' : 'bg-primary/10'}`}>
+                                                    <f.icon className={`size-6 ${i % 2 === 1 ? 'text-secondary' : 'text-primary'}`} />
                                                 </div>
                                                 <h3 className="text-lg font-semibold">{f.title}</h3>
                                             </div>
                                             {f.subtitle && (
-                                                <p className="mt-2 text-sm font-medium text-primary">{f.subtitle}</p>
+                                                <p className={`mt-2 text-sm font-medium ${i % 2 === 1 ? 'text-secondary' : 'text-primary'}`}>{f.subtitle}</p>
                                             )}
                                             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{f.desc}</p>
                                             {f.features && f.features.length > 0 && (
@@ -544,7 +544,7 @@ export default function Landing() {
                                             ))}
                                         </ul>
                                         <Link href="/host/register" className="mt-6 block">
-                                            <Button variant="outline" className="h-11 w-full rounded-xl">Start Free</Button>
+                                            <Button variant="secondary" className="h-11 w-full rounded-xl">Start Free</Button>
                                         </Link>
                                     </CardContent>
                                 </Card>
@@ -595,7 +595,7 @@ export default function Landing() {
                                             ))}
                                         </ul>
                                         <Link href="/host/register" className="mt-6 block">
-                                            <Button variant="outline" className="h-11 w-full rounded-xl">Start Trial</Button>
+                                            <Button variant="secondary" className="h-11 w-full rounded-xl">Start Trial</Button>
                                         </Link>
                                     </CardContent>
                                 </Card>
@@ -613,7 +613,7 @@ export default function Landing() {
 
                     {/* 9. FINAL CTA */}
                     <section id="airbnb-import" className="px-4 py-8 sm:px-6 lg:px-8">
-                        <div className="relative mx-auto flex max-w-7xl min-h-[55vh] items-center justify-center overflow-hidden rounded-2xl bg-muted/30">
+                        <div className="relative mx-auto flex max-w-7xl min-h-[55vh] items-center justify-center overflow-hidden rounded-2xl bg-secondary/10">
                             <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=1920&q=80')] bg-cover bg-center opacity-10" />
                             <div className="relative z-10 mx-auto w-full max-w-2xl px-6 py-16 text-center sm:py-20">
                                 <h2 className="text-2xl font-bold sm:text-3xl md:text-4xl">Stop Renting Your Business from OTAs</h2>
@@ -654,19 +654,19 @@ export default function Landing() {
                     </div>
                 )}
 
-                <footer className="mt-16 border-t bg-muted/40">
+                <footer className="mt-16 border-t bg-secondary/5">
                     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
                         <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                <IconBeach className="size-5 text-primary" />
+                                <IconBeach className="size-5 text-secondary" />
                                 <span>&copy; {new Date().getFullYear()} Brisa</span>
                             </div>
                             <div className="flex gap-6 text-sm text-muted-foreground">
-                                <Link href="/pricing" className="hover:text-foreground transition-colors">Pricing</Link>
-                                <Link href="/how-it-works" className="hover:text-foreground transition-colors">How it works</Link>
-                                <Link href="/blog" className="hover:text-foreground transition-colors">Blog</Link>
-                                <Link href="/join" className="hover:text-foreground transition-colors">Join</Link>
-                                <Link href="/admin/login" className="hover:text-foreground transition-colors">Admin</Link>
+                                <Link href="/pricing" className="hover:text-secondary transition-colors">Pricing</Link>
+                                <Link href="/how-it-works" className="hover:text-secondary transition-colors">How it works</Link>
+                                <Link href="/blog" className="hover:text-secondary transition-colors">Blog</Link>
+                                <Link href="/join" className="hover:text-secondary transition-colors">Join</Link>
+                                <Link href="/admin/login" className="hover:text-secondary transition-colors">Admin</Link>
                             </div>
                         </div>
                     </div>

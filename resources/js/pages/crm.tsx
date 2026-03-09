@@ -409,7 +409,16 @@ export default function CrmPage() {
                                                         <TableCell>
                                                             <div className="font-medium">{guest.name}</div>
                                                         </TableCell>
-                                                        <TableCell className="text-muted-foreground">{guest.email}</TableCell>
+                                                        <TableCell className="text-muted-foreground max-w-[180px]">
+                                                            <span
+                                                                className="block truncate"
+                                                                title={guest.email}
+                                                            >
+                                                                {guest.email.length > 12
+                                                                    ? `${guest.email.slice(0, 12)}…`
+                                                                    : guest.email}
+                                                            </span>
+                                                        </TableCell>
                                                         <TableCell className="text-muted-foreground hidden sm:table-cell">
                                                             {guest.phone ?? "—"}
                                                         </TableCell>
