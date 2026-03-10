@@ -62,15 +62,15 @@ export function NavMain({
               onClick={handleQuickAddClick}
             >
               <IconCirclePlusFilled />
-              <span>+ Quick Add</span>
+              <span>Quick Add</span>
             </SidebarMenuButton>
             <Button
               size="icon"
               className="size-8 group-data-[collapsible=icon]:opacity-0"
               variant="outline"
             >
-              <IconBell />
-              <span className="sr-only">Notifications</span>
+              {/*<IconBell />*/}
+              {/*<span className="sr-only">Notifications</span>*/}
             </Button>
           </SidebarMenuItem>
         </SidebarMenu>

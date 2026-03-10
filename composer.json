@@ -2,7 +2,7 @@
     "$schema": "https://getcomposer.org/schema.json",
     "name": "costa-rica-rental-hub/platform",
     "type": "project",
-    "description": "Brisa - A community-driven vacation rental platform for Costa Rica properties.",
+    "description": "Sora - A community-driven vacation rental platform for Costa Rica properties.",
     "keywords": [
         "laravel",
         "framework"

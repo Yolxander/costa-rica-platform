@@ -37,7 +37,10 @@ import {
     IconBrandWhatsapp,
     IconCircleCheck,
     IconUser,
-} from "@tabler/icons-react"
+    IconPaperclip,
+    IconMicrophone,
+
+} from '@tabler/icons-react';
 
 interface InquiryResponse {
     id: number
@@ -357,31 +360,62 @@ export default function InquiriesPage() {
                                                 </div>
                                             </div>
 
-                                            {/* Reply via Brisa (secondary) */}
-                                            <div className="border-t p-4">
-                                                <p className="mb-2 text-xs text-muted-foreground">Or reply via Brisa (sends email to guest)</p>
-                                                <div className="flex items-end gap-2">
-                                                    <Textarea
-                                                        placeholder="Type your reply..."
-                                                        value={replyText}
-                                                        onChange={(e) => setReplyText(e.target.value)}
-                                                        className="flex-1 resize-none"
-                                                        rows={2}
-                                                        onKeyDown={(e) => {
-                                                            if (e.key === "Enter" && !e.shiftKey) {
-                                                                e.preventDefault()
-                                                                handleSend()
+                                            {/* Reply via Sora (secondary) */}
+                                            <div className="p-4">
+
+                                                <div className="rounded-xl border bg-background p-3">
+
+                                                    {/* Input area */}
+                                                    <div className="relative">
+                                                        <Textarea
+                                                            placeholder="Type your reply..."
+                                                            value={replyText}
+                                                            onChange={(e) => setReplyText(e.target.value)}
+                                                            rows={2}
+                                                            className="min-h-[120px] resize-none border-0 p-0 pr-10 focus-visible:ring-0"
+                                                            onKeyDown={(e) => {
+                                                                if (e.key === "Enter" && !e.shiftKey) {
+                                                                    e.preventDefault()
+                                                                    handleSend()
+                                                                }
+                                                            }}
+                                                        />
+
+                                                        {/* Send button */}
+                                                        <button
+                                                            onClick={handleSend}
+                                                            disabled={!replyText.trim()}
+                                                            className={`absolute right-0 top-0 p-1 cursor-pointer transition-colors
+      ${
+                                                                replyText.trim()
+                                                                    ? "text-secondary hover:text-primary"
+                                                                    : "text-muted-foreground opacity-40 cursor-not-allowed"
                                                             }
-                                                        }}
-                                                    />
-                                                    <Button
-                                                        size="icon"
-                                                        className="shrink-0"
-                                                        onClick={handleSend}
-                                                        disabled={!replyText.trim()}
-                                                    >
-                                                        <IconSend className="size-4" />
-                                                    </Button>
+    `}
+                                                        >
+                                                            <IconSend className="size-6" />
+                                                        </button>
+                                                    </div>
+
+                                                    {/* Bottom toolbar */}
+                                                    <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
+                                                        <div className="flex items-center gap-4">
+                                                            <button className="flex items-center gap-1 hover:text-foreground">
+                                                                <IconPaperclip className="size-4" />
+                                                                Attach
+                                                            </button>
+
+                                                            <button className="flex items-center gap-1 hover:text-foreground">
+                                                                <IconMicrophone className="size-4" />
+                                                                Voice Message
+                                                            </button>
+
+
+                                                        </div>
+
+                                                        <span>{replyText.length}/3,000</span>
+                                                    </div>
+
                                                 </div>
                                             </div>
                                         </>

@@ -43,10 +43,14 @@ export function PublicHeader({ transparentUntilScroll = false }: PublicHeaderPro
                 showStyled ? 'border-b border-border/50 bg-background/95 shadow-sm backdrop-blur' : ''
             }`}
         >
-            <div className="mx-auto grid h-16 max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-4 px-4 sm:px-6 lg:px-8">
+            <div className="mx-auto grid h-16 max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-4">
                 <Link href="/" className="flex items-center gap-2 justify-self-start">
-                    <IconBeach className="size-7 text-primary" />
-                    <span className="text-lg font-bold tracking-tight">Brisa</span>
+                    <img
+                        src="/brisa-logo.png"
+                        alt="Sora Logo"
+                        className="h-7 w-auto"
+                    />
+                    <span className="text-lg font-bold tracking-tight">Sora</span>
                 </Link>
                 <nav className="hidden items-center justify-center gap-6 md:flex">
                     {navLink('/', 'Home', isActive('/'))}

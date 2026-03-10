@@ -191,7 +191,7 @@ export default function ImportPage() {
 
     return (
         <>
-            <Head title="Import Listing - Brisa" />
+            <Head title="Import Listing - Sora" />
             <SidebarProvider
                 style={
                     {

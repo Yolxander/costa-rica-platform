@@ -8,7 +8,7 @@ const steps = [
         title: 'List your property',
         tag: 'Setup',
         checklist: ['Property photos', 'Description & amenities', 'Pricing & availability', 'Booking page goes live'],
-        example: 'brisa.com/villa-pacifico',
+        example: 'sora.com/villa-pacifico',
     },
     {
         title: 'Share your link',
@@ -40,7 +40,7 @@ const steps = [
 export default function HowItWorks() {
     return (
         <>
-            <Head title="How It Works - Brisa" />
+            <Head title="How It Works - Sora" />
             <div className="min-h-screen bg-background">
                 <PublicHeader />
 

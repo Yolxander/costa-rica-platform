@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\EmailCampaign;
 use App\Models\Inquiry;
 use App\Models\Property;
+use App\Models\SocialPost;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -12,7 +14,7 @@ use Inertia\Inertia;
 class MarketingController extends Controller
 {
     /**
-     * Display the marketing page with properties for social caption generation.
+     * Display the marketing hub with campaigns, posts, and create buttons.
      */
     public function index(Request $request)
     {
@@ -38,11 +40,323 @@ class MarketingController extends Controller
         $segments = $this->getEmailSegmentCounts($user->id);
         $propertyCounts = $this->getEmailPropertyCounts($user->id);
 
+        $emailCampaigns = EmailCampaign::where('user_id', $user->id)
+            ->with('property:id,name')
+            ->orderByDesc('created_at')
+            ->get()
+            ->map(function ($campaign) {
+                return [
+                    'id' => $campaign->id,
+                    'subject' => $campaign->subject,
+                    'name' => $campaign->name,
+                    'segment_type' => $campaign->segment_type,
+                    'recipient_count' => $campaign->recipient_count,
+                    'status' => $campaign->status,
+                    'property_name' => $campaign->property?->name,
+                    'created_at' => $campaign->created_at->toIso8601String(),
+                ];
+            })
+            ->toArray();
+
+        $socialPosts = SocialPost::where('user_id', $user->id)
+            ->with('property:id,name')
+            ->orderByDesc('created_at')
+            ->get()
+            ->map(function ($post) {
+                return [
+                    'id' => $post->id,
+                    'caption' => $post->caption,
+                    'hashtags' => $post->hashtags,
+                    'location' => $post->location,
+                    'property_name' => $post->property?->name,
+                    'images_count' => is_array($post->images) ? count($post->images) : 0,
+                    'created_at' => $post->created_at->toIso8601String(),
+                ];
+            })
+            ->toArray();
+
         return Inertia::render('marketing', [
             'properties' => $properties,
             'emailSegments' => $segments,
             'emailPropertyCounts' => $propertyCounts,
+            'emailCampaigns' => $emailCampaigns,
+            'socialPosts' => $socialPosts,
         ]);
+    }
+
+    /**
+     * Show the create email campaign wizard.
+     */
+    public function createEmail(Request $request)
+    {
+        $user = $request->user();
+
+        $properties = Property::where('user_id', $user->id)
+            ->get()
+            ->map(function ($property) {
+                return [
+                    'id' => $property->id,
+                    'slug' => $property->slug,
+                    'name' => $property->name,
+                    'location' => $property->location ?? 'Costa Rica',
+                    'description' => $property->description ?? '',
+                    'amenities' => $property->amenities ?? [],
+                    'images' => $property->images ?? [],
+                    'guests' => $property->guests,
+                    'rating' => $property->rating ? (float) $property->rating : null,
+                ];
+            })
+            ->toArray();
+
+        $segments = $this->getEmailSegmentCounts($user->id);
+        $propertyCounts = $this->getEmailPropertyCounts($user->id);
+
+        return Inertia::render('marketing-email-new', [
+            'properties' => $properties,
+            'emailSegments' => $segments,
+            'emailPropertyCounts' => $propertyCounts,
+        ]);
+    }
+
+    /**
+     * Show the edit email campaign wizard (or preview when ?preview=1).
+     */
+    public function editEmail(Request $request, EmailCampaign $campaign)
+    {
+        $campaign->load('property');
+        if ($campaign->user_id !== $request->user()->id) {
+            abort(403);
+        }
+
+        $properties = Property::where('user_id', $request->user()->id)
+            ->get()
+            ->map(function ($property) {
+                return [
+                    'id' => $property->id,
+                    'slug' => $property->slug,
+                    'name' => $property->name,
+                    'location' => $property->location ?? 'Costa Rica',
+                    'description' => $property->description ?? '',
+                    'amenities' => $property->amenities ?? [],
+                    'images' => $property->images ?? [],
+                    'guests' => $property->guests,
+                    'rating' => $property->rating ? (float) $property->rating : null,
+                ];
+            })
+            ->toArray();
+
+        $segments = $this->getEmailSegmentCounts($request->user()->id);
+        $propertyCounts = $this->getEmailPropertyCounts($request->user()->id);
+
+        $initialCampaign = [
+            'id' => $campaign->id,
+            'subject' => $campaign->subject,
+            'body' => $campaign->body,
+            'segment_type' => $campaign->segment_type,
+            'property_id' => $campaign->property_id,
+            'recipient_count' => $campaign->recipient_count,
+        ];
+
+        return Inertia::render('marketing-email-new', [
+            'properties' => $properties,
+            'emailSegments' => $segments,
+            'emailPropertyCounts' => $propertyCounts,
+            'initialCampaign' => $initialCampaign,
+            'initialStep' => $request->query('preview') ? 3 : null,
+        ]);
+    }
+
+    /**
+     * Store a new email campaign (draft).
+     */
+    public function storeEmail(Request $request)
+    {
+        $validated = $request->validate([
+            'segment_id' => 'required|string|in:didnt_book,booked_before,recent_30,recent_60,recent_90,all,by_property',
+            'property_id' => 'required|integer|exists:properties,id',
+            'subject' => 'required|string|max:255',
+            'body' => 'required|string',
+            'recipient_count' => 'required|integer|min:0',
+        ]);
+
+        Property::where('user_id', $request->user()->id)->findOrFail($validated['property_id']);
+
+        EmailCampaign::create([
+            'user_id' => $request->user()->id,
+            'name' => $validated['subject'],
+            'subject' => $validated['subject'],
+            'body' => $validated['body'],
+            'segment_type' => $validated['segment_id'],
+            'segment_config' => ['property_id' => $validated['property_id']],
+            'property_id' => $validated['property_id'],
+            'recipient_count' => $validated['recipient_count'],
+            'status' => 'draft',
+        ]);
+
+        return redirect()->route('marketing')->with('success', 'Email campaign saved as draft.');
+    }
+
+    /**
+     * Update an email campaign.
+     */
+    public function updateEmail(Request $request, EmailCampaign $campaign)
+    {
+        if ($campaign->user_id !== $request->user()->id) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'segment_id' => 'required|string|in:didnt_book,booked_before,recent_30,recent_60,recent_90,all,by_property',
+            'property_id' => 'required|integer|exists:properties,id',
+            'subject' => 'required|string|max:255',
+            'body' => 'required|string',
+            'recipient_count' => 'required|integer|min:0',
+        ]);
+
+        Property::where('user_id', $request->user()->id)->findOrFail($validated['property_id']);
+
+        $campaign->update([
+            'name' => $validated['subject'],
+            'subject' => $validated['subject'],
+            'body' => $validated['body'],
+            'segment_type' => $validated['segment_id'],
+            'segment_config' => ['property_id' => $validated['property_id']],
+            'property_id' => $validated['property_id'],
+            'recipient_count' => $validated['recipient_count'],
+        ]);
+
+        return redirect()->route('marketing')->with('success', 'Email campaign updated.');
+    }
+
+    /**
+     * Show the create social post wizard.
+     */
+    public function createSocial(Request $request)
+    {
+        $user = $request->user();
+
+        $properties = Property::where('user_id', $user->id)
+            ->get()
+            ->map(function ($property) {
+                return [
+                    'id' => $property->id,
+                    'slug' => $property->slug,
+                    'name' => $property->name,
+                    'location' => $property->location ?? 'Costa Rica',
+                    'description' => $property->description ?? '',
+                    'amenities' => $property->amenities ?? [],
+                    'images' => $property->images ?? [],
+                ];
+            })
+            ->toArray();
+
+        return Inertia::render('marketing-social-new', [
+            'properties' => $properties,
+        ]);
+    }
+
+    /**
+     * Show the edit social post wizard (or preview when ?preview=1).
+     */
+    public function editSocial(Request $request, SocialPost $post)
+    {
+        $post->load('property');
+        if ($post->user_id !== $request->user()->id) {
+            abort(403);
+        }
+
+        $properties = Property::where('user_id', $request->user()->id)
+            ->get()
+            ->map(function ($property) {
+                return [
+                    'id' => $property->id,
+                    'slug' => $property->slug,
+                    'name' => $property->name,
+                    'location' => $property->location ?? 'Costa Rica',
+                    'description' => $property->description ?? '',
+                    'amenities' => $property->amenities ?? [],
+                    'images' => $property->images ?? [],
+                ];
+            })
+            ->toArray();
+
+        $initialPost = [
+            'id' => $post->id,
+            'property_id' => $post->property_id,
+            'images' => $post->images ?? [],
+            'caption' => $post->caption ?? '',
+            'hashtags' => $post->hashtags ?? '',
+            'location' => $post->location ?? '',
+        ];
+
+        return Inertia::render('marketing-social-new', [
+            'properties' => $properties,
+            'initialPost' => $initialPost,
+            'initialStep' => $request->query('preview') ? 3 : null,
+        ]);
+    }
+
+    /**
+     * Store a new social post.
+     */
+    public function storeSocial(Request $request)
+    {
+        $validated = $request->validate([
+            'property_id' => 'nullable|integer|exists:properties,id',
+            'images' => 'required|array',
+            'images.*' => 'string',
+            'caption' => 'nullable|string',
+            'hashtags' => 'nullable|string',
+            'location' => 'nullable|string|max:255',
+        ]);
+
+        if ($validated['property_id']) {
+            Property::where('user_id', $request->user()->id)->findOrFail($validated['property_id']);
+        }
+
+        SocialPost::create([
+            'user_id' => $request->user()->id,
+            'property_id' => $validated['property_id'] ?? null,
+            'images' => $validated['images'],
+            'caption' => $validated['caption'] ?? '',
+            'hashtags' => $validated['hashtags'] ?? '',
+            'location' => $validated['location'] ?? '',
+        ]);
+
+        return redirect()->route('marketing')->with('success', 'Social post saved.');
+    }
+
+    /**
+     * Update a social post.
+     */
+    public function updateSocial(Request $request, SocialPost $post)
+    {
+        if ($post->user_id !== $request->user()->id) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'property_id' => 'nullable|integer|exists:properties,id',
+            'images' => 'required|array',
+            'images.*' => 'string',
+            'caption' => 'nullable|string',
+            'hashtags' => 'nullable|string',
+            'location' => 'nullable|string|max:255',
+        ]);
+
+        if ($validated['property_id']) {
+            Property::where('user_id', $request->user()->id)->findOrFail($validated['property_id']);
+        }
+
+        $post->update([
+            'property_id' => $validated['property_id'] ?? null,
+            'images' => $validated['images'],
+            'caption' => $validated['caption'] ?? '',
+            'hashtags' => $validated['hashtags'] ?? '',
+            'location' => $validated['location'] ?? '',
+        ]);
+
+        return redirect()->route('marketing')->with('success', 'Social post updated.');
     }
 
     /**
@@ -183,7 +497,7 @@ class MarketingController extends Controller
 
     /**
      * Generate HTML email content for the blank template using the AI/ML API.
-     * Wraps AI output in Brisa template styling.
+     * Wraps AI output in Sora template styling.
      * Returns both subject and html.
      */
     public function generateEmailContent(Request $request)
@@ -284,7 +598,7 @@ class MarketingController extends Controller
     }
 
     /**
-     * Wrap inner HTML body in Brisa email template styling.
+     * Wrap inner HTML body in Sora email template styling.
      */
     private function wrapEmailInTemplate(string $innerHtml): string
     {
@@ -294,14 +608,14 @@ class MarketingController extends Controller
 <body style="margin:0;font-family:\'Segoe UI\',sans-serif;background:#f5f5f5;padding:24px">
 <div style="max-width:560px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,.08)">
   <div style="background:linear-gradient(135deg,#047857 0%,#059669 100%);padding:28px;text-align:center">
-    <h1 style="margin:0;color:#fff;font-size:22px;font-weight:600">Brisa</h1>
+    <h1 style="margin:0;color:#fff;font-size:22px;font-weight:600">Sora</h1>
     <p style="margin:8px 0 0;color:rgba(255,255,255,.9);font-size:14px">Your message</p>
   </div>
   <div style="padding:28px">
     ' . $innerHtml . '
   </div>
   <div style="background:#f9fafb;padding:16px;text-align:center;font-size:12px;color:#9ca3af">
-    Brisa · Unsubscribe
+    Sora · Unsubscribe
   </div>
 </div>
 </body>

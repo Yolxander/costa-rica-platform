@@ -10,13 +10,13 @@ export default function Blog() {
 
     return (
         <>
-            <Head title="Blog - Brisa" />
+            <Head title="Blog - Sora" />
             <div className="min-h-screen bg-background">
                 <header className="border-b">
                     <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
                         <Link href="/" className="flex items-center gap-2">
                             <IconBeach className="size-7 text-primary" />
-                            <span className="font-bold">Brisa</span>
+                            <span className="font-bold">Sora</span>
                         </Link>
                         <nav className="flex gap-4">
                             <Link href="/" className="text-sm text-muted-foreground hover:text-foreground">Home</Link>

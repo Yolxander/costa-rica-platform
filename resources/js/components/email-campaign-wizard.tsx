@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { useState, useCallback } from "react"
-import { IconArrowLeft, IconArrowRight, IconUsers, IconEdit, IconEye } from "@tabler/icons-react"
+import { router } from "@inertiajs/react"
+import { IconArrowLeft, IconArrowRight, IconUsers, IconEdit, IconEye, IconDeviceFloppy } from "@tabler/icons-react"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { EmailAudienceStep, type EmailSegmentId } from "./email-audience-step"
@@ -30,11 +31,28 @@ export interface PropertyForEmail {
     rating?: number | null
 }
 
+interface InitialCampaign {
+    id: number
+    subject: string
+    body: string
+    segment_type: string
+    property_id: number | null
+    recipient_count: number
+}
+
 interface EmailCampaignWizardProps {
     segments: Record<string, number>
     propertyCounts: Record<number, number>
     properties: PropertyForEmail[]
     hostName?: string
+    /** When provided, step 3 shows "Save draft" that POSTs to this URL */
+    saveUrl?: string
+    /** When editing, PUT to this URL instead of POST to saveUrl */
+    updateUrl?: string
+    /** Prefill wizard for edit mode */
+    initialCampaign?: InitialCampaign | null
+    /** Start on this step (e.g. 3 for preview) */
+    initialStep?: number
 }
 
 function getCsrfToken(): string {
@@ -56,13 +74,20 @@ export function EmailCampaignWizard({
     propertyCounts,
     properties,
     hostName = "Your name",
+    saveUrl,
+    updateUrl,
+    initialCampaign,
+    initialStep,
 }: EmailCampaignWizardProps) {
-    const [step, setStep] = useState(1)
-    const [segmentId, setSegmentId] = useState<EmailSegmentId | "">("")
-    const [propertyId, setPropertyId] = useState<number | null>(null)
-    const [subject, setSubject] = useState("")
+    const init = initialCampaign ?? null
+    const [step, setStep] = useState(initialStep ?? 1)
+    const [segmentId, setSegmentId] = useState<EmailSegmentId | "">(
+        (init?.segment_type as EmailSegmentId) ?? ""
+    )
+    const [propertyId, setPropertyId] = useState<number | null>(init?.property_id ?? null)
+    const [subject, setSubject] = useState(init?.subject ?? "")
     const [templateId, setTemplateId] = useState<EmailTemplateId>("blank")
-    const [html, setHtml] = useState<string>(EMAIL_TEMPLATES.blank.html)
+    const [html, setHtml] = useState<string>(init?.body ?? EMAIL_TEMPLATES.blank.html)
     const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
     const [pendingPrompt, setPendingPrompt] = useState<string | null>(null)
     const [isGenerating, setIsGenerating] = useState(false)
@@ -222,6 +247,23 @@ export function EmailCampaignWizard({
         else if (step === 3) setStep(2)
     }
 
+    const handleSaveDraft = () => {
+        const payload = {
+            segment_id: segmentId,
+            property_id: propertyId,
+            subject,
+            body: html,
+            recipient_count: recipientCount,
+        }
+        if (updateUrl) {
+            if (!segmentId || !propertyId) return
+            router.put(updateUrl, payload)
+        } else if (saveUrl) {
+            if (!segmentId || !propertyId) return
+            router.post(saveUrl, payload)
+        }
+    }
+
     return (
         <div className="space-y-4">
             {/* Step indicator */}
@@ -318,6 +360,11 @@ export function EmailCampaignWizard({
                         >
                             Next
                             <IconArrowRight className="mr-2 size-4" />
+                        </Button>
+                    ) : (saveUrl || updateUrl) ? (
+                        <Button onClick={handleSaveDraft} className="gap-2">
+                            <IconDeviceFloppy className="size-4" />
+                            {updateUrl ? "Update" : "Save draft"}
                         </Button>
                     ) : (
                         <Button

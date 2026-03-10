@@ -22,7 +22,7 @@ import {
 
 const data = {
   user: {
-    name: "Brisa",
+    name: "Sora",
     email: "admin@costaricarentalhub.com",
     avatar: "/avatars/shadcn.jpg",
   },
@@ -64,7 +64,7 @@ export function AdminSidebar({ ...props }: React.ComponentProps<typeof Sidebar>)
             >
               <a href="#">
                 <IconInnerShadowTop className="!size-5" />
-                <span className="text-base font-semibold">Brisa</span>
+                <span className="text-base font-semibold">Sora</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>

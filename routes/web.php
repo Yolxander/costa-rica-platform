@@ -156,6 +156,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('inquiries');
 
     Route::get('marketing', [MarketingController::class, 'index'])->name('marketing');
+    Route::get('marketing/email/new', [MarketingController::class, 'createEmail'])->name('marketing.email.create');
+    Route::get('marketing/email/{campaign}/edit', [MarketingController::class, 'editEmail'])->name('marketing.email.edit');
+    Route::post('marketing/email', [MarketingController::class, 'storeEmail'])->name('marketing.email.store');
+    Route::put('marketing/email/{campaign}', [MarketingController::class, 'updateEmail'])->name('marketing.email.update');
+    Route::get('marketing/social/new', [MarketingController::class, 'createSocial'])->name('marketing.social.create');
+    Route::get('marketing/social/{post}/edit', [MarketingController::class, 'editSocial'])->name('marketing.social.edit');
+    Route::post('marketing/social', [MarketingController::class, 'storeSocial'])->name('marketing.social.store');
+    Route::put('marketing/social/{post}', [MarketingController::class, 'updateSocial'])->name('marketing.social.update');
     Route::post('marketing/social/generate-caption', [MarketingController::class, 'generateCaption'])->name('marketing.social.generate-caption');
     Route::post('marketing/email/understand', [MarketingController::class, 'understandEmailIntent'])->name('marketing.email.understand');
     Route::post('marketing/email/generate-content', [MarketingController::class, 'generateEmailContent'])->name('marketing.email.generate-content');

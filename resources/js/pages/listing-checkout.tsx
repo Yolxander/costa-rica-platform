@@ -104,7 +104,7 @@ export default function ListingCheckout() {
                         <Link href="/" className="flex items-center gap-2">
                             <IconBeach className="size-7 text-primary" />
                             <span className="text-lg font-bold tracking-tight">
-                                Brisa
+                                Sora
                             </span>
                         </Link>
                         <nav className="flex items-center gap-3">
@@ -379,7 +379,7 @@ export default function ListingCheckout() {
                         <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                 <IconBeach className="size-5 text-primary" />
-                                <span>&copy; {new Date().getFullYear()} Brisa</span>
+                                <span>&copy; {new Date().getFullYear()} Sora</span>
                             </div>
                             <div className="flex gap-6 text-sm text-muted-foreground">
                                 <span>Privacy</span>

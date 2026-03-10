@@ -32,7 +32,7 @@ return [
         'api_key' => env('BREVO_API_KEY'),
         'sender' => [
             'email' => env('BREVO_SENDER_EMAIL', 'noreply@example.com'),
-            'name' => env('BREVO_SENDER_NAME', 'Brisa'),
+            'name' => env('BREVO_SENDER_NAME', 'Sora'),
         ],
         'templates' => [
             'new_inquiry' => env('BREVO_TEMPLATE_NEW_INQUIRY', 10),

@@ -326,7 +326,7 @@ export default function CrmPage() {
 
     return (
         <>
-            <Head title="Guest CRM - Brisa" />
+            <Head title="Guest CRM - Sora" />
             <SidebarProvider
                 style={{
                     "--sidebar-width": "calc(var(--spacing) * 72)",

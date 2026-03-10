@@ -47,7 +47,7 @@ export default function AdminLogin({ status, canResetPassword }: AdminLoginProps
                             <IconInnerShadowTop className="h-8 w-8 text-primary" />
                         </div>
                     </div>
-                    <h1 className="text-2xl font-bold text-foreground">Brisa</h1>
+                    <h1 className="text-2xl font-bold text-foreground">Sora</h1>
                     <p className="text-muted-foreground">Admin Portal</p>
                 </div>
 
@@ -152,7 +152,7 @@ export default function AdminLogin({ status, canResetPassword }: AdminLoginProps
                 </Card>
 
                 <div className="mt-8 text-center text-xs text-muted-foreground">
-                    <p>© 2024 Brisa. All rights reserved.</p>
+                    <p>© 2024 Sora. All rights reserved.</p>
                 </div>
             </div>
         </div>

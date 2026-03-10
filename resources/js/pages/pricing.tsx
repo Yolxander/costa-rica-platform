@@ -117,7 +117,7 @@ function PricingFAQ() {
 export default function Pricing() {
     return (
         <>
-            <Head title="Pricing - Brisa" />
+            <Head title="Pricing - Sora" />
             <div className="min-h-screen bg-background">
                 <PublicHeader />
 
@@ -131,7 +131,7 @@ export default function Pricing() {
                                 <span className="text-muted-foreground">Airbnb: 14–18%</span>
                                 <span className="text-muted-foreground">Booking.com: 15–20%</span>
                                 <span className="text-muted-foreground">Vrbo: 8–12%</span>
-                                <span className="rounded-full bg-primary/10 px-3 py-1 font-semibold text-primary">Brisa: 0–5%</span>
+                                <span className="rounded-full bg-primary/10 px-3 py-1 font-semibold text-primary">Sora: 0–5%</span>
                             </div>
 
                         </div>
@@ -264,7 +264,7 @@ export default function Pricing() {
                                     <CardHeader className="pb-3">
                                         <CardTitle className="flex items-center gap-2 text-base text-primary">
                                             <IconCurrencyDollar className="size-5" />
-                                            With Brisa (3% fee)
+                                            With Sora (3% fee)
                                         </CardTitle>
                                         <CardDescription>Direct bookings, more in your pocket</CardDescription>
                                     </CardHeader>

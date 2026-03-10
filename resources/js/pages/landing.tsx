@@ -20,8 +20,6 @@ import {
 } from '@tabler/icons-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
     Collapsible,
     CollapsibleContent,
@@ -56,129 +54,7 @@ function useCountUp(end: number, duration: number, trigger: boolean) {
     return count;
 }
 
-// Commission Calculator
-function CommissionCalculator() {
-    const [nightlyRate, setNightlyRate] = useState(150);
-    const [bookingsPerMonth, setBookingsPerMonth] = useState(15);
-    const [otaFee, setOtaFee] = useState(15);
-    const [hasCalculated, setHasCalculated] = useState(false);
-    const sectionRef = useRef<HTMLElement>(null);
-    const [inView, setInView] = useState(false);
 
-    const annualCost = Math.round((nightlyRate * bookingsPerMonth * 12) * (otaFee / 100));
-    const platformCost = 588;
-    const savings = Math.max(0, annualCost - platformCost);
-
-    const displayedSavings = useCountUp(savings, 1000, hasCalculated);
-
-    useEffect(() => {
-        const ob = new IntersectionObserver(([e]) => setInView(e.isIntersecting), { threshold: 0.3 });
-        const el = sectionRef.current;
-        if (el) ob.observe(el);
-        return () => ob.disconnect();
-    }, []);
-
-    useEffect(() => {
-        if (inView && !hasCalculated) setHasCalculated(true);
-    }, [inView, hasCalculated]);
-
-    return (
-        <section ref={sectionRef} className="px-4 py-16 sm:px-6 lg:px-8">
-            <div className="mx-auto max-w-2xl">
-                <Card className="overflow-hidden rounded-2xl border-0 border-secondary/30 bg-secondary/5 shadow-lg">
-                    <CardHeader className="space-y-1 pb-4">
-                        <div className="flex items-center gap-2">
-                            <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10">
-                                <IconCalculator className="size-5 text-primary" />
-                            </div>
-                            <CardTitle className="text-xl">Commission Calculator</CardTitle>
-                        </div>
-                        <CardDescription className="text-base">
-                            See how much you save with direct bookings vs OTAs
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                        <div className="grid gap-4 sm:grid-cols-2">
-                            <div className="space-y-2">
-                                <Label className="text-sm font-medium">Nightly rate</Label>
-                                <div className="flex items-center gap-3">
-                                    <input
-                                        type="range"
-                                        min={50}
-                                        max={500}
-                                        step={10}
-                                        value={nightlyRate}
-                                        onChange={(e) => setNightlyRate(Number(e.target.value))}
-                                        className="h-2.5 flex-1 accent-primary rounded-full"
-                                    />
-                                    <Input
-                                        type="number"
-                                        value={nightlyRate}
-                                        onChange={(e) => setNightlyRate(Number(e.target.value) || 50)}
-                                        className="h-10 w-20 rounded-lg text-center"
-                                        min={50}
-                                        max={500}
-                                    />
-                                </div>
-                                <p className="text-sm text-muted-foreground">${nightlyRate}/night</p>
-                            </div>
-                            <div className="space-y-2">
-                                <Label className="text-sm font-medium">Bookings per month</Label>
-                                <div className="flex items-center gap-3">
-                                    <input
-                                        type="range"
-                                        min={1}
-                                        max={30}
-                                        value={bookingsPerMonth}
-                                        onChange={(e) => setBookingsPerMonth(Number(e.target.value))}
-                                        className="h-2.5 flex-1 accent-primary rounded-full"
-                                    />
-                                    <Input
-                                        type="number"
-                                        value={bookingsPerMonth}
-                                        onChange={(e) => setBookingsPerMonth(Number(e.target.value) || 1)}
-                                        className="h-10 w-16 rounded-lg text-center"
-                                        min={1}
-                                        max={30}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            <Label className="text-sm font-medium">OTA commission</Label>
-                            <select
-                                value={otaFee}
-                                onChange={(e) => setOtaFee(Number(e.target.value))}
-                                className="mt-2 h-11 w-full rounded-xl border border-input bg-background px-4 text-sm"
-                            >
-                                <option value={15}>15%</option>
-                                <option value={18}>18%</option>
-                                <option value={20}>20%</option>
-                            </select>
-                        </div>
-                        <div className="space-y-3 rounded-xl border bg-background/80 p-5">
-                            <div className="flex justify-between text-sm">
-                                <span className="text-muted-foreground">Annual OTA fees</span>
-                                <span className="font-semibold">${annualCost.toLocaleString()}</span>
-                            </div>
-                            <div className="flex justify-between text-sm">
-                                <span className="text-muted-foreground">Our platform</span>
-                                <span className="font-semibold">$588/year</span>
-                            </div>
-                            <div className="flex justify-between border-t pt-3 text-lg font-bold text-green-600">
-                                <span>You save</span>
-                                <span>${displayedSavings.toLocaleString()}/year</span>
-                            </div>
-                        </div>
-                        <Button className="h-12 w-full rounded-xl text-base" size="lg" onClick={scrollToImport}>
-                            Start Saving Now
-                        </Button>
-                    </CardContent>
-                </Card>
-            </div>
-        </section>
-    );
-}
 
 // FAQ Accordion
 const faqItems = [
@@ -282,19 +158,12 @@ export default function Landing() {
     const regionsRef = useRef<HTMLDivElement>(null);
     const hostCountRef = useRef<HTMLDivElement>(null);
     const [hostCountInView, setHostCountInView] = useState(false);
-    const displayedHostCount = useCountUp(hostCount, 2000, hostCountInView);
-    const [finalCtaPulse, setFinalCtaPulse] = useState(false);
 
     useEffect(() => {
         const ob = new IntersectionObserver(([e]) => setHostCountInView(e.isIntersecting), { threshold: 0.5 });
         const el = hostCountRef.current;
         if (el) ob.observe(el);
         return () => ob.disconnect();
-    }, []);
-
-    useEffect(() => {
-        const id = setInterval(() => setFinalCtaPulse((p) => !p), 5000);
-        return () => clearInterval(id);
     }, []);
 
     const scrollRegions = (dir: 'l' | 'r') => {
@@ -340,22 +209,44 @@ export default function Landing() {
 
                 <main>
                     {/* 1. HERO */}
-                    <section className="px-4 py-8 sm:px-6 lg:px-8">
-                        <div className="relative mx-auto max-w-7xl min-h-[75vh] flex items-center justify-center overflow-hidden rounded-2xl bg-muted/30">
-                            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=1920&q=80')] bg-cover bg-center opacity-10" />
+                    <section className="px-4 py-6 sm:px-6 lg:px-8">
+                        <div className="relative mx-auto flex min-h-[85vh] max-w-7xl items-center justify-center overflow-hidden rounded-2xl bg-muted/30">
+                            {/* Background image */}
+                            <div className="absolute inset-0 bg-[url('/sora-bg.jpg')] bg-cover bg-center" />
+
+                            {/* Dark overlay */}
+                            <div className="absolute inset-0 bg-black/30" />
+
                             <div className="relative z-10 mx-auto w-full max-w-3xl px-6 py-16 text-center sm:px-8 sm:py-20">
-                                <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl lg:text-6xl">
-                                    Own Your Direct Bookings in Costa Rica
+                                <h1 className="text-4xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl">
+                                    Own Your{' '}
+                                    <span className="text-[#d87943]">
+                                        Direct Bookings
+                                    </span>
                                 </h1>
-                                <p className="mt-5 text-base text-muted-foreground sm:text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-                                    Stop paying commission. Accept payments directly. Capture guest emails. Build repeat bookings.
+
+                                <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-white sm:text-lg md:text-xl">
+                                    Accept direct bookings, collect payments,
+                                    and turn one-time guests into repeat
+                                    customers without paying OTA commissions.
                                 </p>
+
                                 <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
-                                    <Button size="lg" className="w-full gap-2 rounded-full px-8 sm:w-auto" onClick={scrollToImport}>
+                                    <Button
+                                        size="lg"
+                                        className="w-full gap-2 rounded-full px-8 sm:w-auto"
+                                        onClick={scrollToImport}
+                                    >
                                         Import listing
                                         <IconArrowRight className="size-4" />
                                     </Button>
-                                    <Button variant="secondary" size="lg" className="w-full rounded-full sm:w-auto" onClick={() => setDemoModalOpen(true)}>
+
+                                    <Button
+                                        variant="secondary"
+                                        size="lg"
+                                        className="w-full rounded-full sm:w-auto"
+                                        onClick={() => setDemoModalOpen(true)}
+                                    >
                                         Watch Demo
                                     </Button>
                                 </div>
@@ -367,30 +258,79 @@ export default function Landing() {
                     <section className="px-4 py-16 sm:px-6 lg:px-8">
                         <div className="mx-auto max-w-7xl">
                             <div className="grid gap-10 lg:grid-cols-12 lg:items-start lg:gap-12">
-                                <div className="lg:col-span-5 lg:sticky lg:top-24">
-                                    <h2 className="text-2xl font-bold leading-tight sm:text-3xl">Why Costa Rica Hosts Choose Direct Bookings</h2>
-                                    <p className="mt-4 text-muted-foreground leading-relaxed sm:text-base">
-                                        Get your direct booking page live in minutes—no website needed. Add your listing, sync your calendar, and start reaching guests with email and social. Connect Stripe when you&apos;re ready to take payments.
+                                <div className="lg:sticky lg:top-24 lg:col-span-5">
+                                    <h2 className="text-2xl leading-tight font-bold sm:text-3xl">
+                                        Why Costa Rica Hosts Choose Direct
+                                        Bookings
+                                    </h2>
+                                    <p className="mt-4 leading-relaxed text-muted-foreground sm:text-base">
+                                        Get your direct booking page live in
+                                        minutes—no website needed. Add your
+                                        listing, sync your calendar, and start
+                                        reaching guests with email and social.
+                                        Connect Stripe when you&apos;re ready to
+                                        take payments.
                                     </p>
                                     <div className="mt-6 flex gap-3">
-                                        <a href="#" className="flex size-10 items-center justify-center rounded-full bg-secondary/20 text-secondary-foreground transition-colors hover:bg-secondary" aria-label="Instagram"><IconBrandInstagram className="size-5" /></a>
-                                        <a href="#" className="flex size-10 items-center justify-center rounded-full bg-secondary/20 text-secondary-foreground transition-colors hover:bg-secondary" aria-label="X"><IconBrandX className="size-5" /></a>
-                                        <a href="#" className="flex size-10 items-center justify-center rounded-full bg-secondary/20 text-secondary-foreground transition-colors hover:bg-secondary" aria-label="Facebook"><IconBrandFacebook className="size-5" /></a>
+                                        <a
+                                            href="#"
+                                            className="flex size-10 items-center justify-center rounded-full bg-secondary/20 text-secondary-foreground transition-colors hover:bg-secondary"
+                                            aria-label="Instagram"
+                                        >
+                                            <IconBrandInstagram className="size-5" />
+                                        </a>
+                                        <a
+                                            href="#"
+                                            className="flex size-10 items-center justify-center rounded-full bg-secondary/20 text-secondary-foreground transition-colors hover:bg-secondary"
+                                            aria-label="X"
+                                        >
+                                            <IconBrandX className="size-5" />
+                                        </a>
+                                        <a
+                                            href="#"
+                                            className="flex size-10 items-center justify-center rounded-full bg-secondary/20 text-secondary-foreground transition-colors hover:bg-secondary"
+                                            aria-label="Facebook"
+                                        >
+                                            <IconBrandFacebook className="size-5" />
+                                        </a>
                                     </div>
                                 </div>
-                                <div className="lg:col-span-7 space-y-4">
+                                <div className="space-y-4 lg:col-span-7">
                                     {[
-                                        { icon: IconLink, title: 'Add your listing', desc: 'Import photos, title, description, and amenities. Your direct listing goes live—free to start, no credit card required.' },
-                                        { icon: IconCalendar, title: 'Sync your calendar', desc: 'Import your calendar so your direct page shows real-time availability. Block dates, prevent double-bookings, and keep one source of truth from day one.' },
-                                        { icon: IconMail, title: 'Reach guests without OTAs', desc: 'Build your guest list from inquiries, run email campaigns to past guests, and post to social with AI captions. Get your first direct booking.' },
+                                        {
+                                            icon: IconLink,
+                                            title: 'Add your listing',
+                                            desc: 'Import photos, title, description, and amenities. Your direct listing goes live—free to start, no credit card required.',
+                                        },
+                                        {
+                                            icon: IconCalendar,
+                                            title: 'Sync your calendar',
+                                            desc: 'Import your calendar so your direct page shows real-time availability. Block dates, prevent double-bookings, and keep one source of truth from day one.',
+                                        },
+                                        {
+                                            icon: IconMail,
+                                            title: 'Reach guests without OTAs',
+                                            desc: 'Build your guest list from inquiries, run email campaigns to past guests, and post to social with AI captions. Get your first direct booking.',
+                                        },
                                     ].map((item, i) => (
-                                        <Card key={i} className="flex flex-row items-start gap-5 rounded-2xl border-0 bg-muted/40 p-6 shadow-sm transition-all hover:shadow-md">
-                                            <div className={`flex size-12 shrink-0 items-center justify-center rounded-xl ${i === 1 ? 'bg-secondary/20' : 'bg-primary/10'}`}>
-                                                <item.icon className={`size-6 ${i === 1 ? 'text-secondary' : 'text-primary'}`} />
+                                        <Card
+                                            key={i}
+                                            className="flex flex-row items-start gap-5 rounded-2xl border-0 bg-muted/40 p-6 shadow-sm transition-all hover:shadow-md"
+                                        >
+                                            <div
+                                                className={`flex size-12 shrink-0 items-center justify-center rounded-xl ${i === 1 ? 'bg-secondary/20' : 'bg-primary/10'}`}
+                                            >
+                                                <item.icon
+                                                    className={`size-6 ${i === 1 ? 'text-secondary' : 'text-primary'}`}
+                                                />
                                             </div>
                                             <div className="min-w-0 flex-1">
-                                                <h3 className="font-semibold">{item.title}</h3>
-                                                <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{item.desc}</p>
+                                                <h3 className="font-semibold">
+                                                    {item.title}
+                                                </h3>
+                                                <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                                                    {item.desc}
+                                                </p>
                                             </div>
                                         </Card>
                                     ))}
@@ -399,52 +339,95 @@ export default function Landing() {
                         </div>
                     </section>
 
-                    {/* 3. STATS */}
-                    <section ref={hostCountRef} className="border-t bg-secondary/5 px-4 py-14 sm:px-6 lg:px-8">
-                        <div className="mx-auto max-w-5xl">
-                            <div className="grid gap-10 sm:grid-cols-3 sm:gap-8">
-                                <div className="flex flex-col items-center rounded-2xl bg-background/60 px-6 py-8 text-center shadow-sm border border-secondary/20">
-                                    <div className="flex size-14 items-center justify-center rounded-full bg-secondary/20">
-                                        <IconUsers className="size-7 text-secondary" />
+                    {/* 6. WHAT YOU GET */}
+                    <section className="border-t bg-secondary/5 px-4 py-16 sm:px-6 lg:px-8">
+                        <div className="mx-auto max-w-6xl">
+                            <h2 className="text-center text-2xl font-bold sm:text-3xl">
+                                What You Get
+                            </h2>
+                            <p className="mt-2 text-center text-muted-foreground">
+                                Everything you need to grow direct bookings
+                            </p>
+                            <div className="mt-10 flex flex-col">
+                                {WHAT_YOU_GET_CARDS.map((f, i) => (
+                                    <div
+                                        key={f.title}
+                                        className={`flex ${i % 2 === 0 ? 'justify-start' : 'justify-end'} ${i > 0 ? '-mt-8' : ''}`}
+                                    >
+                                        <Card
+                                            className={`flex w-full max-w-lg flex-col rounded-2xl border-0 bg-background p-6 shadow-sm transition-all hover:shadow-md sm:p-8 ${i % 2 === 1 ? 'border-l-4 border-l-secondary' : ''}`}
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <div
+                                                    className={`flex size-12 shrink-0 items-center justify-center rounded-xl ${i % 2 === 1 ? 'bg-secondary/20' : 'bg-primary/10'}`}
+                                                >
+                                                    <f.icon
+                                                        className={`size-6 ${i % 2 === 1 ? 'text-secondary' : 'text-primary'}`}
+                                                    />
+                                                </div>
+                                                <h3 className="text-lg font-semibold">
+                                                    {f.title}
+                                                </h3>
+                                            </div>
+                                            {f.subtitle && (
+                                                <p
+                                                    className={`mt-2 text-sm font-medium ${i % 2 === 1 ? 'text-secondary' : 'text-primary'}`}
+                                                >
+                                                    {f.subtitle}
+                                                </p>
+                                            )}
+                                            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                                                {f.desc}
+                                            </p>
+                                            {f.features &&
+                                                f.features.length > 0 && (
+                                                    <ul className="mt-4 space-y-2">
+                                                        {f.features.map(
+                                                            (feature) => (
+                                                                <li
+                                                                    key={
+                                                                        feature
+                                                                    }
+                                                                    className="flex items-center gap-2 text-sm text-muted-foreground"
+                                                                >
+                                                                    <IconCheck className="size-4 shrink-0 text-green-500" />
+                                                                    {feature}
+                                                                </li>
+                                                            ),
+                                                        )}
+                                                    </ul>
+                                                )}
+                                        </Card>
                                     </div>
-                                    <span className="mt-4 text-2xl font-bold sm:text-3xl">{displayedHostCount}+</span>
-                                    <p className="mt-2 text-sm leading-snug text-muted-foreground">Hosts booking direct</p>
-                                </div>
-                                <div className="flex flex-col items-center rounded-2xl bg-background/60 px-6 py-8 text-center shadow-sm border border-secondary/20">
-                                    <div className="flex size-14 items-center justify-center rounded-full bg-secondary/20">
-                                        <IconChartLine className="size-7 text-secondary" />
-                                    </div>
-                                    <span className="mt-4 text-2xl font-bold sm:text-3xl">$588</span>
-                                    <p className="mt-2 text-sm leading-snug text-muted-foreground">Per year</p>
-                                </div>
-                                <div className="flex flex-col items-center rounded-2xl bg-background/60 px-6 py-8 text-center shadow-sm border border-secondary/20">
-                                    <div className="flex size-14 items-center justify-center rounded-full bg-secondary/20">
-                                        <IconMapPin className="size-7 text-secondary" />
-                                    </div>
-                                    <span className="mt-4 text-2xl font-bold sm:text-3xl">4+</span>
-                                    <p className="mt-2 text-sm leading-snug text-muted-foreground">Regions</p>
-                                </div>
+                                ))}
                             </div>
                         </div>
                     </section>
-
-                    {/* 4. COMMISSION CALCULATOR */}
-                    <CommissionCalculator />
 
                     {/* 5. POPULAR REGIONS */}
                     <section className="border-t px-4 py-16 sm:px-6 lg:px-8">
                         <div className="mx-auto max-w-7xl">
                             <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
                                 <div>
-                                    <h2 className="text-2xl font-bold sm:text-3xl">Popular Regions</h2>
-                                    <p className="mt-2 text-sm text-muted-foreground">Hosts across Costa Rica are taking back their bookings.</p>
+                                    <h2 className="text-2xl font-bold sm:text-3xl">
+                                        Popular Regions
+                                    </h2>
+                                    <p className="mt-2 text-sm text-muted-foreground">
+                                        Hosts across Costa Rica are taking back
+                                        their bookings.
+                                    </p>
                                 </div>
-                                <button onClick={scrollToImport} className="text-sm font-medium text-secondary hover:underline sm:shrink-0">View all →</button>
+                                <button
+                                    onClick={scrollToImport}
+                                    className="text-sm font-medium text-secondary hover:underline sm:shrink-0"
+                                >
+                                    View all →
+                                </button>
                             </div>
                             <div className="relative -mx-4 mt-8 sm:mx-0">
                                 <div
                                     ref={regionsRef}
-                                    className="flex gap-4 overflow-x-auto px-4 pb-4 pt-1 scroll-smooth scroll-pl-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:gap-6 sm:px-0"
+                                    className="flex scroll-pl-4 gap-4 overflow-x-auto scroll-smooth px-4 pt-1 pb-4 [scrollbar-width:none] sm:gap-6 sm:px-0 [&::-webkit-scrollbar]:hidden"
                                 >
                                     {REGIONS.map((r) => (
                                         <div
@@ -452,12 +435,22 @@ export default function Landing() {
                                             className="flex w-[300px] shrink-0 flex-col overflow-hidden rounded-2xl bg-card shadow-md transition-shadow hover:shadow-lg"
                                         >
                                             <div className="relative aspect-[4/3] w-full overflow-hidden">
-                                                <img src={r.img} alt={r.name} className="h-full w-full object-cover" />
-                                                <span className="absolute right-3 top-3 rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground backdrop-blur-sm">Popular</span>
+                                                <img
+                                                    src={r.img}
+                                                    alt={r.name}
+                                                    className="h-full w-full object-cover"
+                                                />
+                                                <span className="absolute top-3 right-3 rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground backdrop-blur-sm">
+                                                    Popular
+                                                </span>
                                             </div>
                                             <div className="flex flex-col gap-1 p-5">
-                                                <h3 className="font-semibold">{r.name}</h3>
-                                                <p className="text-sm text-muted-foreground">{r.tag}</p>
+                                                <h3 className="font-semibold">
+                                                    {r.name}
+                                                </h3>
+                                                <p className="text-sm text-muted-foreground">
+                                                    {r.tag}
+                                                </p>
                                                 <div className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
                                                     <IconMapPin className="size-3.5 shrink-0" />
                                                     {r.region}
@@ -467,10 +460,20 @@ export default function Landing() {
                                     ))}
                                 </div>
                                 <div className="mt-4 flex justify-end gap-2">
-                                    <Button variant="outline" size="icon" className="size-10 rounded-full" onClick={() => scrollRegions('l')}>
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        className="size-10 rounded-full"
+                                        onClick={() => scrollRegions('l')}
+                                    >
                                         <IconChevronLeft className="size-4" />
                                     </Button>
-                                    <Button variant="outline" size="icon" className="size-10 rounded-full" onClick={() => scrollRegions('r')}>
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        className="size-10 rounded-full"
+                                        onClick={() => scrollRegions('r')}
+                                    >
                                         <IconChevronRight className="size-4" />
                                     </Button>
                                 </div>
@@ -478,99 +481,102 @@ export default function Landing() {
                         </div>
                     </section>
 
-                    {/* 6. WHAT YOU GET */}
-                    <section className="border-t bg-secondary/5 px-4 py-16 sm:px-6 lg:px-8">
-                        <div className="mx-auto max-w-6xl">
-                            <h2 className="text-center text-2xl font-bold sm:text-3xl">What You Get</h2>
-                            <p className="mt-2 text-center text-muted-foreground">Everything you need to grow direct bookings</p>
-                            <div className="mt-10 flex flex-col">
-                                {WHAT_YOU_GET_CARDS.map((f, i) => (
-                                    <div
-                                        key={f.title}
-                                        className={`flex ${i % 2 === 0 ? 'justify-start' : 'justify-end'} ${i > 0 ? '-mt-8' : ''}`}
-                                    >
-                                        <Card className={`flex w-full max-w-lg flex-col rounded-2xl border-0 bg-background p-6 shadow-sm transition-all hover:shadow-md sm:p-8 ${i % 2 === 1 ? 'border-l-4 border-l-secondary' : ''}`}>
-                                            <div className="flex items-center gap-3">
-                                                <div className={`flex size-12 shrink-0 items-center justify-center rounded-xl ${i % 2 === 1 ? 'bg-secondary/20' : 'bg-primary/10'}`}>
-                                                    <f.icon className={`size-6 ${i % 2 === 1 ? 'text-secondary' : 'text-primary'}`} />
-                                                </div>
-                                                <h3 className="text-lg font-semibold">{f.title}</h3>
-                                            </div>
-                                            {f.subtitle && (
-                                                <p className={`mt-2 text-sm font-medium ${i % 2 === 1 ? 'text-secondary' : 'text-primary'}`}>{f.subtitle}</p>
-                                            )}
-                                            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{f.desc}</p>
-                                            {f.features && f.features.length > 0 && (
-                                                <ul className="mt-4 space-y-2">
-                                                    {f.features.map((feature) => (
-                                                        <li key={feature} className="flex items-center gap-2 text-sm text-muted-foreground">
-                                                            <IconCheck className="size-4 shrink-0 text-green-500" />
-                                                            {feature}
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            )}
-                                        </Card>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </section>
-
                     {/* 7. PRICING */}
                     <section className="border-t px-4 py-16 sm:px-6 lg:px-8">
                         <div className="mx-auto max-w-6xl">
-                            <h2 className="text-center text-2xl font-bold sm:text-3xl">Simple pricing tiers</h2>
-                            <p className="mt-2 text-center text-muted-foreground">Hosts hate complicated pricing. We keep it simple.</p>
+                            <h2 className="text-center text-2xl font-bold sm:text-3xl">
+                                Simple pricing tiers
+                            </h2>
+                            <p className="mt-2 text-center text-muted-foreground">
+                                Hosts hate complicated pricing. We keep it
+                                simple.
+                            </p>
                             <div className="mt-10 grid gap-6 lg:grid-cols-3">
                                 {/* Starter */}
                                 <Card className="flex flex-col rounded-2xl border-0 shadow-lg">
                                     <CardHeader className="pb-4">
                                         <CardTitle>Starter</CardTitle>
-                                        <CardDescription>Best for new hosts</CardDescription>
+                                        <CardDescription>
+                                            Best for new hosts
+                                        </CardDescription>
                                         <div className="mt-4 flex items-baseline gap-1">
-                                            <span className="text-3xl font-bold">$0</span>
-                                            <span className="text-muted-foreground">/month</span>
+                                            <span className="text-3xl font-bold">
+                                                $0
+                                            </span>
+                                            <span className="text-muted-foreground">
+                                                /month
+                                            </span>
                                         </div>
-                                        <p className="mt-2 text-sm font-medium text-primary">5% per booking</p>
+                                        <p className="mt-2 text-sm font-medium text-primary">
+                                            5% per booking
+                                        </p>
                                     </CardHeader>
                                     <CardContent className="flex flex-1 flex-col pt-0">
                                         <ul className="flex-1 space-y-2.5">
                                             {starterFeatures.map((f) => (
-                                                <li key={f} className="flex items-start gap-2 text-sm">
+                                                <li
+                                                    key={f}
+                                                    className="flex items-start gap-2 text-sm"
+                                                >
                                                     <IconCheck className="mt-0.5 size-4 shrink-0 text-green-500" />
                                                     {f}
                                                 </li>
                                             ))}
                                         </ul>
-                                        <Link href="/host/register" className="mt-6 block">
-                                            <Button variant="secondary" className="h-11 w-full rounded-xl">Start Free</Button>
+                                        <Link
+                                            href="/host/register"
+                                            className="mt-6 block"
+                                        >
+                                            <Button
+                                                variant="secondary"
+                                                className="h-11 w-full rounded-xl"
+                                            >
+                                                Start Free
+                                            </Button>
                                         </Link>
                                     </CardContent>
                                 </Card>
                                 {/* Pro Host */}
                                 <Card className="relative flex flex-col rounded-2xl border-2 border-primary shadow-xl">
-                                    <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 rounded-full bg-primary px-4 py-1 text-xs font-medium text-primary-foreground">Most Popular</div>
+                                    <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 rounded-full bg-primary px-4 py-1 text-xs font-medium text-primary-foreground">
+                                        Most Popular
+                                    </div>
                                     <CardHeader className="pt-7 pb-4">
                                         <CardTitle>Pro Host</CardTitle>
-                                        <CardDescription>Best for serious hosts</CardDescription>
+                                        <CardDescription>
+                                            Best for serious hosts
+                                        </CardDescription>
                                         <div className="mt-4 flex items-baseline gap-1">
-                                            <span className="text-3xl font-bold">$24</span>
-                                            <span className="text-muted-foreground">/month</span>
+                                            <span className="text-3xl font-bold">
+                                                $24
+                                            </span>
+                                            <span className="text-muted-foreground">
+                                                /month
+                                            </span>
                                         </div>
-                                        <p className="mt-2 text-sm font-medium text-primary">2–3% per booking</p>
+                                        <p className="mt-2 text-sm font-medium text-primary">
+                                            2–3% per booking
+                                        </p>
                                     </CardHeader>
                                     <CardContent className="flex flex-1 flex-col pt-0">
                                         <ul className="flex-1 space-y-2.5">
                                             {proHostFeatures.map((f) => (
-                                                <li key={f} className="flex items-start gap-2 text-sm">
+                                                <li
+                                                    key={f}
+                                                    className="flex items-start gap-2 text-sm"
+                                                >
                                                     <IconCheck className="mt-0.5 size-4 shrink-0 text-green-500" />
                                                     {f}
                                                 </li>
                                             ))}
                                         </ul>
-                                        <Link href="/host/register" className="mt-6 block">
-                                            <Button className="h-11 w-full rounded-xl">Upgrade</Button>
+                                        <Link
+                                            href="/host/register"
+                                            className="mt-6 block"
+                                        >
+                                            <Button className="h-11 w-full rounded-xl">
+                                                Upgrade
+                                            </Button>
                                         </Link>
                                     </CardContent>
                                 </Card>
@@ -578,30 +584,52 @@ export default function Landing() {
                                 <Card className="flex flex-col rounded-2xl border-0 shadow-lg">
                                     <CardHeader className="pb-4">
                                         <CardTitle>Professional</CardTitle>
-                                        <CardDescription>Best for property managers</CardDescription>
+                                        <CardDescription>
+                                            Best for property managers
+                                        </CardDescription>
                                         <div className="mt-4 flex items-baseline gap-1">
-                                            <span className="text-3xl font-bold">$64</span>
-                                            <span className="text-muted-foreground">/month</span>
+                                            <span className="text-3xl font-bold">
+                                                $64
+                                            </span>
+                                            <span className="text-muted-foreground">
+                                                /month
+                                            </span>
                                         </div>
-                                        <p className="mt-2 text-sm font-medium text-primary">0–1% per booking</p>
+                                        <p className="mt-2 text-sm font-medium text-primary">
+                                            0–1% per booking
+                                        </p>
                                     </CardHeader>
                                     <CardContent className="flex flex-1 flex-col pt-0">
                                         <ul className="flex-1 space-y-2.5">
                                             {professionalFeatures.map((f) => (
-                                                <li key={f} className="flex items-start gap-2 text-sm">
+                                                <li
+                                                    key={f}
+                                                    className="flex items-start gap-2 text-sm"
+                                                >
                                                     <IconCheck className="mt-0.5 size-4 shrink-0 text-green-500" />
                                                     {f}
                                                 </li>
                                             ))}
                                         </ul>
-                                        <Link href="/host/register" className="mt-6 block">
-                                            <Button variant="secondary" className="h-11 w-full rounded-xl">Start Trial</Button>
+                                        <Link
+                                            href="/host/register"
+                                            className="mt-6 block"
+                                        >
+                                            <Button
+                                                variant="secondary"
+                                                className="h-11 w-full rounded-xl"
+                                            >
+                                                Start Trial
+                                            </Button>
                                         </Link>
                                     </CardContent>
                                 </Card>
                             </div>
                             <div className="mt-8 text-center">
-                                <Link href="/pricing" className="text-sm font-medium text-primary hover:underline">
+                                <Link
+                                    href="/pricing"
+                                    className="text-sm font-medium text-primary hover:underline"
+                                >
                                     Compare plans →
                                 </Link>
                             </div>
@@ -612,22 +640,39 @@ export default function Landing() {
                     <FAQSection />
 
                     {/* 9. FINAL CTA */}
-                    <section id="airbnb-import" className="px-4 py-8 sm:px-6 lg:px-8">
-                        <div className="relative mx-auto flex max-w-7xl min-h-[55vh] items-center justify-center overflow-hidden rounded-2xl bg-secondary/10">
-                            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=1920&q=80')] bg-cover bg-center opacity-10" />
+                    <section
+                        id="airbnb-import"
+                        className="px-4 py-8 sm:px-6 lg:px-8"
+                    >
+                        <div className="relative mx-auto flex min-h-[55vh] max-w-7xl items-center justify-center overflow-hidden rounded-2xl bg-muted/30">
+                            {/* Background image */}
+                            <div className="absolute inset-0 bg-[url('/sora-bg.jpg')] bg-cover bg-center" />
+
+                            {/* Dark overlay */}
+                            <div className="absolute inset-0 bg-black/30" />
+
                             <div className="relative z-10 mx-auto w-full max-w-2xl px-6 py-16 text-center sm:py-20">
-                                <h2 className="text-2xl font-bold sm:text-3xl md:text-4xl">Stop Renting Your Business from OTAs</h2>
-                                <p className="mt-4 text-lg text-muted-foreground sm:text-xl">Import your Airbnb listing in 2 minutes</p>
-                                <Link href="/host/register" className="mt-8 inline-block">
+                                <h2 className="text-2xl font-bold text-white sm:text-3xl md:text-4xl">
+                                    Stop Renting Your Business from OTAs
+                                </h2>
+                                <p className="mt-4 text-lg text-white/90 sm:text-xl">
+                                    Import your Airbnb listing in 2 minutes
+                                </p>
+                                <Link
+                                    href="/host/register"
+                                    className="mt-8 inline-block"
+                                >
                                     <Button
                                         size="lg"
-                                        className={`h-12 gap-2 rounded-xl px-8 text-base transition-transform ${finalCtaPulse ? 'scale-105' : 'scale-100'}`}
+                                        className="h-12 gap-2 rounded-full px-8 text-base"
                                     >
                                         Import Now
                                         <IconArrowRight className="size-4" />
                                     </Button>
                                 </Link>
-                                <p className="mt-4 text-sm text-muted-foreground">No credit card required · Free setup</p>
+                                <p className="mt-4 text-sm text-white/70">
+                                    No credit card required · Free setup
+                                </p>
                             </div>
                         </div>
                     </section>
@@ -644,11 +689,23 @@ export default function Landing() {
                             onClick={(e) => e.stopPropagation()}
                         >
                             <div className="mb-4 flex items-center justify-between">
-                                <h3 className="text-lg font-semibold">8-Minute Setup Demo</h3>
-                                <Button variant="ghost" size="sm" className="rounded-full" onClick={() => setDemoModalOpen(false)}>Close</Button>
+                                <h3 className="text-lg font-semibold">
+                                    8-Minute Setup Demo
+                                </h3>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="rounded-full"
+                                    onClick={() => setDemoModalOpen(false)}
+                                >
+                                    Close
+                                </Button>
                             </div>
-                            <div className="aspect-video w-full max-w-3xl rounded-xl bg-muted flex items-center justify-center">
-                                <p className="text-muted-foreground">Video placeholder — embed YouTube or self-hosted</p>
+                            <div className="flex aspect-video w-full max-w-3xl items-center justify-center rounded-xl bg-muted">
+                                <p className="text-muted-foreground">
+                                    Video placeholder — embed YouTube or
+                                    self-hosted
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -659,14 +716,41 @@ export default function Landing() {
                         <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                 <IconBeach className="size-5 text-secondary" />
-                                <span>&copy; {new Date().getFullYear()} Brisa</span>
+                                <span>
+                                    &copy; {new Date().getFullYear()} Sora
+                                </span>
                             </div>
                             <div className="flex gap-6 text-sm text-muted-foreground">
-                                <Link href="/pricing" className="hover:text-secondary transition-colors">Pricing</Link>
-                                <Link href="/how-it-works" className="hover:text-secondary transition-colors">How it works</Link>
-                                <Link href="/blog" className="hover:text-secondary transition-colors">Blog</Link>
-                                <Link href="/join" className="hover:text-secondary transition-colors">Join</Link>
-                                <Link href="/admin/login" className="hover:text-secondary transition-colors">Admin</Link>
+                                <Link
+                                    href="/pricing"
+                                    className="transition-colors hover:text-secondary"
+                                >
+                                    Pricing
+                                </Link>
+                                <Link
+                                    href="/how-it-works"
+                                    className="transition-colors hover:text-secondary"
+                                >
+                                    How it works
+                                </Link>
+                                <Link
+                                    href="/blog"
+                                    className="transition-colors hover:text-secondary"
+                                >
+                                    Blog
+                                </Link>
+                                <Link
+                                    href="/join"
+                                    className="transition-colors hover:text-secondary"
+                                >
+                                    Join
+                                </Link>
+                                <Link
+                                    href="/admin/login"
+                                    className="transition-colors hover:text-secondary"
+                                >
+                                    Admin
+                                </Link>
                             </div>
                         </div>
                     </div>

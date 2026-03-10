@@ -4,140 +4,87 @@ import {
     SidebarInset,
     SidebarProvider,
 } from "@/components/ui/sidebar"
-import { Head, usePage } from "@inertiajs/react"
+import { Head, Link, usePage } from "@inertiajs/react"
 import { SharedData } from "@/types"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { SocialPostWizard } from "@/components/social-post-wizard"
-import { EmailCampaignWizard } from "@/components/email-campaign-wizard"
-import type { PropertyForSocial } from "@/components/social-image-picker"
-import { IconMail, IconBrandInstagram } from "@tabler/icons-react"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { IconMail, IconBrandInstagram, IconPlus, IconDots, IconEdit, IconEye } from "@tabler/icons-react"
+import { useEffect } from "react"
 import { toast } from "sonner"
-import { useState, useEffect, useCallback } from "react"
 
-function getCsrfToken(): string {
-    const meta = document.querySelector<HTMLMetaElement>('meta[name="csrf-token"]')
-    if (meta?.content) return meta.content
-    const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/)
-    return match ? decodeURIComponent(match[1]) : ''
+const SEGMENT_LABELS: Record<string, string> = {
+    didnt_book: "Didn't book",
+    booked_before: "Booked before",
+    recent_30: "Recent inquirers (30 days)",
+    recent_60: "Recent inquirers (60 days)",
+    recent_90: "Recent inquirers (90 days)",
+    all: "All guests",
+    by_property: "By property",
+}
+
+interface EmailCampaign {
+    id: number
+    subject: string
+    name: string | null
+    segment_type: string
+    recipient_count: number
+    status: string
+    property_name: string | null
+    created_at: string
+}
+
+interface SocialPost {
+    id: number
+    caption: string | null
+    hashtags: string | null
+    location: string | null
+    property_name: string | null
+    images_count: number
+    created_at: string
 }
 
 interface MarketingProps extends SharedData {
-    properties: PropertyForSocial[]
-    emailSegments: Record<string, number>
-    emailPropertyCounts: Record<number, number>
+    emailCampaigns: EmailCampaign[]
+    socialPosts: SocialPost[]
 }
 
-function truncate(str: string, maxLen: number): string {
+function truncate(str: string | null, maxLen: number): string {
     if (!str || str.length <= maxLen) return str
     return str.slice(0, maxLen).trim() + "..."
 }
 
-function generateCaption(property: PropertyForSocial): string {
-    const listingUrl = typeof window !== "undefined"
-        ? `${window.location.origin}/${property.slug}`
-        : `/${property.slug}`
-    const desc = truncate(property.description || "", 120)
-    const amenities = (property.amenities || []).slice(0, 3)
-    const amenityStr = amenities.length > 0 ? amenities.join(", ") : ""
-
-    const parts: string[] = []
-    parts.push(`Escape to ${property.name} in ${property.location}.`)
-    if (desc) parts.push(desc)
-    if (amenityStr) parts.push(`Amenities: ${amenityStr}.`)
-    parts.push(`Book direct: ${listingUrl}`)
-
-    return parts.join(" ")
-}
-
-const BASE_HASHTAGS = ["#CostaRica", "#PuraVida", "#CostaRicaTravel"]
-const KNOWN_LOCATIONS = [
-    "Tamarindo", "Manuel Antonio", "Guanacaste", "Nosara", "San Jose", "San José",
-    "Jaco", "Monteverde", "Uvita", "Puerto Viejo", "La Fortuna", "Playa Flamingo",
-    "Playa Conchal", "Santa Teresa", "Cahuita", "Tortuguero", "Arenal",
-]
-
-function generateHashtags(property: PropertyForSocial): string {
-    const location = (property.location || "").toLowerCase()
-    const locationHashtags: string[] = []
-
-    for (const place of KNOWN_LOCATIONS) {
-        if (location.includes(place.toLowerCase().replace("ó", "o"))) {
-            const tag = "#" + place.replace(/\s/g, "")
-            if (!locationHashtags.includes(tag)) {
-                locationHashtags.push(tag)
-            }
-        }
-    }
-
-    const all = [...BASE_HASHTAGS, ...locationHashtags, "#CostaRicaRental", "#VacationRental"]
-    return [...new Set(all)].join(" ")
+function formatDate(iso: string): string {
+    const d = new Date(iso)
+    return d.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+    })
 }
 
 export default function MarketingPage() {
-    const { properties, emailSegments = {}, emailPropertyCounts = {}, auth } = usePage<MarketingProps>().props
-    const [selectedPropertyId, setSelectedPropertyId] = useState<number | null>(
-        properties.length > 0 ? properties[0].id : null
-    )
-    const [selectedImages, setSelectedImages] = useState<string[]>([])
-    const [caption, setCaption] = useState("")
-    const [hashtags, setHashtags] = useState("")
-    const [isGenerating, setIsGenerating] = useState(false)
-
-    const selectedProperty = properties.find((p) => p.id === selectedPropertyId) ?? null
-
-    const refreshCaptionFromProperty = useCallback((property: PropertyForSocial | null) => {
-        if (!property) {
-            setCaption("")
-            setHashtags(BASE_HASHTAGS.join(" ") + " #CostaRicaRental #VacationRental")
-            return
-        }
-        setCaption(generateCaption(property))
-        setHashtags(generateHashtags(property))
-    }, [])
+    const {
+        emailCampaigns = [],
+        socialPosts = [],
+        flash,
+    } = usePage<MarketingProps>().props
 
     useEffect(() => {
-        refreshCaptionFromProperty(selectedProperty)
-    }, [selectedProperty, refreshCaptionFromProperty])
-
-    const handlePropertyChange = (propertyId: number | null) => {
-        setSelectedPropertyId(propertyId)
-        setSelectedImages([])
-        const prop = propertyId ? properties.find((p) => p.id === propertyId) ?? null : null
-        refreshCaptionFromProperty(prop)
-    }
-
-    const handleGenerateWithAI = useCallback(async () => {
-        if (!selectedPropertyId) return
-        setIsGenerating(true)
-        try {
-            const res = await fetch("/marketing/social/generate-caption", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                    "X-CSRF-TOKEN": getCsrfToken(),
-                    "X-Requested-With": "XMLHttpRequest",
-                },
-                credentials: "same-origin",
-                body: JSON.stringify({ property_id: selectedPropertyId }),
-            })
-            const data = await res.json()
-            if (res.ok && data.caption) {
-                setCaption(data.caption)
-                toast.success("Caption generated")
-            } else {
-                toast.error(data.error || "Failed to generate caption")
-            }
-        } catch {
-            toast.error("Failed to generate caption. Please try again.")
-        } finally {
-            setIsGenerating(false)
+        if (flash?.success) {
+            toast.success(flash.success)
         }
-    }, [selectedPropertyId])
+    }, [flash?.success])
 
     return (
         <>
-            <Head title="Marketing - Brisa" />
+            <Head title="Marketing - Sora" />
             <SidebarProvider
                 style={{
                     "--sidebar-width": "calc(var(--spacing) * 72)",
@@ -149,50 +96,188 @@ export default function MarketingPage() {
                     <SiteHeader />
                     <div className="flex flex-1 flex-col">
                         <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-                            <div className="px-4 lg:px-6">
-                                <Tabs defaultValue="social" className="space-y-6">
-                                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-                                        <div>
-                                            <h1 className="text-2xl font-bold">Marketing</h1>
-                                            <p className="text-muted-foreground">
-                                                Email campaigns and social content tools
-                                            </p>
-                                        </div>
-                                        <TabsList>
-                                            <TabsTrigger value="email" className="gap-2">
-                                                <IconMail className="size-4" />
-                                                Email
-                                            </TabsTrigger>
-                                            <TabsTrigger value="social" className="gap-2">
-                                                <IconBrandInstagram className="size-4" />
-                                                Social
-                                            </TabsTrigger>
-                                        </TabsList>
+                            <div className="px-4 lg:px-6 space-y-6">
+                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                    <div>
+                                        <h1 className="text-2xl font-bold">Marketing</h1>
+                                        <p className="text-muted-foreground">
+                                            Email campaigns and social content tools
+                                        </p>
                                     </div>
+                                    <div className="flex gap-2">
+                                        <Button asChild>
+                                            <Link href="/marketing/email/new" className="gap-2">
+                                                <IconMail className="size-4" />
+                                                Create Email Campaign
+                                            </Link>
+                                        </Button>
+                                        <Button asChild variant="outline">
+                                            <Link href="/marketing/social/new" className="gap-2">
+                                                <IconBrandInstagram className="size-4" />
+                                                Create Social Post
+                                            </Link>
+                                        </Button>
+                                    </div>
+                                </div>
 
-                                    <TabsContent value="email" className="mt-6">
-                                        <EmailCampaignWizard
-                                            segments={emailSegments}
-                                            propertyCounts={emailPropertyCounts}
-                                            properties={properties}
-                                            hostName={auth?.user?.name}
-                                        />
+                                <Tabs defaultValue="emails" className="w-full space-y-6">
+                                    <TabsList className="flex h-11 w-full max-w-[360px] gap-1 rounded-lg bg-muted p-1 sm:max-w-[400px]">
+                                        <TabsTrigger
+                                            value="emails"
+                                            className="flex min-w-0 flex-1 items-center justify-center gap-2 overflow-hidden rounded-md px-3 py-2 text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                                        >
+                                            <IconMail className="size-4 shrink-0" />
+                                            <span className="truncate">Email Campaigns</span>
+                                            <span className="flex shrink-0 items-center justify-center rounded-full bg-muted-foreground/15 px-2 py-0.5 text-xs font-medium tabular-nums">
+                                                {emailCampaigns.length}
+                                            </span>
+                                        </TabsTrigger>
+                                        <TabsTrigger
+                                            value="posts"
+                                            className="flex min-w-0 flex-1 items-center justify-center gap-2 overflow-hidden rounded-md px-3 py-2 text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                                        >
+                                            <IconBrandInstagram className="size-4 shrink-0" />
+                                            <span className="truncate">Social Posts</span>
+                                            <span className="flex shrink-0 items-center justify-center rounded-full bg-muted-foreground/15 px-2 py-0.5 text-xs font-medium tabular-nums">
+                                                {socialPosts.length}
+                                            </span>
+                                        </TabsTrigger>
+                                    </TabsList>
+
+                                    <TabsContent value="emails" className="mt-0">
+                                        <Card>
+                                            <CardContent className="pt-6">
+                                                {emailCampaigns.length === 0 ? (
+                                                    <div className="rounded-lg border border-dashed py-12 text-center text-muted-foreground">
+                                                        <p>No campaigns yet. Create your first email campaign.</p>
+                                                        <Button asChild variant="outline" className="mt-4">
+                                                            <Link href="/marketing/email/new" className="gap-2">
+                                                                <IconPlus className="size-4" />
+                                                                Create Email Campaign
+                                                            </Link>
+                                                        </Button>
+                                                    </div>
+                                                ) : (
+                                                    <div className="overflow-x-auto">
+                                                        <table className="w-full text-sm">
+                                                            <thead>
+                                                                <tr className="border-b">
+                                                                    <th className="text-left py-3 px-2 font-medium">Subject</th>
+                                                                    <th className="text-left py-3 px-2 font-medium">Segment</th>
+                                                                    <th className="text-left py-3 px-2 font-medium">Recipients</th>
+                                                                    <th className="text-left py-3 px-2 font-medium">Status</th>
+                                                                    <th className="text-left py-3 px-2 font-medium">Created</th>
+                                                                    <th className="w-[60px] py-3 px-2"></th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {emailCampaigns.map((c) => (
+                                                                    <tr key={c.id} className="border-b hover:bg-muted/50">
+                                                                        <td className="py-3 px-2">{truncate(c.subject, 50)}</td>
+                                                                        <td className="py-3 px-2">
+                                                                            {SEGMENT_LABELS[c.segment_type] ?? c.segment_type}
+                                                                        </td>
+                                                                        <td className="py-3 px-2">{c.recipient_count}</td>
+                                                                        <td className="py-3 px-2 capitalize">{c.status}</td>
+                                                                        <td className="py-3 px-2">{formatDate(c.created_at)}</td>
+                                                                        <td className="py-3 px-2">
+                                                                            <DropdownMenu>
+                                                                                <DropdownMenuTrigger asChild>
+                                                                                    <Button variant="ghost" size="icon" className="size-8">
+                                                                                        <IconDots className="size-4" />
+                                                                                    </Button>
+                                                                                </DropdownMenuTrigger>
+                                                                                <DropdownMenuContent align="end">
+                                                                                    <DropdownMenuItem asChild>
+                                                                                        <Link href={`/marketing/email/${c.id}/edit`} className="gap-2 cursor-pointer">
+                                                                                            <IconEdit className="size-4" />
+                                                                                            Edit
+                                                                                        </Link>
+                                                                                    </DropdownMenuItem>
+                                                                                    <DropdownMenuItem asChild>
+                                                                                        <Link href={`/marketing/email/${c.id}/edit?preview=1`} className="gap-2 cursor-pointer">
+                                                                                            <IconEye className="size-4" />
+                                                                                            Preview
+                                                                                        </Link>
+                                                                                    </DropdownMenuItem>
+                                                                                </DropdownMenuContent>
+                                                                            </DropdownMenu>
+                                                                        </td>
+                                                                    </tr>
+                                                                ))}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                )}
+                                            </CardContent>
+                                        </Card>
                                     </TabsContent>
 
-                                    <TabsContent value="social" className="mt-6">
-                                        <SocialPostWizard
-                                            properties={properties}
-                                            selectedPropertyId={selectedPropertyId}
-                                            onPropertyChange={handlePropertyChange}
-                                            selectedImages={selectedImages}
-                                            onSelectionChange={setSelectedImages}
-                                            caption={caption}
-                                            hashtags={hashtags}
-                                            onCaptionChange={setCaption}
-                                            onHashtagsChange={setHashtags}
-                                            onGenerateWithAI={handleGenerateWithAI}
-                                            isGenerating={isGenerating}
-                                        />
+                                    <TabsContent value="posts" className="mt-0">
+                                        <Card>
+                                            <CardContent className="">
+                                                {socialPosts.length === 0 ? (
+                                                    <div className="rounded-lg border border-dashed py-12 text-center text-muted-foreground">
+                                                        <p>No posts yet. Create your first social post.</p>
+                                                        <Button asChild variant="outline" className="mt-4">
+                                                            <Link href="/marketing/social/new" className="gap-2">
+                                                                <IconPlus className="size-4" />
+                                                                Create Social Post
+                                                            </Link>
+                                                        </Button>
+                                                    </div>
+                                                ) : (
+                                                    <div className="overflow-x-auto">
+                                                        <table className="w-full text-sm">
+                                                            <thead>
+                                                                <tr className="border-b">
+                                                                    <th className="text-left py-3 px-2 font-medium">Caption</th>
+                                                                    <th className="text-left py-3 px-2 font-medium">Property</th>
+                                                                    <th className="text-left py-3 px-2 font-medium">Images</th>
+                                                                    <th className="text-left py-3 px-2 font-medium">Created</th>
+                                                                    <th className="w-[60px] py-3 px-2"></th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {socialPosts.map((p) => (
+                                                                    <tr key={p.id} className="border-b hover:bg-muted/50">
+                                                                        <td className="py-3 px-2 max-w-xs">
+                                                                            {truncate(p.caption ?? "", 60)}
+                                                                        </td>
+                                                                        <td className="py-3 px-2">{p.property_name ?? "—"}</td>
+                                                                        <td className="py-3 px-2">{p.images_count}</td>
+                                                                        <td className="py-3 px-2">{formatDate(p.created_at)}</td>
+                                                                        <td className="py-3 px-2">
+                                                                            <DropdownMenu>
+                                                                                <DropdownMenuTrigger asChild>
+                                                                                    <Button variant="ghost" size="icon" className="size-8">
+                                                                                        <IconDots className="size-4" />
+                                                                                    </Button>
+                                                                                </DropdownMenuTrigger>
+                                                                                <DropdownMenuContent align="end">
+                                                                                    <DropdownMenuItem asChild>
+                                                                                        <Link href={`/marketing/social/${p.id}/edit`} className="gap-2 cursor-pointer">
+                                                                                            <IconEdit className="size-4" />
+                                                                                            Edit
+                                                                                        </Link>
+                                                                                    </DropdownMenuItem>
+                                                                                    <DropdownMenuItem asChild>
+                                                                                        <Link href={`/marketing/social/${p.id}/edit?preview=1`} className="gap-2 cursor-pointer">
+                                                                                            <IconEye className="size-4" />
+                                                                                            Preview
+                                                                                        </Link>
+                                                                                    </DropdownMenuItem>
+                                                                                </DropdownMenuContent>
+                                                                            </DropdownMenu>
+                                                                        </td>
+                                                                    </tr>
+                                                                ))}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                )}
+                                            </CardContent>
+                                        </Card>
                                     </TabsContent>
                                 </Tabs>
                             </div>

@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
-import { IconArrowLeft, IconArrowRight, IconPhoto, IconEdit, IconEye } from "@tabler/icons-react"
+import { router } from "@inertiajs/react"
+import { IconArrowLeft, IconArrowRight, IconPhoto, IconEdit, IconEye, IconDeviceFloppy } from "@tabler/icons-react"
 import { cn } from "@/lib/utils"
 import { SocialImagePicker, type PropertyForSocial } from "./social-image-picker"
 import { CaptionDisplay } from "./caption-display"
@@ -24,6 +25,15 @@ interface SocialPostWizardProps {
     onHashtagsChange: (value: string) => void
     onGenerateWithAI?: () => void
     isGenerating?: boolean
+    /** When provided, step 3 shows "Save post" that POSTs to this URL with getSavePayload() */
+    saveUrl?: string
+    /** When editing, PUT to this URL instead of POST */
+    updateUrl?: string
+    getSavePayload?: () => { property_id: number | null; images: string[]; caption: string; hashtags: string; location: string }
+    /** Start on this step (e.g. 3 for preview) */
+    initialStep?: number
+    /** Override location for preview when property is null (e.g. from saved post) */
+    locationForPreview?: string
 }
 
 export function SocialPostWizard({
@@ -38,8 +48,13 @@ export function SocialPostWizard({
     onHashtagsChange,
     onGenerateWithAI,
     isGenerating = false,
+    saveUrl,
+    updateUrl,
+    getSavePayload,
+    initialStep,
+    locationForPreview,
 }: SocialPostWizardProps) {
-    const [step, setStep] = useState(1)
+    const [step, setStep] = useState(initialStep ?? 1)
 
     const selectedProperty = properties.find((p) => p.id === selectedPropertyId) ?? null
 
@@ -54,6 +69,16 @@ export function SocialPostWizard({
     const goBack = () => {
         if (step === 2) setStep(1)
         else if (step === 3) setStep(2)
+    }
+
+    const handleSavePost = () => {
+        if (!getSavePayload) return
+        const payload = getSavePayload()
+        if (updateUrl) {
+            router.put(updateUrl, payload)
+        } else if (saveUrl) {
+            router.post(saveUrl, payload)
+        }
     }
 
     return (
@@ -119,7 +144,7 @@ export function SocialPostWizard({
                                             selectedImages={selectedImages}
                                             caption={caption}
                                             hashtags={hashtags}
-                                            location={selectedProperty?.location}
+                                            location={selectedProperty?.location ?? locationForPreview}
                                         />
                 )}
 
@@ -143,6 +168,11 @@ export function SocialPostWizard({
                             >
                                 Next
                                 <IconArrowRight className="ml-2 size-4" />
+                            </Button>
+                        ) : (saveUrl || updateUrl) && getSavePayload ? (
+                            <Button onClick={handleSavePost} className="gap-2">
+                                <IconDeviceFloppy className="size-4" />
+                                {updateUrl ? "Update" : "Save post"}
                             </Button>
                         ) : (
                             <Button
