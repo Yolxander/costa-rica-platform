@@ -211,18 +211,15 @@ export default function Landing() {
                     {/* 1. HERO */}
                     <section className="px-4 py-6 sm:px-6 lg:px-8">
                         <div className="relative mx-auto flex min-h-[85vh] max-w-7xl items-center justify-center overflow-hidden rounded-2xl bg-muted/30">
-                            {/* Background image */}
-                            <div className="absolute inset-0 bg-[url('/sora-bg.jpg')] bg-cover bg-center" />
+                            {/* Background image - top half */}
+                            <div className="absolute inset-0 bg-[url('/sora-bg.jpg')] bg-[length:100%_200%] bg-[position:50%_0%]" />
 
                             {/* Dark overlay */}
-                            <div className="absolute inset-0 bg-black/30" />
+                            <div className="absolute inset-0 bg-black/20" />
 
                             <div className="relative z-10 mx-auto w-full max-w-3xl px-6 py-16 text-center sm:px-8 sm:py-20">
                                 <h1 className="text-4xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl">
-                                    Own Your{' '}
-                                    <span className="text-[#d87943]">
-                                        Direct Bookings
-                                    </span>
+                                    Own Your Direct Bookings
                                 </h1>
 
                                 <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-white sm:text-lg md:text-xl">
@@ -645,8 +642,8 @@ export default function Landing() {
                         className="px-4 py-8 sm:px-6 lg:px-8"
                     >
                         <div className="relative mx-auto flex min-h-[55vh] max-w-7xl items-center justify-center overflow-hidden rounded-2xl bg-muted/30">
-                            {/* Background image */}
-                            <div className="absolute inset-0 bg-[url('/sora-bg.jpg')] bg-cover bg-center" />
+                            {/* Background image - bottom half */}
+                            <div className="absolute inset-0 bg-[url('/sora-bg.jpg')] bg-[length:100%_200%] bg-[position:50%_100%]" />
 
                             {/* Dark overlay */}
                             <div className="absolute inset-0 bg-black/30" />
