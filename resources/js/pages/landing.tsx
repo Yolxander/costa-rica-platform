@@ -8,7 +8,6 @@ import {
     IconChevronRight,
     IconCheck,
     IconArrowRight,
-    IconChevronDown,
     IconUsers,
     IconBrandInstagram,
     IconBrandX,
@@ -67,10 +66,6 @@ const faqItems = [
         a: "Yes. We're an additional channel, not a replacement. Keep Airbnb, capture overflow direct.",
     },
     {
-        q: 'Is this legal in Costa Rica?',
-        a: 'Yes. We help you collect IVA (13% sales tax) automatically through Stripe.',
-    },
-    {
         q: 'How do I receive payments?',
         a: 'Stripe deposits to your Costa Rican bank account (Banco Nacional, BAC, etc.) within 2 business days.',
     },
@@ -82,28 +77,68 @@ const faqItems = [
 
 function FAQSection() {
     const [openIndex, setOpenIndex] = useState<number | null>(null);
+    const faqRef = useRef<HTMLDivElement>(null);
+    const [faqInView, setFaqInView] = useState(false);
+
+    useEffect(() => {
+        const ob = new IntersectionObserver(([e]) => setFaqInView(e.isIntersecting), { threshold: 0.1 });
+        const el = faqRef.current;
+        if (el) ob.observe(el);
+        return () => ob.disconnect();
+    }, []);
+
     return (
-        <section className="border-t bg-secondary/5 px-4 py-16 sm:px-6 lg:px-8">
-            <div className="mx-auto max-w-2xl">
-                <h2 className="text-center text-2xl font-bold sm:text-3xl">Frequently Asked Questions</h2>
-                <div className="mt-10 space-y-3">
+        <section ref={faqRef} className="bg-secondary/5 px-4 pt-16 pb-20 sm:px-6 lg:px-8">
+            <div className="mx-auto max-w-7xl">
+                <div className="mb-12 text-center">
+                    <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Frequently asked questions</h2>
+                    <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
+                        Here are some common questions about our services to help you understand better.
+                    </p>
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2">
                     {faqItems.map((item, i) => (
                         <Collapsible
                             key={i}
                             open={openIndex === i}
                             onOpenChange={(open) => setOpenIndex(open ? i : null)}
                         >
-                            <Card className="overflow-hidden rounded-xl border-0 bg-background shadow-sm">
+                            <Card
+                                className="group overflow-hidden rounded-2xl border border-border/30 bg-background shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
+                                style={{
+                                    opacity: faqInView ? 1 : 0,
+                                    transform: faqInView ? 'translateY(0)' : 'translateY(20px)',
+                                    transitionDelay: `${i * 90}ms`,
+                                }}
+                            >
                                 <CollapsibleTrigger asChild>
-                                    <button className="flex w-full items-center justify-between px-5 py-4 text-left transition-colors hover:bg-muted/50 sm:px-6">
-                                        <span className="pr-4 font-medium">{item.q}</span>
-                                        <IconChevronDown
-                                            className={`size-5 shrink-0 transition-transform duration-300 ${openIndex === i ? 'rotate-180' : ''}`}
-                                        />
+                                    <button className="flex w-full items-center justify-between p-5 text-left">
+                                        <span className="pr-4 text-base font-semibold">{item.q}</span>
+                                        <span className={`flex size-8 shrink-0 items-center justify-center rounded-full transition-all duration-300 ${openIndex === i ? 'bg-secondary text-background rotate-0' : 'bg-primary text-background rotate-0'}`}
+                                            style={{
+                                                transform: openIndex === i ? 'rotate(90deg)' : 'rotate(0deg)',
+                                                transition: 'transform 0.25s ease-out, background-color 0.3s',
+                                            }}
+                                        >
+                                            <svg className="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m6-6H6" />
+                                            </svg>
+                                        </span>
                                     </button>
                                 </CollapsibleTrigger>
-                                <CollapsibleContent>
-                                    <div className="border-t px-5 py-4 text-sm leading-relaxed text-muted-foreground sm:px-6">{item.a}</div>
+                                <CollapsibleContent
+                                    className="data-[state=open]:animate-faqOpen data-[state=closed]:animate-faqClose"
+                                >
+                                    <div
+                                        className="px-5 pb-5 pt-0 text-sm leading-relaxed text-muted-foreground"
+                                        style={{
+                                            opacity: openIndex === i ? 1 : 0,
+                                            transform: openIndex === i ? 'translateY(0)' : 'translateY(6px)',
+                                            transition: 'opacity 0.35s ease-out, transform 0.35s ease-out',
+                                        }}
+                                    >
+                                        {item.a}
+                                    </div>
                                 </CollapsibleContent>
                             </Card>
                         </Collapsible>
@@ -157,7 +192,17 @@ export default function Landing() {
     const [demoModalOpen, setDemoModalOpen] = useState(false);
     const regionsRef = useRef<HTMLDivElement>(null);
     const hostCountRef = useRef<HTMLDivElement>(null);
+    const whyChooseRef = useRef<HTMLDivElement>(null);
+    const popularRegionsRef = useRef<HTMLDivElement>(null);
+    const whatYouGetRef = useRef<HTMLDivElement>(null);
+    const pricingRef = useRef<HTMLDivElement>(null);
+    const ctaRef = useRef<HTMLDivElement>(null);
+    const whatYouGetCardRefs = useRef<(HTMLDivElement | null)[]>([]);
     const [hostCountInView, setHostCountInView] = useState(false);
+    const [whyChooseInView, setWhyChooseInView] = useState(false);
+    const [popularRegionsInView, setPopularRegionsInView] = useState(false);
+    const [pricingInView, setPricingInView] = useState(false);
+    const [ctaInView, setCtaInView] = useState(false);
     const [scrollY, setScrollY] = useState(0);
     const [vh, setVh] = useState(800);
 
@@ -165,26 +210,51 @@ export default function Landing() {
         setVh(window.innerHeight);
         const handleScroll = () => setScrollY(window.scrollY);
         window.addEventListener('scroll', handleScroll, { passive: true });
-        // Initialize Lenis smooth scroll
+
+        // Initialize Lenis smooth scroll with script load detection
+        let lenisInstance: { raf: (time: number) => void; destroy: () => void } | null = null;
+
         const initLenis = () => {
             const win = window as unknown as { Lenis?: new (options: Record<string, unknown>) => { raf: (time: number) => void; destroy: () => void } };
             if (typeof window !== 'undefined' && win.Lenis) {
-                const lenis = new win.Lenis({
+                lenisInstance = new win.Lenis({
                     duration: 1.2,
                     easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
                     orientation: 'vertical',
                     gestureOrientation: 'vertical',
                     smoothWheel: true,
+                    wheelMultiplier: 1,
+                    touchMultiplier: 2,
                 });
+
+                // Connect Lenis to the document for proper scroll handling
+                lenisInstance.raf(0);
+
                 function raf(time: number) {
-                    lenis.raf(time);
+                    lenisInstance?.raf(time);
                     requestAnimationFrame(raf);
                 }
                 requestAnimationFrame(raf);
-                return lenis;
             }
         };
-        const lenisInstance = initLenis();
+
+        // Check if script is already loaded
+        const win = window as unknown as { Lenis?: new (options: Record<string, unknown>) => { raf: (time: number) => void; destroy: () => void } };
+        if (win.Lenis) {
+            initLenis();
+        } else {
+            // Wait for script to load
+            const checkInterval = setInterval(() => {
+                if (win.Lenis) {
+                    clearInterval(checkInterval);
+                    initLenis();
+                }
+            }, 100);
+
+            // Cleanup interval after 10 seconds if script never loads
+            setTimeout(() => clearInterval(checkInterval), 10000);
+        }
+
         return () => {
             window.removeEventListener('scroll', handleScroll);
             if (lenisInstance) lenisInstance.destroy();
@@ -206,6 +276,55 @@ export default function Landing() {
         if (el) ob.observe(el);
         return () => ob.disconnect();
     }, []);
+
+    useEffect(() => {
+        const ob = new IntersectionObserver(([e]) => setWhyChooseInView(e.isIntersecting), { threshold: 0.2 });
+        const el = whyChooseRef.current;
+        if (el) ob.observe(el);
+        return () => ob.disconnect();
+    }, []);
+
+    useEffect(() => {
+        const ob = new IntersectionObserver(([e]) => setPopularRegionsInView(e.isIntersecting), { threshold: 0.15 });
+        const el = popularRegionsRef.current;
+        if (el) ob.observe(el);
+        return () => ob.disconnect();
+    }, []);
+
+    useEffect(() => {
+        const ob = new IntersectionObserver(([e]) => setPricingInView(e.isIntersecting), { threshold: 0.2 });
+        const el = pricingRef.current;
+        if (el) ob.observe(el);
+        return () => ob.disconnect();
+    }, []);
+
+    useEffect(() => {
+        const ob = new IntersectionObserver(([e]) => setCtaInView(e.isIntersecting), { threshold: 0.15 });
+        const el = ctaRef.current;
+        if (el) ob.observe(el);
+        return () => ob.disconnect();
+    }, []);
+
+    // Scroll-driven scale and vertical lift for What You Get cards (Premium Parallax Feel)
+    const getCardTransform = (index: number) => {
+        const card = whatYouGetCardRefs.current[index];
+        if (!card) return { scale: 0.93, translateY: 10 };
+
+        const rect = card.getBoundingClientRect();
+        const cardCenter = rect.top + rect.height / 2;
+        const viewportCenter = vh / 2;
+        const distance = cardCenter - viewportCenter;
+
+        // Normalize distance: 0 at center, increases as card moves away
+        const maxDistance = 400;
+        const progress = Math.max(0, Math.min(1, 1 - Math.abs(distance) / maxDistance));
+
+        // Scale: 0.93 → 1, translateY: 10px → 0
+        const scale = 0.93 + (progress * 0.07);
+        const translateY = 10 - (progress * 10);
+
+        return { scale, translateY };
+    };
 
     const scrollRegions = (dir: 'l' | 'r') => {
         if (regionsRef.current) {
@@ -257,10 +376,11 @@ export default function Landing() {
                         }}
                     >
                         <div
-                            className="relative mx-auto flex min-h-[85vh] items-center justify-center overflow-hidden rounded-2xl bg-muted/30 mt-14"
+                            className="relative mx-auto mt-14 flex min-h-[85vh] items-center justify-center overflow-hidden rounded-2xl bg-muted/30"
                             style={{
                                 width: `${heroWidth}px`,
-                                borderRadius: heroWidthProgress > 0.5 ? '0px' : '16px',
+                                borderRadius:
+                                    heroWidthProgress > 0.5 ? '0px' : '16px',
                             }}
                         >
                             {/* Background image - top half with zoom parallax */}
@@ -314,23 +434,31 @@ export default function Landing() {
                     </section>
 
                     {/* 2. WHY CHOOSE */}
-                    <section className="px-4 py-16 sm:px-6 lg:px-8">
+                    <section
+                        ref={whyChooseRef}
+                        className="px-4 py-16 sm:px-6 lg:px-8"
+                    >
                         <div className="mx-auto max-w-7xl">
                             {/* Header row with label, title left, desc right */}
                             <div className="mb-12 grid gap-8 lg:grid-cols-2 lg:items-start">
                                 <div>
-                                    <span className="mb-3 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                                    <span className="mb-3 block text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                                         Features
                                     </span>
-                                    <h2 className="text-3xl font-bold leading-tight sm:text-4xl">
-                                        Why Costa Rica Hosts Choose Direct Bookings
+                                    <h2 className="text-3xl leading-tight font-bold sm:text-4xl">
+                                        Why Costa Rica Hosts Choose Direct
+                                        Bookings
                                     </h2>
                                 </div>
                                 <p className="text-muted-foreground lg:pt-8">
-                                    Get your direct booking page live in minutes—no website needed. Add your listing, sync your calendar, and start reaching guests with email and social. Connect Stripe when you're ready to take payments.
+                                    Get your direct booking page live in
+                                    minutes—no website needed. Add your listing,
+                                    sync your calendar, and start reaching
+                                    guests with email and social. Connect Stripe
+                                    when you're ready to take payments.
                                 </p>
                             </div>
-                            {/* 3 feature cards */}
+                            {/* 3 feature cards with cloud float animation */}
                             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                                 {[
                                     {
@@ -351,7 +479,14 @@ export default function Landing() {
                                 ].map((item, i) => (
                                     <Card
                                         key={i}
-                                        className="rounded-2xl border-0 bg-muted/40 p-6 shadow-sm transition-all hover:shadow-md"
+                                        className="rounded-2xl border-0 bg-muted/40 p-6 shadow-sm transition-all duration-700 ease-out hover:shadow-md"
+                                        style={{
+                                            opacity: whyChooseInView ? 1 : 0,
+                                            transform: whyChooseInView
+                                                ? 'translateY(0) scale(1)'
+                                                : 'translateY(60px) scale(0.95)',
+                                            transitionDelay: `${i * 150}ms`,
+                                        }}
                                     >
                                         <div
                                             className={`mb-4 flex size-10 items-center justify-center rounded-lg ${i === 1 ? 'bg-secondary/20' : 'bg-primary/10'}`}
@@ -396,73 +531,11 @@ export default function Landing() {
                         </div>
                     </section>
 
-                    {/* 6. WHAT YOU GET */}
-                    <section className="border-t bg-secondary/5 px-4 py-16 sm:px-6 lg:px-8">
-                        <div className="mx-auto max-w-6xl">
-                            <h2 className="text-center text-2xl font-bold sm:text-3xl">
-                                What You Get
-                            </h2>
-                            <p className="mt-2 text-center text-muted-foreground">
-                                Everything you need to grow direct bookings
-                            </p>
-                            <div className="mt-10 flex flex-col">
-                                {WHAT_YOU_GET_CARDS.map((f, i) => (
-                                    <div
-                                        key={f.title}
-                                        className={`flex ${i % 2 === 0 ? 'justify-start' : 'justify-end'} ${i > 0 ? '-mt-8' : ''}`}
-                                    >
-                                        <Card
-                                            className={`flex w-full max-w-lg flex-col rounded-2xl border-0 bg-background p-6 shadow-sm transition-all hover:shadow-md sm:p-8 ${i % 2 === 1 ? 'border-l-4 border-l-secondary' : ''}`}
-                                        >
-                                            <div className="flex items-center gap-3">
-                                                <div
-                                                    className={`flex size-12 shrink-0 items-center justify-center rounded-xl ${i % 2 === 1 ? 'bg-secondary/20' : 'bg-primary/10'}`}
-                                                >
-                                                    <f.icon
-                                                        className={`size-6 ${i % 2 === 1 ? 'text-secondary' : 'text-primary'}`}
-                                                    />
-                                                </div>
-                                                <h3 className="text-lg font-semibold">
-                                                    {f.title}
-                                                </h3>
-                                            </div>
-                                            {f.subtitle && (
-                                                <p
-                                                    className={`mt-2 text-sm font-medium ${i % 2 === 1 ? 'text-secondary' : 'text-primary'}`}
-                                                >
-                                                    {f.subtitle}
-                                                </p>
-                                            )}
-                                            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                                                {f.desc}
-                                            </p>
-                                            {f.features &&
-                                                f.features.length > 0 && (
-                                                    <ul className="mt-4 space-y-2">
-                                                        {f.features.map(
-                                                            (feature) => (
-                                                                <li
-                                                                    key={
-                                                                        feature
-                                                                    }
-                                                                    className="flex items-center gap-2 text-sm text-muted-foreground"
-                                                                >
-                                                                    <IconCheck className="size-4 shrink-0 text-green-500" />
-                                                                    {feature}
-                                                                </li>
-                                                            ),
-                                                        )}
-                                                    </ul>
-                                                )}
-                                        </Card>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </section>
-
                     {/* 5. POPULAR REGIONS */}
-                    <section className="border-t px-4 py-16 sm:px-6 lg:px-8">
+                    <section
+                        ref={popularRegionsRef}
+                        className="px-4 py-16 sm:px-6 lg:px-8"
+                    >
                         <div className="mx-auto max-w-7xl">
                             <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
                                 <div>
@@ -486,34 +559,45 @@ export default function Landing() {
                                     ref={regionsRef}
                                     className="flex scroll-pl-4 gap-4 overflow-x-auto scroll-smooth px-4 pt-1 pb-4 [scrollbar-width:none] sm:gap-6 sm:px-0 [&::-webkit-scrollbar]:hidden"
                                 >
-                                    {REGIONS.map((r) => (
-                                        <div
+                                    {REGIONS.map((r, i) => (
+                                        <Card
                                             key={r.name}
-                                            className="flex w-[300px] shrink-0 flex-col overflow-hidden rounded-2xl bg-card shadow-md transition-shadow hover:shadow-lg"
+                                            className="group flex w-[340px] shrink-0 flex-col overflow-hidden rounded-3xl border border-border/40 bg-background p-3 shadow-[0_2px_8px_rgba(0,0,0,0.06)] transition-all duration-700 ease-out hover:shadow-[0_4px_16px_rgba(0,0,0,0.08)]"
+                                            style={{
+                                                opacity: popularRegionsInView
+                                                    ? 1
+                                                    : 0,
+                                                transform: popularRegionsInView
+                                                    ? 'translateX(0) scale(1)'
+                                                    : 'translateX(40px) scale(0.96)',
+                                                transitionDelay: `${i * 100}ms`,
+                                                animation: popularRegionsInView
+                                                    ? `regionFloat 6s ease-in-out ${i * 0.5}s infinite`
+                                                    : 'none',
+                                            }}
                                         >
-                                            <div className="relative aspect-[4/3] w-full overflow-hidden">
+                                            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl">
                                                 <img
                                                     src={r.img}
                                                     alt={r.name}
-                                                    className="h-full w-full object-cover"
+                                                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                                                 />
-                                                <span className="absolute top-3 right-3 rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground backdrop-blur-sm">
-                                                    Popular
-                                                </span>
                                             </div>
-                                            <div className="flex flex-col gap-1 p-5">
-                                                <h3 className="font-semibold">
+                                            <div className="flex flex-col gap-1 px-2 pt-4 pb-2">
+                                                <h3 className="text-lg font-semibold tracking-tight">
                                                     {r.name}
                                                 </h3>
                                                 <p className="text-sm text-muted-foreground">
                                                     {r.tag}
                                                 </p>
-                                                <div className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
-                                                    <IconMapPin className="size-3.5 shrink-0" />
-                                                    {r.region}
+                                                <div className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+                                                    <IconMapPin className="size-3.5 shrink-0 text-secondary" />
+                                                    <span className="font-medium">
+                                                        {r.region}
+                                                    </span>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </Card>
                                     ))}
                                 </div>
                                 <div className="mt-4 flex justify-end gap-2">
@@ -538,8 +622,94 @@ export default function Landing() {
                         </div>
                     </section>
 
+                    {/* 6. WHAT YOU GET */}
+                    <section
+                        ref={whatYouGetRef}
+                        className="bg-gradient-to-b from-muted/40 via-muted/25 via-secondary/5 to-background px-4 py-16 sm:px-6 lg:px-8"
+                    >
+                        <div className="mx-auto max-w-6xl">
+                            <h2 className="text-center text-2xl font-bold sm:text-3xl">
+                                What You Get
+                            </h2>
+                            <p className="mt-2 text-center text-muted-foreground">
+                                Everything you need to grow direct bookings
+                            </p>
+                            <div
+                                className="mt-10 flex flex-col"
+                                style={{ perspective: '1000px' }}
+                            >
+                                {WHAT_YOU_GET_CARDS.map((f, i) => (
+                                    <div
+                                        key={f.title}
+                                        ref={(el) => {
+                                            whatYouGetCardRefs.current[i] = el;
+                                        }}
+                                        className={`flex ${i % 2 === 0 ? 'justify-start' : 'justify-end'} ${i > 0 ? '-mt-8' : ''}`}
+                                        style={{
+                                            transform: `scale(${getCardTransform(i).scale}) translateY(${getCardTransform(i).translateY}px)`,
+                                            transition:
+                                                'transform 0.35s cubic-bezier(0.22, 1, 0.36, 1)',
+                                        }}
+                                    >
+                                        <Card
+                                            className={`group flex w-full max-w-lg flex-col rounded-2xl border border-border/40 bg-gradient-to-br from-background via-background to-muted/30 p-6 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_4px_12px_rgba(0,0,0,0.03)] backdrop-blur-sm transition-all duration-300 hover:border-border/60 hover:shadow-[0_2px_6px_rgba(0,0,0,0.05),0_8px_20px_rgba(0,0,0,0.06)] sm:p-8`}
+                                        >
+                                            <div className="flex items-center gap-4">
+                                                <div
+                                                    className={`flex size-12 shrink-0 items-center justify-center rounded-xl border border-border/30 ring-1 ring-border/20 ${i % 2 === 1 ? 'bg-secondary/15' : 'bg-primary/10'}`}
+                                                >
+                                                    <f.icon
+                                                        className={`size-5 ${i % 2 === 1 ? 'text-secondary' : 'text-primary'}`}
+                                                    />
+                                                </div>
+                                                <div className="flex flex-col">
+                                                    <h3 className="text-lg font-semibold">
+                                                        {f.title}
+                                                    </h3>
+                                                    {f.subtitle && (
+                                                        <p
+                                                            className={`text-sm font-medium ${i % 2 === 1 ? 'text-secondary' : 'text-primary'}`}
+                                                        >
+                                                            {f.subtitle}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <p className="mt-4 text-sm leading-relaxed text-foreground">
+                                                {f.desc}
+                                            </p>
+                                            {f.features &&
+                                                f.features.length > 0 && (
+                                                    <ul className="mt-5 space-y-2.5 border-t border-border/30 pt-4">
+                                                        {f.features.map(
+                                                            (feature) => (
+                                                                <li
+                                                                    key={
+                                                                        feature
+                                                                    }
+                                                                    className="flex items-center gap-2.5 text-sm text-muted-foreground"
+                                                                >
+                                                                    <span className="flex size-5 items-center justify-center rounded-full bg-green-500/10">
+                                                                        <IconCheck className="size-3.5 shrink-0 text-green-600" />
+                                                                    </span>
+                                                                    {feature}
+                                                                </li>
+                                                            ),
+                                                        )}
+                                                    </ul>
+                                                )}
+                                        </Card>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+
                     {/* 7. PRICING */}
-                    <section className="border-t px-4 py-16 sm:px-6 lg:px-8">
+                    <section
+                        ref={pricingRef}
+                        className="bg-gradient-to-b from-background via-background to-secondary/5 px-4 py-16 sm:px-6 lg:px-8"
+                    >
                         <div className="mx-auto max-w-6xl">
                             <h2 className="text-center text-2xl font-bold sm:text-3xl">
                                 Simple pricing tiers
@@ -550,7 +720,18 @@ export default function Landing() {
                             </p>
                             <div className="mt-10 grid gap-6 lg:grid-cols-3">
                                 {/* Starter */}
-                                <Card className="flex flex-col rounded-2xl border-0 shadow-lg">
+                                <Card
+                                    className="flex flex-col rounded-2xl border-0 shadow-lg transition-all duration-650 ease-out hover:scale-[1.02] hover:shadow-xl"
+                                    style={{
+                                        opacity: pricingInView ? 1 : 0,
+                                        transform: pricingInView
+                                            ? 'translateY(0) scale(1)'
+                                            : 'translateY(30px) scale(0.96)',
+                                        transitionDelay: pricingInView
+                                            ? '0ms'
+                                            : '0ms',
+                                    }}
+                                >
                                     <CardHeader className="pb-4">
                                         <CardTitle>Starter</CardTitle>
                                         <CardDescription>
@@ -586,15 +767,26 @@ export default function Landing() {
                                         >
                                             <Button
                                                 variant="secondary"
-                                                className="h-11 w-full rounded-xl"
+                                                className="h-11 w-full rounded-xl transition-transform duration-200 hover:scale-[1.04]"
                                             >
                                                 Start Free
                                             </Button>
                                         </Link>
                                     </CardContent>
                                 </Card>
-                                {/* Pro Host */}
-                                <Card className="relative flex flex-col rounded-2xl border-2 border-primary shadow-xl">
+                                {/* Pro Host - Most Popular */}
+                                <Card
+                                    className="relative flex flex-col rounded-2xl border-2 border-primary shadow-xl transition-all duration-750 ease-out hover:scale-[1.02] hover:shadow-2xl"
+                                    style={{
+                                        opacity: pricingInView ? 1 : 0,
+                                        transform: pricingInView
+                                            ? 'translateY(0) scale(1)'
+                                            : 'translateY(30px) scale(0.94)',
+                                        transitionDelay: pricingInView
+                                            ? '240ms'
+                                            : '0ms',
+                                    }}
+                                >
                                     <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 rounded-full bg-primary px-4 py-1 text-xs font-medium text-primary-foreground">
                                         Most Popular
                                     </div>
@@ -631,14 +823,26 @@ export default function Landing() {
                                             href="/host/register"
                                             className="mt-6 block"
                                         >
-                                            <Button className="h-11 w-full rounded-xl">
+                                            <Button className="group h-11 w-full rounded-xl transition-transform duration-200 hover:scale-[1.04]">
                                                 Upgrade
+                                                <IconArrowRight className="ml-1 size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
                                             </Button>
                                         </Link>
                                     </CardContent>
                                 </Card>
                                 {/* Professional */}
-                                <Card className="flex flex-col rounded-2xl border-0 shadow-lg">
+                                <Card
+                                    className="flex flex-col rounded-2xl border-0 shadow-lg transition-all duration-650 ease-out hover:scale-[1.02] hover:shadow-xl"
+                                    style={{
+                                        opacity: pricingInView ? 1 : 0,
+                                        transform: pricingInView
+                                            ? 'translateY(0) scale(1)'
+                                            : 'translateY(30px) scale(0.96)',
+                                        transitionDelay: pricingInView
+                                            ? '120ms'
+                                            : '0ms',
+                                    }}
+                                >
                                     <CardHeader className="pb-4">
                                         <CardTitle>Professional</CardTitle>
                                         <CardDescription>
@@ -674,7 +878,7 @@ export default function Landing() {
                                         >
                                             <Button
                                                 variant="secondary"
-                                                className="h-11 w-full rounded-xl"
+                                                className="h-11 w-full rounded-xl transition-transform duration-200 hover:scale-[1.04]"
                                             >
                                                 Start Trial
                                             </Button>
@@ -699,35 +903,83 @@ export default function Landing() {
                     {/* 9. FINAL CTA */}
                     <section
                         id="airbnb-import"
+                        ref={ctaRef}
                         className="px-4 py-8 sm:px-6 lg:px-8"
                     >
-                        <div className="relative mx-auto flex min-h-[55vh] max-w-7xl items-center justify-center overflow-hidden rounded-2xl bg-muted/30">
-                            {/* Background image - bottom half */}
-                            <div className="absolute inset-0 bg-[url('/sora-bg.jpg')] bg-[length:100%_200%] bg-[position:50%_100%]" />
+                        <div
+                            className="relative mx-auto flex min-h-[55vh] max-w-7xl items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-secondary/10 via-background to-background shadow-[0_0_80px_rgba(255,255,255,0.05)]"
+                            style={{
+                                backgroundPosition: ctaInView ? '50% 100%' : '50% 110%',
+                                transition: 'background-position 2s ease-out',
+                            }}
+                        >
+                            {/* Radial glow behind content */}
+                            <div
+                                className="pointer-events-none absolute inset-0 flex items-center justify-center"
+                                style={{
+                                    opacity: ctaInView ? 1 : 0,
+                                    transform: ctaInView ? 'scale(1)' : 'scale(0.9)',
+                                    transition: 'opacity 1.4s ease-out, transform 1.4s ease-out',
+                                }}
+                            >
+                                <div
+                                    className="h-[650px] w-[650px] rounded-full blur-3xl"
+                                    style={{
+                                        background:
+                                            "radial-gradient(circle at center, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 35%, rgba(255,255,255,0.05) 55%, transparent 75%)",
+                                    }}
+                                />
+                            </div>
 
-                            {/* Dark overlay */}
-                            <div className="absolute inset-0 bg-black/30" />
+                            {/* Button radial glow - fades in behind CTA */}
+                            <div
+                                className="pointer-events-none absolute bottom-[30%] left-1/2 -translate-x-1/2"
+                                style={{
+                                    opacity: ctaInView ? 0.25 : 0,
+                                    transform: ctaInView ? 'scale(1)' : 'scale(0.8)',
+                                    transition: 'opacity 1.2s ease-out 0.5s, transform 1.2s ease-out 0.5s',
+                                }}
+                            >
+                                <div
+                                    className="h-[200px] w-[300px] rounded-full blur-[60px]"
+                                    style={{
+                                        background: "radial-gradient(ellipse at center, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 50%, transparent 70%)",
+                                    }}
+                                />
+                            </div>
 
-                            <div className="relative z-10 mx-auto w-full max-w-2xl px-6 py-16 text-center sm:py-20">
-                                <h2 className="text-2xl font-bold text-white sm:text-3xl md:text-4xl">
-                                    Stop Renting Your Business from OTAs
+                            {/* Content */}
+                            <div
+                                className="relative z-10 mx-auto w-full max-w-2xl px-6 py-16 text-center sm:py-20"
+                                style={{
+                                    opacity: ctaInView ? 1 : 0,
+                                    transform: ctaInView ? 'translateY(0) scale(1)' : 'translateY(30px) scale(0.98)',
+                                    transition: 'opacity 1.2s cubic-bezier(0.22,1,0.36,1), transform 1.2s cubic-bezier(0.22,1,0.36,1)',
+                                }}
+                            >
+                                <h2 className="text-3xl text-secondary font-bold tracking-tight sm:text-4xl md:text-5xl">
+                                    Take Back Control of Your Bookings
                                 </h2>
-                                <p className="mt-4 text-lg text-white/90 sm:text-xl">
-                                    Import your Airbnb listing in 2 minutes
+
+                                <p className="mt-4 text-lg text-muted-foreground">
+                                    Import your listing in minutes and start accepting
+                                    direct bookings.
                                 </p>
+
                                 <Link
                                     href="/host/register"
                                     className="mt-8 inline-block"
                                 >
                                     <Button
                                         size="lg"
-                                        className="h-12 gap-2 rounded-full px-8 text-base"
+                                        className="group h-12 gap-2 rounded-full px-8 text-base shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl"
                                     >
                                         Import Now
-                                        <IconArrowRight className="size-4" />
+                                        <IconArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
                                     </Button>
                                 </Link>
-                                <p className="mt-4 text-sm text-white/70">
+
+                                <p className="mt-4 text-sm text-muted-foreground">
                                     No credit card required · Free setup
                                 </p>
                             </div>
@@ -768,11 +1020,15 @@ export default function Landing() {
                     </div>
                 )}
 
-                <footer className="mt-16 border-t bg-secondary/5">
-                    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+                <footer className="mt-16  bg-secondary/5">
+                    <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
                         <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                <IconBeach className="size-5 text-secondary" />
+                                <img
+                                    src="/brisa-logo.png"
+                                    alt="Sora Logo"
+                                    className="h-6 w-auto"
+                                />
                                 <span>
                                     &copy; {new Date().getFullYear()} Sora
                                 </span>
@@ -818,6 +1074,10 @@ export default function Landing() {
                 @keyframes float {
                     0%, 100% { transform: translateY(0); }
                     50% { transform: translateY(-8px); }
+                }
+                @keyframes regionFloat {
+                    0%, 100% { transform: translateY(0) translateX(0); }
+                    50% { transform: translateY(-4px) translateX(0); }
                 }
             `}</style>
             <script src="https://unpkg.com/lenis@1.3.18/dist/lenis.min.js"></script>

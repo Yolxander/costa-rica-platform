@@ -41,8 +41,8 @@ export function PublicHeader({ transparentUntilScroll = false }: PublicHeaderPro
         <header
             className={`fixed left-1/2 top-4 z-50 -translate-x-1/2 transition-all duration-300 ${
                 showStyled
-                    ? 'rounded-full border border-border/50 bg-background/95 shadow-lg backdrop-blur-md px-6 w-7xl'
-                    : 'w-7xl px-4'
+                    ? 'rounded-2xl border border-border/50 bg-background/95 shadow-lg backdrop-blur-md px-6 w-7xl'
+                    : 'w-7xl px-2'
             }`}
         >
             <div className={`flex h-14 items-center gap-6 ${showStyled ? '' : 'mx-auto max-w-full'}`}>
@@ -65,8 +65,8 @@ export function PublicHeader({ transparentUntilScroll = false }: PublicHeaderPro
                             <Button className="h-9 rounded-full bg-foreground text-background hover:bg-foreground/90">Dashboard</Button>
                         </Link>
                     ) : (
-                        <Link href="/pricing">
-                            <Button className="h-9 rounded-full bg-primary text-background hover:bg-foreground/90">View Plans</Button>
+                        <Link href="/login">
+                            <Button className="h-9 rounded-full bg-primary text-background hover:bg-foreground/90">Get Started</Button>
                         </Link>
                     )}
                 </div>
