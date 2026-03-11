@@ -29,8 +29,8 @@ export function PublicHeader({ transparentUntilScroll = false }: PublicHeaderPro
     const navLink = (href: string, label: string, active: boolean) => (
         <Link
             href={href}
-            className={`text-sm transition-colors ${
-                active ? 'font-medium text-foreground' : 'text-muted-foreground hover:text-foreground'
+            className={`text-sm font-medium transition-colors ${
+                active ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
             }`}
         >
             {label}
@@ -39,38 +39,35 @@ export function PublicHeader({ transparentUntilScroll = false }: PublicHeaderPro
 
     return (
         <header
-            className={`sticky top-0 z-50 transition-all duration-300 ${
-                showStyled ? 'border-b border-border/50 bg-background/95 shadow-sm backdrop-blur' : ''
+            className={`fixed left-1/2 top-4 z-50 -translate-x-1/2 transition-all duration-300 ${
+                showStyled
+                    ? 'rounded-full border border-border/50 bg-background/95 shadow-lg backdrop-blur-md px-6 w-7xl'
+                    : 'w-7xl px-4'
             }`}
         >
-            <div className="mx-auto grid h-16 max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-4">
-                <Link href="/" className="flex items-center gap-2 justify-self-start">
+            <div className={`flex h-14 items-center gap-6 ${showStyled ? '' : 'mx-auto max-w-full'}`}>
+                <Link href="/" className="flex items-center gap-2">
                     <img
                         src="/brisa-logo.png"
                         alt="Sora Logo"
-                        className="h-7 w-auto"
+                        className="h-6 w-auto"
                     />
-                    <span className="text-lg font-bold tracking-tight">Sora</span>
+                    <p className="text-lg font-semibold">Sora</p>
                 </Link>
-                <nav className="hidden items-center justify-center gap-6 md:flex">
-                    {navLink('/', 'Home', isActive('/'))}
-                    {navLink('/pricing', 'Pricing', isActive('/pricing'))}
-                    {navLink('/how-it-works', 'How it works', isActive('/how-it-works'))}
-                </nav>
-                <div className="flex items-center justify-end gap-3 justify-self-end">
+                <div className="ml-auto flex items-center gap-6">
+                    <nav className="hidden items-center gap-6 md:flex">
+                        {navLink('/', 'Home', isActive('/'))}
+                        {navLink('/pricing', 'Pricing', isActive('/pricing'))}
+                        {navLink('/how-it-works', 'How it works', isActive('/how-it-works'))}
+                    </nav>
                     {auth?.user ? (
                         <Link href="/dashboard">
-                            <Button className="rounded-full">Dashboard</Button>
+                            <Button className="h-9 rounded-full bg-foreground text-background hover:bg-foreground/90">Dashboard</Button>
                         </Link>
                     ) : (
-                        <>
-                            <Link href="/login">
-                                <Button variant="ghost" className="rounded-full">Log in</Button>
-                            </Link>
-                            <Link href="/host/register">
-                                <Button className="rounded-full">Become a Host</Button>
-                            </Link>
-                        </>
+                        <Link href="/pricing">
+                            <Button className="h-9 rounded-full bg-primary text-background hover:bg-foreground/90">View Plans</Button>
+                        </Link>
                     )}
                 </div>
             </div>

@@ -158,6 +158,47 @@ export default function Landing() {
     const regionsRef = useRef<HTMLDivElement>(null);
     const hostCountRef = useRef<HTMLDivElement>(null);
     const [hostCountInView, setHostCountInView] = useState(false);
+    const [scrollY, setScrollY] = useState(0);
+    const [vh, setVh] = useState(800);
+
+    useEffect(() => {
+        setVh(window.innerHeight);
+        const handleScroll = () => setScrollY(window.scrollY);
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        // Initialize Lenis smooth scroll
+        const initLenis = () => {
+            const win = window as unknown as { Lenis?: new (options: Record<string, unknown>) => { raf: (time: number) => void; destroy: () => void } };
+            if (typeof window !== 'undefined' && win.Lenis) {
+                const lenis = new win.Lenis({
+                    duration: 1.2,
+                    easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                    orientation: 'vertical',
+                    gestureOrientation: 'vertical',
+                    smoothWheel: true,
+                });
+                function raf(time: number) {
+                    lenis.raf(time);
+                    requestAnimationFrame(raf);
+                }
+                requestAnimationFrame(raf);
+                return lenis;
+            }
+        };
+        const lenisInstance = initLenis();
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+            if (lenisInstance) lenisInstance.destroy();
+        };
+    }, []);
+
+    // Parallax: hero image zooms out (scales down) as we scroll
+    // Starts at normal size (1.0) and zooms out to 1.15x over scroll
+    const heroBgScale = 1 + Math.min(0.15, scrollY * 0.0003);
+    const heroContentOpacity = Math.max(0, 1 - scrollY / (vh * 0.6));
+    // Hero width expansion: interpolate from max-w-7xl (1280px) to 100vw
+    const heroWidthProgress = Math.min(1, scrollY / 300); // 0 to 1 over 300px scroll
+    const heroWidth = 1280 + (window.innerWidth - 1280) * heroWidthProgress;
+    const heroPadding = 24 * (1 - heroWidthProgress); // 24px down to 0
 
     useEffect(() => {
         const ob = new IntersectionObserver(([e]) => setHostCountInView(e.isIntersecting), { threshold: 0.5 });
@@ -209,15 +250,36 @@ export default function Landing() {
 
                 <main>
                     {/* 1. HERO */}
-                    <section className="px-4 py-6 sm:px-6 lg:px-8">
-                        <div className="relative mx-auto flex min-h-[85vh] max-w-7xl items-center justify-center overflow-hidden rounded-2xl bg-muted/30">
-                            {/* Background image - top half */}
-                            <div className="absolute inset-0 bg-[url('/sora-bg.jpg')] bg-[length:100%_200%] bg-[position:50%_0%]" />
+                    <section
+                        className="transition-all duration-100 ease-out"
+                        style={{
+                            padding: `${heroPadding}px`,
+                        }}
+                    >
+                        <div
+                            className="relative mx-auto flex min-h-[85vh] items-center justify-center overflow-hidden rounded-2xl bg-muted/30 mt-14"
+                            style={{
+                                width: `${heroWidth}px`,
+                                borderRadius: heroWidthProgress > 0.5 ? '0px' : '16px',
+                            }}
+                        >
+                            {/* Background image - top half with zoom parallax */}
+                            <div
+                                className="absolute inset-0 bg-[url('/sora-bg.jpg')] bg-[length:100%_200%] bg-[position:50%_0%]"
+                                style={{
+                                    transform: `scale(${heroBgScale})`,
+                                    transformOrigin: 'center center',
+                                }}
+                            />
 
                             {/* Dark overlay */}
                             <div className="absolute inset-0 bg-black/20" />
 
-                            <div className="relative z-10 mx-auto w-full max-w-3xl px-6 py-16 text-center sm:px-8 sm:py-20">
+                            {/* Content with fade and subtle parallax */}
+                            <div
+                                className="relative z-10 mx-auto w-full max-w-3xl px-6 py-16 text-center sm:px-8 sm:py-20"
+                                style={{ opacity: heroContentOpacity }}
+                            >
                                 <h1 className="text-4xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl">
                                     Own Your Direct Bookings
                                 </h1>
@@ -760,6 +822,7 @@ export default function Landing() {
                     50% { transform: translateY(-8px); }
                 }
             `}</style>
+            <script src="https://unpkg.com/lenis@1.3.18/dist/lenis.min.js"></script>
         </>
     );
 }
