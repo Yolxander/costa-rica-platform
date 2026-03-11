@@ -316,84 +316,82 @@ export default function Landing() {
                     {/* 2. WHY CHOOSE */}
                     <section className="px-4 py-16 sm:px-6 lg:px-8">
                         <div className="mx-auto max-w-7xl">
-                            <div className="grid gap-10 lg:grid-cols-12 lg:items-start lg:gap-12">
-                                <div className="lg:sticky lg:top-24 lg:col-span-5">
-                                    <h2 className="text-2xl leading-tight font-bold sm:text-3xl">
-                                        Why Costa Rica Hosts Choose Direct
-                                        Bookings
+                            {/* Header row with label, title left, desc right */}
+                            <div className="mb-12 grid gap-8 lg:grid-cols-2 lg:items-start">
+                                <div>
+                                    <span className="mb-3 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                                        Features
+                                    </span>
+                                    <h2 className="text-3xl font-bold leading-tight sm:text-4xl">
+                                        Why Costa Rica Hosts Choose Direct Bookings
                                     </h2>
-                                    <p className="mt-4 leading-relaxed text-muted-foreground sm:text-base">
-                                        Get your direct booking page live in
-                                        minutes—no website needed. Add your
-                                        listing, sync your calendar, and start
-                                        reaching guests with email and social.
-                                        Connect Stripe when you&apos;re ready to
-                                        take payments.
-                                    </p>
-                                    <div className="mt-6 flex gap-3">
-                                        <a
-                                            href="#"
-                                            className="flex size-10 items-center justify-center rounded-full bg-secondary/20 text-secondary-foreground transition-colors hover:bg-secondary"
-                                            aria-label="Instagram"
-                                        >
-                                            <IconBrandInstagram className="size-5" />
-                                        </a>
-                                        <a
-                                            href="#"
-                                            className="flex size-10 items-center justify-center rounded-full bg-secondary/20 text-secondary-foreground transition-colors hover:bg-secondary"
-                                            aria-label="X"
-                                        >
-                                            <IconBrandX className="size-5" />
-                                        </a>
-                                        <a
-                                            href="#"
-                                            className="flex size-10 items-center justify-center rounded-full bg-secondary/20 text-secondary-foreground transition-colors hover:bg-secondary"
-                                            aria-label="Facebook"
-                                        >
-                                            <IconBrandFacebook className="size-5" />
-                                        </a>
-                                    </div>
                                 </div>
-                                <div className="space-y-4 lg:col-span-7">
-                                    {[
-                                        {
-                                            icon: IconLink,
-                                            title: 'Add your listing',
-                                            desc: 'Import photos, title, description, and amenities. Your direct listing goes live—free to start, no credit card required.',
-                                        },
-                                        {
-                                            icon: IconCalendar,
-                                            title: 'Sync your calendar',
-                                            desc: 'Import your calendar so your direct page shows real-time availability. Block dates, prevent double-bookings, and keep one source of truth from day one.',
-                                        },
-                                        {
-                                            icon: IconMail,
-                                            title: 'Reach guests without OTAs',
-                                            desc: 'Build your guest list from inquiries, run email campaigns to past guests, and post to social with AI captions. Get your first direct booking.',
-                                        },
-                                    ].map((item, i) => (
-                                        <Card
-                                            key={i}
-                                            className="flex flex-row items-start gap-5 rounded-2xl border-0 bg-muted/40 p-6 shadow-sm transition-all hover:shadow-md"
+                                <p className="text-muted-foreground lg:pt-8">
+                                    Get your direct booking page live in minutes—no website needed. Add your listing, sync your calendar, and start reaching guests with email and social. Connect Stripe when you're ready to take payments.
+                                </p>
+                            </div>
+                            {/* 3 feature cards */}
+                            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                                {[
+                                    {
+                                        icon: IconLink,
+                                        title: 'Add your listing',
+                                        desc: 'Import photos, title, description, and amenities. Your direct listing goes live—free to start, no credit card required.',
+                                    },
+                                    {
+                                        icon: IconCalendar,
+                                        title: 'Sync your calendar',
+                                        desc: 'Import your calendar so your direct page shows real-time availability. Block dates, prevent double-bookings, and keep one source of truth from day one.',
+                                    },
+                                    {
+                                        icon: IconMail,
+                                        title: 'Reach guests without OTAs',
+                                        desc: 'Build your guest list from inquiries, run email campaigns to past guests, and post to social with AI captions. Get your first direct booking.',
+                                    },
+                                ].map((item, i) => (
+                                    <Card
+                                        key={i}
+                                        className="rounded-2xl border-0 bg-muted/40 p-6 shadow-sm transition-all hover:shadow-md"
+                                    >
+                                        <div
+                                            className={`mb-4 flex size-10 items-center justify-center rounded-lg ${i === 1 ? 'bg-secondary/20' : 'bg-primary/10'}`}
                                         >
-                                            <div
-                                                className={`flex size-12 shrink-0 items-center justify-center rounded-xl ${i === 1 ? 'bg-secondary/20' : 'bg-primary/10'}`}
-                                            >
-                                                <item.icon
-                                                    className={`size-6 ${i === 1 ? 'text-secondary' : 'text-primary'}`}
-                                                />
-                                            </div>
-                                            <div className="min-w-0 flex-1">
-                                                <h3 className="font-semibold">
-                                                    {item.title}
-                                                </h3>
-                                                <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-                                                    {item.desc}
-                                                </p>
-                                            </div>
-                                        </Card>
-                                    ))}
-                                </div>
+                                            <item.icon
+                                                className={`size-5 ${i === 1 ? 'text-secondary' : 'text-primary'}`}
+                                            />
+                                        </div>
+                                        <h3 className="font-semibold">
+                                            {item.title}
+                                        </h3>
+                                        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                                            {item.desc}
+                                        </p>
+                                    </Card>
+                                ))}
+                            </div>
+                            {/* Social links row */}
+                            <div className="mt-10 flex gap-3">
+                                <a
+                                    href="#"
+                                    className="flex size-10 items-center justify-center rounded-full bg-secondary/20 text-secondary-foreground transition-colors hover:bg-secondary"
+                                    aria-label="Instagram"
+                                >
+                                    <IconBrandInstagram className="size-5" />
+                                </a>
+                                <a
+                                    href="#"
+                                    className="flex size-10 items-center justify-center rounded-full bg-secondary/20 text-secondary-foreground transition-colors hover:bg-secondary"
+                                    aria-label="X"
+                                >
+                                    <IconBrandX className="size-5" />
+                                </a>
+                                <a
+                                    href="#"
+                                    className="flex size-10 items-center justify-center rounded-full bg-secondary/20 text-secondary-foreground transition-colors hover:bg-secondary"
+                                    aria-label="Facebook"
+                                >
+                                    <IconBrandFacebook className="size-5" />
+                                </a>
                             </div>
                         </div>
                     </section>
