@@ -1,15 +1,45 @@
-import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { ThemeToggle } from "@/components/theme-toggle"
-import { usePage } from "@inertiajs/react"
+import { Button } from "@/components/ui/button"
+import { IconBell, IconCirclePlusFilled } from "@tabler/icons-react"
+import { usePage, router } from "@inertiajs/react"
+import { useState } from "react"
+import { QuickAddModal } from "@/components/quick-add-modal"
+import { AddPropertyModal } from "@/components/add-property-modal"
 
 export function SiteHeader() {
   const page = usePage()
+  const [isQuickAddModalOpen, setIsQuickAddModalOpen] = useState(false)
+  const [isAddPropertyModalOpen, setIsAddPropertyModalOpen] = useState(false)
+
+  const handleQuickAddClick = () => {
+    setIsQuickAddModalOpen(true)
+  }
+
+  const handleCloseQuickAddModal = () => {
+    setIsQuickAddModalOpen(false)
+  }
+
+  const handleAddProperty = () => {
+    setIsAddPropertyModalOpen(true)
+  }
+
+  const handleCloseAddPropertyModal = () => {
+    setIsAddPropertyModalOpen(false)
+  }
+
+  const handleUpdateAvailability = () => {
+    router.visit('/calendar')
+  }
+
+  const handleUploadImage = () => {
+    console.log("Upload image clicked")
+  }
 
   const getHeaderTitle = () => {
-    if (page.url === "/dashboard") {
-      return "Overview"
+    if (page.url === "/dashboard" || page.url === "/") {
+      return "Dashboard"
     }
     if (page.url === "/listings") {
       return "Listings Management"
@@ -23,9 +53,27 @@ export function SiteHeader() {
     if (page.url === "/calendar") {
       return "Calendar & Availability"
     }
+    // Marketing routes
+    if (page.url.match(/\/marketing\/social\/\d+\/edit/)) {
+      const isPreview = page.url.includes("preview=1")
+      return isPreview ? "Preview Post" : "Edit Post"
+    }
+    if (page.url.match(/\/marketing\/email\/\d+\/edit/)) {
+      const isPreview = page.url.includes("preview=1")
+      return isPreview ? "Preview Email" : "Edit Email"
+    }
+    // Derive title from URL path for other pages
+    const path = page.url.split('?')[0].split('/').filter(Boolean).pop()
+    if (path) {
+      return path
+        .split('-')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ')
+    }
     return "Dashboard"
   }
   return (
+    <>
     <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
       <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
         <SidebarTrigger className="-ml-1" />
@@ -35,9 +83,37 @@ export function SiteHeader() {
         />
         <h1 className="text-base font-medium">{getHeaderTitle()}</h1>
         <div className="ml-auto flex items-center gap-2">
+          <Button
+            size="icon"
+            className="size-8 bg-primary text-primary-foreground hover:bg-primary/90"
+            onClick={handleQuickAddClick}
+          >
+            <IconCirclePlusFilled />
+            <span className="sr-only">Quick Add</span>
+          </Button>
+          <Button
+            size="icon"
+            className="size-8"
+            variant="outline"
+          >
+            <IconBell />
+            <span className="sr-only">Notifications</span>
+          </Button>
           <ThemeToggle />
         </div>
       </div>
     </header>
+    <QuickAddModal
+      isOpen={isQuickAddModalOpen}
+      onClose={handleCloseQuickAddModal}
+      onAddProperty={handleAddProperty}
+      onUpdateAvailability={handleUpdateAvailability}
+      onUploadImage={handleUploadImage}
+    />
+    <AddPropertyModal
+      isOpen={isAddPropertyModalOpen}
+      onClose={handleCloseAddPropertyModal}
+    />
+  </>
   )
 }

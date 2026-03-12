@@ -320,7 +320,12 @@ export function ListingsTable({ data, onEdit, onDuplicate, onArchive }: Listings
 
   return (
     <div className="w-full space-y-4">
-      <div className="flex items-center justify-end">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-sm text-muted-foreground">
+            Manage your property listings and track their performance
+          </p>
+        </div>
         <div className="flex items-center gap-2">
           <Button
             variant="outline"

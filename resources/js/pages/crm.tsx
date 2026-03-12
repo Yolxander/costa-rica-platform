@@ -341,7 +341,6 @@ export default function CrmPage() {
                             <div className="px-4 lg:px-6">
                                 <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
                                     <div>
-                                        <h1 className="text-2xl font-bold">Guest CRM</h1>
                                         <p className="text-muted-foreground">Manage your guest contacts</p>
                                     </div>
                                     <Button variant="outline" onClick={() => exportToCsv(filteredGuests)}>

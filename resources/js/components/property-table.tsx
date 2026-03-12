@@ -240,12 +240,10 @@ export function PropertyTable({ data }: PropertyTableProps) {
 
   return (
     <div className="w-full space-y-4 px-4 lg:px-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between px-2">
         <div>
-          <h3 className="text-lg font-semibold">Property Performance</h3>
-          <p className="text-sm text-muted-foreground">
-            Track views, inquiries, and bookings across all properties
-          </p>
+          <h3 className="text-lg text-primary font-semibold">Property Performance</h3>
+
         </div>
         <div className="flex items-center gap-2">
           <Button

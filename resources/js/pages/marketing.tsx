@@ -99,7 +99,6 @@ export default function MarketingPage() {
                             <div className="px-4 lg:px-6 space-y-6">
                                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                                     <div>
-                                        <h1 className="text-2xl font-bold">Marketing</h1>
                                         <p className="text-muted-foreground">
                                             Email campaigns and social content tools
                                         </p>
@@ -146,7 +145,7 @@ export default function MarketingPage() {
 
                                     <TabsContent value="emails" className="mt-0">
                                         <Card>
-                                            <CardContent className="pt-6">
+                                            <CardContent className="pt-0">
                                                 {emailCampaigns.length === 0 ? (
                                                     <div className="rounded-lg border border-dashed py-12 text-center text-muted-foreground">
                                                         <p>No campaigns yet. Create your first email campaign.</p>

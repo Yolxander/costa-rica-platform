@@ -1,6 +1,7 @@
 import * as React from "react"
+import { usePage } from "@inertiajs/react"
+import { type SharedData } from "@/types"
 import {
-  IconInnerShadowTop,
   IconSettings,
   IconHome,
   IconList,
@@ -25,11 +26,6 @@ import {
 } from "@/components/ui/sidebar"
 
 const data = {
-  user: {
-    name: "Sora",
-    email: "admin@costaricarentalhub.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
   navMain: [
     {
       title: "Dashboard",
@@ -76,6 +72,9 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { auth } = usePage<SharedData>().props
+  const user = auth.user
+
   return (
       <Sidebar collapsible="offcanvas" {...props}>
           <SidebarHeader>
@@ -109,10 +108,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <NavSecondary items={data.navSecondary} className="mt-auto" />
           </SidebarContent>
           <SidebarFooter>
-              <NavUser user={data.user} />
+              <NavUser user={user} />
           </SidebarFooter>
       </Sidebar>
   );
 }
-
-

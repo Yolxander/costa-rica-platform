@@ -45,7 +45,6 @@ export default function MarketingEmailNewPage() {
 
     return (
         <>
-            <Head title={isEdit ? "Edit Email Campaign - Marketing - Sora" : "Create Email Campaign - Marketing - Sora"} />
             <SidebarProvider
                 style={{
                     "--sidebar-width": "calc(var(--spacing) * 72)",
@@ -64,16 +63,7 @@ export default function MarketingEmailNewPage() {
                                         Back to Marketing
                                     </Link>
                                 </Button>
-                                <div>
-                                    <h1 className="text-2xl font-bold">
-                                        {isEdit ? "Edit Email Campaign" : "Create Email Campaign"}
-                                    </h1>
-                                    <p className="text-muted-foreground">
-                                        {initialStep === 3
-                                            ? "Preview your email"
-                                            : "Build your email campaign with audience, content, and preview"}
-                                    </p>
-                                </div>
+
                                 <div className="mt-6">
                                     <EmailCampaignWizard
                                         segments={emailSegments}

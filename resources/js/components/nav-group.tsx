@@ -22,7 +22,7 @@ export function NavGroup({
   }[]
   label: string
 }) {
-  const { page } = usePage()
+  const page = usePage()
 
   return (
     <SidebarGroup>
@@ -37,7 +37,7 @@ export function NavGroup({
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton
                   tooltip={item.title}
-                  className={isActive ? "bg-sidebar-accent text-sidebar-accent-foreground" : ""}
+                  className={isActive ? "bg-secondary text-white" : ""}
                   asChild
                 >
                   <Link href={item.url}>

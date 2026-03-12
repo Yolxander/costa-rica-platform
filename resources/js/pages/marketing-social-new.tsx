@@ -171,16 +171,6 @@ export default function MarketingSocialNewPage() {
                                         Back to Marketing
                                     </Link>
                                 </Button>
-                                <div>
-                                    <h1 className="text-2xl font-bold">
-                                        {isEdit ? "Edit Social Post" : "Create Social Post"}
-                                    </h1>
-                                    <p className="text-muted-foreground">
-                                        {initialStep === 3
-                                            ? "Preview your social post"
-                                            : "Select images, add caption and hashtags, then save your post"}
-                                    </p>
-                                </div>
                                 <div className="mt-6">
                                     <SocialPostWizard
                                         properties={properties}
