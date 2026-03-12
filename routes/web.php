@@ -207,6 +207,33 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('crm/guests/{email}/tags', [CrmController::class, 'updateTags'])->name('crm.guests.tags.update')->where('email', '.+');
     Route::post('crm/tags', [CrmController::class, 'storeTag'])->name('crm.tags.store');
 
+    // Discovery Pages Routes
+    Route::get('discovery-pages', function () {
+        $properties = \App\Models\Property::where('user_id', auth()->id())
+            ->get()
+            ->map(function ($property) {
+                return [
+                    'id' => $property->id,
+                    'slug' => $property->slug,
+                    'name' => $property->name,
+                    'location' => $property->location,
+                    'thumbnail' => $property->images && count($property->images) > 0 ? $property->images[0] : null,
+                    'discovery_url' => url('/stay/' . $property->slug),
+                    'is_enabled' => $property->discovery_page_enabled,
+                    'views_30d' => $property->views_30d,
+                ];
+            })->toArray();
+
+        return Inertia::render('discovery-pages', ['properties' => $properties]);
+    })->name('discovery-pages');
+
+    Route::get('discovery-pages/{id}/edit', function ($id) {
+        $property = \App\Models\Property::where('user_id', auth()->id())->findOrFail($id);
+        return Inertia::render('discovery-page-edit', ['property' => $property]);
+    })->name('discovery-pages.edit');
+
+    Route::put('discovery-pages/{id}', [PropertyController::class, 'updateDiscoveryPage'])->name('discovery-pages.update');
+
     Route::get('property/{id}', function ($id) {
         $propertyModel = \App\Models\Property::find($id);
 
@@ -394,7 +421,65 @@ Route::middleware('auth')->group(function () {
         ->name('admin.logout');
 });
 
-$reservedPaths = 'pricing|how-it-works|blog|join|dashboard|listings|calendar|inquiries|marketing|crm|import|login|register|host|admin|settings|property|properties|forgot-password|reset-password|verify-email|two-factor|confirm-password|password|user';
+$reservedPaths = 'pricing|how-it-works|blog|join|dashboard|listings|calendar|inquiries|marketing|crm|import|login|register|host|admin|settings|property|properties|forgot-password|reset-password|verify-email|two-factor|confirm-password|password|user|stay|discovery-pages';
+
+// Public Discovery Page Route
+Route::get('/stay/{slug}', function ($slug) {
+    $property = \App\Models\Property::where('slug', $slug)
+        ->where('discovery_page_enabled', true)
+        ->with('user')
+        ->firstOrFail();
+
+    return Inertia::render('discovery-page', [
+        'property' => [
+            'id' => $property->id,
+            'slug' => $property->slug,
+            'name' => $property->name,
+            'location' => $property->location,
+            'type' => $property->type,
+            'images' => $property->images ?? [],
+            'guests' => $property->guests,
+            'bedrooms' => $property->bedrooms,
+            'bathrooms' => $property->bathrooms,
+            'amenities' => $property->amenities ?? [],
+            'base_price' => $property->base_price,
+            'price_format' => $property->price_format,
+            'currency' => $property->currency,
+            'custom_message' => $property->custom_message,
+            'accent_color' => $property->accent_color ?? '#10b981',
+            'host' => [
+                'name' => $property->user?->name ?? 'Host',
+                'avatar' => $property->user?->avatar ?? null,
+            ],
+            'buttons' => [
+                'book_direct' => [
+                    'visible' => $property->show_book_direct_button,
+                    'url' => '/' . $property->slug,
+                ],
+                'airbnb' => [
+                    'visible' => $property->show_airbnb_button && $property->airbnb_url,
+                    'url' => $property->airbnb_url,
+                ],
+                'bookingcom' => [
+                    'visible' => $property->show_bookingcom_button && $property->bookingcom_url,
+                    'url' => $property->bookingcom_url,
+                ],
+                'vrbo' => [
+                    'visible' => $property->vrbo_url ? true : false,
+                    'url' => $property->vrbo_url,
+                ],
+                'whatsapp' => [
+                    'visible' => $property->show_whatsapp_button && $property->whatsapp_number,
+                    'url' => $property->whatsapp_number ? 'https://wa.me/' . preg_replace('/[^0-9]/', '', $property->whatsapp_number) : null,
+                ],
+                'website' => [
+                    'visible' => $property->website_url ? true : false,
+                    'url' => $property->website_url,
+                ],
+            ],
+        ],
+    ]);
+})->where('slug', "^(?!({$reservedPaths})(?:\/|\$))[^/]+")->name('discovery-page');
 
 Route::get('/{slug}', function ($slug) {
     $property = \App\Models\Property::where('slug', $slug)

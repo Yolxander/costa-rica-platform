@@ -213,4 +213,35 @@ class PropertyController extends Controller
         $symbol = $symbols[strtoupper($currency)] ?? strtoupper($currency) . ' ';
         return $symbol . number_format($basePrice, 0) . '/night';
     }
+
+    /**
+     * Update Discovery Page settings for a property.
+     */
+    public function updateDiscoveryPage(Request $request, string $id)
+    {
+        $property = Property::findOrFail($id);
+
+        if ($property->user_id !== $request->user()->id) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'discovery_page_enabled' => 'boolean',
+            'show_book_direct_button' => 'boolean',
+            'show_airbnb_button' => 'boolean',
+            'show_bookingcom_button' => 'boolean',
+            'show_whatsapp_button' => 'boolean',
+            'airbnb_url' => 'nullable|url',
+            'bookingcom_url' => 'nullable|url',
+            'vrbo_url' => 'nullable|url',
+            'website_url' => 'nullable|url',
+            'whatsapp_number' => 'nullable|string',
+            'custom_message' => 'nullable|string|max:500',
+            'accent_color' => 'nullable|string|regex:/^#[a-fA-F0-9]{6}$/',
+        ]);
+
+        $property->update($validated);
+
+        return redirect()->back()->with('success', 'Discovery Page updated successfully!');
+    }
 }

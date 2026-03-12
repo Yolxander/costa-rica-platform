@@ -9,6 +9,7 @@ import {
   IconMessage,
   IconUsers,
   IconBrandInstagram,
+  IconLayoutGrid,
 } from "@tabler/icons-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -38,6 +39,11 @@ const data = {
       title: "Listings",
       url: "/listings",
       icon: IconList,
+    },
+    {
+      title: "Discovery Pages",
+      url: "/discovery-pages",
+      icon: IconLayoutGrid,
     },
     {
       title: "Calendar",

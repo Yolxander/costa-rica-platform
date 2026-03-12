@@ -37,6 +37,19 @@ class Property extends Model
         'bookings',
         'rating',
         'reviews',
+        // Discovery page fields
+        'airbnb_url',
+        'bookingcom_url',
+        'vrbo_url',
+        'website_url',
+        'whatsapp_number',
+        'discovery_page_enabled',
+        'show_book_direct_button',
+        'show_airbnb_button',
+        'show_bookingcom_button',
+        'show_whatsapp_button',
+        'custom_message',
+        'accent_color',
     ];
 
     protected $casts = [
@@ -48,6 +61,12 @@ class Property extends Model
         'cleaning_fee' => 'decimal:2',
         'service_fee' => 'decimal:2',
         'rating' => 'decimal:2',
+        // Discovery page toggles
+        'discovery_page_enabled' => 'boolean',
+        'show_book_direct_button' => 'boolean',
+        'show_airbnb_button' => 'boolean',
+        'show_bookingcom_button' => 'boolean',
+        'show_whatsapp_button' => 'boolean',
     ];
 
     protected static function booted(): void
