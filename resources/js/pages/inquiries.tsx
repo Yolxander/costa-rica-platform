@@ -32,13 +32,14 @@ import {
     IconCalendar,
     IconUsers,
     IconHome,
-    IconDotsVertical,
     IconSearch,
     IconBrandWhatsapp,
     IconCircleCheck,
     IconUser,
     IconPaperclip,
     IconMicrophone,
+    IconLayoutSidebarRightExpand,
+    IconChevronRight,
 
 } from '@tabler/icons-react';
 
@@ -125,6 +126,7 @@ export default function InquiriesPage() {
     const [searchQuery, setSearchQuery] = useState("")
     const [propertyFilter, setPropertyFilter] = useState<string>("all")
     const [localResponses, setLocalResponses] = useState<Record<number, InquiryResponse[]>>({})
+    const [isRightPanelOpen, setIsRightPanelOpen] = useState(true)
     const messagesEndRef = useRef<HTMLDivElement>(null)
 
     const filteredInquiries = useMemo(() => {
@@ -207,10 +209,6 @@ export default function InquiriesPage() {
                             <div className="flex min-h-0 flex-1 overflow-hidden">
                                 {/* Left panel — inquiry list */}
                                 <div className="flex w-72 shrink-0 flex-col border-r lg:w-80">
-                                    <div className="flex items-center justify-between border-b px-4 py-3">
-                                        <h2 className="font-semibold">Inquiries</h2>
-                                        <IconDotsVertical className="size-5 text-muted-foreground" />
-                                    </div>
                                     <div className="space-y-2 border-b px-3 py-2">
                                         <div className="relative">
                                             <IconSearch className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -307,7 +305,6 @@ export default function InquiriesPage() {
                                                         {selected.property_name} · {selected.sent_at}
                                                     </p>
                                                 </div>
-                                                <IconDotsVertical className="size-5 text-muted-foreground" />
                                             </div>
 
                                             {/* Inquiry content */}
@@ -372,7 +369,7 @@ export default function InquiriesPage() {
                                                             value={replyText}
                                                             onChange={(e) => setReplyText(e.target.value)}
                                                             rows={2}
-                                                            className="min-h-[120px] resize-none border-0 p-0 pr-10 focus-visible:ring-0"
+                                                            className="min-h-[120px] resize-none border-0 p-0 pr-10 focus:outline-none focus-visible:outline-none focus-visible:ring-0 rounded-none"
                                                             onKeyDown={(e) => {
                                                                 if (e.key === "Enter" && !e.shiftKey) {
                                                                     e.preventDefault()
@@ -427,162 +424,187 @@ export default function InquiriesPage() {
                                 </div>
 
                                 {/* Right panel — contact details */}
-                                <div className="hidden w-72 shrink-0 flex-col border-l bg-muted/30 lg:flex xl:w-80">
-                                    {selected ? (
-                                        <div className="flex flex-1 flex-col overflow-y-auto">
-                                            <div className="flex flex-col items-center px-4 py-6">
-                                                <Avatar className="size-16">
-                                                    <AvatarFallback
-                                                        className={`text-xl text-white ${getAvatarColor(selected.traveler_name)}`}
-                                                    >
-                                                        {getInitials(selected.traveler_name)}
-                                                    </AvatarFallback>
-                                                </Avatar>
-                                                <h3 className="mt-3 text-base font-semibold">
-                                                    {selected.traveler_name}
-                                                </h3>
-                                                <span className="mt-1 rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
-                                                    Guest
-                                                </span>
-                                                <div className="mt-4 w-full space-y-2">
-                                                    <Select
-                                                        value={selected.status}
-                                                        onValueChange={(value) => {
-                                                            router.patch(`/inquiries/${selected.id}`, { status: value }, { preserveScroll: true })
-                                                        }}
-                                                    >
-                                                        <SelectTrigger className="w-full">
-                                                            <SelectValue />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            <SelectItem value="new">New</SelectItem>
-                                                            <SelectItem value="contacted">Contacted</SelectItem>
-                                                            <SelectItem value="booked">Booked</SelectItem>
-                                                            <SelectItem value="lost">Lost</SelectItem>
-                                                        </SelectContent>
-                                                    </Select>
+                                <div className={`shrink-0 flex-col border-l bg-muted/30 lg:flex ${isRightPanelOpen ? 'w-72 xl:w-80' : 'w-12'} hidden transition-all duration-200`}>
+                                    {isRightPanelOpen ? (
+                                        selected ? (
+                                            <div className="flex flex-1 flex-col overflow-y-auto">
+                                                {/* Panel Header with collapse button */}
+                                                <div className="flex items-center justify-end border-b p-2">
                                                     <Button
-                                                        variant="outline"
+                                                        variant="ghost"
                                                         size="sm"
-                                                        className="w-full"
-                                                        onClick={() => router.patch(`/inquiries/${selected.id}`, { status: "booked" }, { preserveScroll: true })}
+                                                        onClick={() => setIsRightPanelOpen(false)}
+                                                        title="Hide details"
                                                     >
-                                                        <IconCircleCheck className="mr-1.5 size-4" />
-                                                        Mark as Booked
+                                                        <IconChevronRight className="mr-1 size-4" />
+                                                        Hide
                                                     </Button>
                                                 </div>
-                                                <Button variant="ghost" size="sm" className="mt-3" asChild>
-                                                    <Link href="/crm">
-                                                        <IconUser className="mr-1.5 size-4" />
-                                                        View in CRM
-                                                    </Link>
-                                                </Button>
-                                            </div>
-
-                                            <Separator />
-
-                                            <div className="space-y-3 p-4">
-                                                <h4 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                                                    Contact
-                                                </h4>
-                                                <a
-                                                    href={`mailto:${selected.traveler_email}`}
-                                                    className="flex items-center gap-3 rounded-md py-1.5 transition-colors hover:bg-muted/50"
-                                                >
-                                                    <IconMail className="size-4 shrink-0 text-muted-foreground" />
-                                                    <span className="min-w-0 truncate text-sm" title={selected.traveler_email}>
-                                                        {selected.traveler_email}
+                                                <div className="flex flex-col items-center px-4 py-6">
+                                                    <Avatar className="size-16">
+                                                        <AvatarFallback
+                                                            className={`text-xl text-white ${getAvatarColor(selected.traveler_name)}`}
+                                                        >
+                                                            {getInitials(selected.traveler_name)}
+                                                        </AvatarFallback>
+                                                    </Avatar>
+                                                    <h3 className="mt-3 text-base font-semibold">
+                                                        {selected.traveler_name}
+                                                    </h3>
+                                                    <span className="mt-1 rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+                                                        Guest
                                                     </span>
-                                                </a>
-                                                {selected.traveler_phone && (
+                                                    <div className="mt-4 w-full space-y-2">
+                                                        <Select
+                                                            value={selected.status}
+                                                            onValueChange={(value) => {
+                                                                router.patch(`/inquiries/${selected.id}`, { status: value }, { preserveScroll: true })
+                                                            }}
+                                                        >
+                                                            <SelectTrigger className="w-full">
+                                                                <SelectValue />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="new">New</SelectItem>
+                                                                <SelectItem value="contacted">Contacted</SelectItem>
+                                                                <SelectItem value="booked">Booked</SelectItem>
+                                                                <SelectItem value="lost">Lost</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            className="w-full"
+                                                            onClick={() => router.patch(`/inquiries/${selected.id}`, { status: "booked" }, { preserveScroll: true })}
+                                                        >
+                                                            <IconCircleCheck className="mr-1.5 size-4" />
+                                                            Mark as Booked
+                                                        </Button>
+                                                    </div>
+                                                    <Button variant="ghost" size="sm" className="mt-3" asChild>
+                                                        <Link href="/crm">
+                                                            <IconUser className="mr-1.5 size-4" />
+                                                            View in CRM
+                                                        </Link>
+                                                    </Button>
+                                                </div>
+
+                                                <Separator />
+
+                                                <div className="space-y-3 p-4">
+                                                    <h4 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                                                        Contact
+                                                    </h4>
                                                     <a
-                                                        href={`tel:${selected.traveler_phone}`}
+                                                        href={`mailto:${selected.traveler_email}`}
                                                         className="flex items-center gap-3 rounded-md py-1.5 transition-colors hover:bg-muted/50"
                                                     >
-                                                        <IconPhone className="size-4 shrink-0 text-muted-foreground" />
-                                                        <span className="text-sm tabular-nums">
-                                                            {formatPhone(selected.traveler_phone)}
+                                                        <IconMail className="size-4 shrink-0 text-muted-foreground" />
+                                                        <span className="min-w-0 truncate text-sm" title={selected.traveler_email}>
+                                                            {selected.traveler_email}
                                                         </span>
                                                     </a>
-                                                )}
-                                            </div>
-
-                                            <Separator />
-
-                                            <div className="space-y-3 p-4">
-                                                <h4 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                                                    Inquiry Details
-                                                </h4>
-                                                <div className="flex items-start gap-3">
-                                                    <IconHome className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-                                                    <span className="min-w-0 truncate text-sm leading-snug" title={selected.property_name}>
-                                                        {selected.property_name}
-                                                    </span>
-                                                </div>
-                                                <div className="flex items-center gap-3">
-                                                    <IconCalendar className="size-4 shrink-0 text-muted-foreground" />
-                                                    <span className="text-sm">
-                                                        {formatDateRange(selected.check_in, selected.check_out)}
-                                                    </span>
-                                                </div>
-                                                <div className="flex items-center gap-3">
-                                                    <IconUsers className="size-4 shrink-0 text-muted-foreground" />
-                                                    <span className="text-sm">
-                                                        {selected.guests} guest{selected.guests !== 1 ? "s" : ""}
-                                                    </span>
-                                                </div>
-                                            </div>
-
-                                            <Separator />
-
-                                            <div className="space-y-2 p-4">
-                                                {selected.traveler_phone ? (
-                                                    <Button variant="default" className="w-full" asChild>
+                                                    {selected.traveler_phone && (
                                                         <a
-                                                            href={`https://wa.me/${selected.traveler_phone.replace(/\D/g, "")}?text=${encodeURIComponent(`Hi ${selected.traveler_name.split(" ")[0]}, thanks for your inquiry about ${selected.property_name}. I'd love to help!`)}`}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
+                                                            href={`tel:${selected.traveler_phone}`}
+                                                            className="flex items-center gap-3 rounded-md py-1.5 transition-colors hover:bg-muted/50"
                                                         >
-                                                            <IconBrandWhatsapp className="mr-1.5 size-4" />
-                                                            WhatsApp Reply
-                                                        </a>
-                                                    </Button>
-                                                ) : (
-                                                    <Tooltip>
-                                                        <TooltipTrigger asChild>
-                                                            <span className="block">
-                                                                <Button variant="outline" className="w-full" disabled>
-                                                                    <IconBrandWhatsapp className="mr-1.5 size-4" />
-                                                                    WhatsApp (add phone)
-                                                                </Button>
+                                                            <IconPhone className="size-4 shrink-0 text-muted-foreground" />
+                                                            <span className="text-sm tabular-nums">
+                                                                {formatPhone(selected.traveler_phone)}
                                                             </span>
-                                                        </TooltipTrigger>
-                                                        <TooltipContent>
-                                                            Traveler did not provide a phone number. They can add one when submitting an inquiry.
-                                                        </TooltipContent>
-                                                    </Tooltip>
-                                                )}
-                                                <Button variant="outline" className="w-full" asChild>
-                                                    <a
-                                                        href={`mailto:${selected.traveler_email}?subject=${encodeURIComponent(`Re: ${selected.property_name} - ${formatDateRange(selected.check_in, selected.check_out)}`)}`}
-                                                    >
-                                                        <IconMail className="mr-1.5 size-4" />
-                                                        Email
-                                                    </a>
-                                                </Button>
-                                                {selected.traveler_phone && (
+                                                        </a>
+                                                    )}
+                                                </div>
+
+                                                <Separator />
+
+                                                <div className="space-y-3 p-4">
+                                                    <h4 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                                                        Inquiry Details
+                                                    </h4>
+                                                    <div className="flex items-start gap-3">
+                                                        <IconHome className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+                                                        <span className="min-w-0 truncate text-sm leading-snug" title={selected.property_name}>
+                                                            {selected.property_name}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex items-center gap-3">
+                                                        <IconCalendar className="size-4 shrink-0 text-muted-foreground" />
+                                                        <span className="text-sm">
+                                                            {formatDateRange(selected.check_in, selected.check_out)}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex items-center gap-3">
+                                                        <IconUsers className="size-4 shrink-0 text-muted-foreground" />
+                                                        <span className="text-sm">
+                                                            {selected.guests} guest{selected.guests !== 1 ? "s" : ""}
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                <Separator />
+
+                                                <div className="space-y-2 p-4">
+                                                    {selected.traveler_phone ? (
+                                                        <Button variant="default" className="w-full" asChild>
+                                                            <a
+                                                                href={`https://wa.me/${selected.traveler_phone.replace(/\D/g, "")}?text=${encodeURIComponent(`Hi ${selected.traveler_name.split(" ")[0]}, thanks for your inquiry about ${selected.property_name}. I'd love to help!`)}`}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                            >
+                                                                <IconBrandWhatsapp className="mr-1.5 size-4" />
+                                                                WhatsApp Reply
+                                                            </a>
+                                                        </Button>
+                                                    ) : (
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <span className="block">
+                                                                    <Button variant="outline" className="w-full" disabled>
+                                                                        <IconBrandWhatsapp className="mr-1.5 size-4" />
+                                                                        WhatsApp (add phone)
+                                                                    </Button>
+                                                                </span>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>
+                                                                Traveler did not provide a phone number. They can add one when submitting an inquiry.
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    )}
                                                     <Button variant="outline" className="w-full" asChild>
-                                                        <a href={`tel:${selected.traveler_phone}`}>
-                                                            <IconPhone className="mr-1.5 size-4" />
-                                                            Call
+                                                        <a
+                                                            href={`mailto:${selected.traveler_email}?subject=${encodeURIComponent(`Re: ${selected.property_name} - ${formatDateRange(selected.check_in, selected.check_out)}`)}`}
+                                                        >
+                                                            <IconMail className="mr-1.5 size-4" />
+                                                            Email
                                                         </a>
                                                     </Button>
-                                                )}
+                                                    {selected.traveler_phone && (
+                                                        <Button variant="outline" className="w-full" asChild>
+                                                            <a href={`tel:${selected.traveler_phone}`}>
+                                                                <IconPhone className="mr-1.5 size-4" />
+                                                                Call
+                                                            </a>
+                                                        </Button>
+                                                    )}
+                                                </div>
                                             </div>
-                                        </div>
+                                        ) : (
+                                            <div className="flex flex-1 items-center justify-center p-4 text-center text-sm text-muted-foreground">
+                                                Select an inquiry to see details
+                                            </div>
+                                        )
                                     ) : (
-                                        <div className="flex flex-1 items-center justify-center p-4 text-center text-sm text-muted-foreground">
-                                            Select an inquiry to see details
+                                        <div className="flex flex-1 flex-col items-center py-4">
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => setIsRightPanelOpen(true)}
+                                                title="Show contact details"
+                                            >
+                                                <IconLayoutSidebarRightExpand className="size-5" />
+                                            </Button>
                                         </div>
                                     )}
                                 </div>
