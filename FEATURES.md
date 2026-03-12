@@ -1,6 +1,6 @@
 # Brisa — Feature Status
 
-> Last updated: March 6, 2026
+> Last updated: March 12, 2026
 
 This document tracks every feature in the platform, organized by completion status: **completed**, **partially built** (needs finishing), and **not yet built** (planned).
 
@@ -25,8 +25,21 @@ These features are fully functional with backend logic, database support, and a 
 
 - **Dashboard Overview** — Displays key metrics (direct bookings, revenue processed, guest emails captured, money saved vs OTAs) and a property summary table. Data is pulled live from the database. Revenue is a placeholder until Stripe Connect is integrated.
 - **Listings Management** — Lists all host properties with title, location, status, price, bedrooms, bathrooms, thumbnail, and last updated. Data sourced from `properties` table.
-- **Inquiries Page** — Displays all inquiries sent to the host, pulled from the `inquiries` table with property relationship. Shows traveler name, email, phone, property, dates, guests, message, and status. Includes status update (`PATCH /inquiries/{id}`) to mark inquiries as `new`, `contacted`, `booked`, or `lost`. Reply actions: Email (`mailto:`), WhatsApp (with pre-filled message), and Call links. Falls back to sample data when no real inquiries exist.
-- **Guest CRM** — Aggregates inquiries by traveler email to build a guest database. Shows name, email, phone, property, booking count, total spent, and last booking date. Supports filtering by property and CSV export. Data is derived from the `inquiries` table.
+- **Inquiries Page** — Full inquiry management at `/inquiries` with a chat-like interface. Displays all inquiries with property relationship, traveler details, dates, guests, message, and status. Features include:
+  - Search and filter by property
+  - Threaded conversation view with inquiry responses
+  - Host reply system with `POST /inquiries/{id}/reply` endpoint
+  - Status management (`PATCH /inquiries/{id}`): `new`, `contacted`, `booked`, `lost`
+  - Quick action buttons: Email (`mailto:`), WhatsApp (pre-filled message), Call
+  - Collapsible right panel with contact details and quick actions
+  - `InquiryResponse` model stores threaded conversation history
+- **Guest CRM** — Full guest relationship management at `/crm`. Aggregates inquiries by traveler email to build a guest database. Features include:
+  - Guest list with name, email, phone, property, booking count, and last booking date
+  - Property filter and CSV export
+  - Guest detail side panel with full inquiry history and conversation threads
+  - Guest notes system (`GuestNote` model) with property association
+  - Guest tags system (`GuestTag` model) for segmentation and organization
+  - Backend API: `GET /crm/guests/{email}`, `POST /crm/guests/{email}/notes`, `PATCH /crm/guests/{email}/tags`, `POST /crm/tags`
 - **Property Details Page** — Deep-dive view for a single property showing all details (description, amenities, images, pricing, capacity, availability rules) plus performance metrics (views, inquiries, bookings, rating). Recent inquiries and upcoming bookings sections use hardcoded sample data.
 - **Property CRUD (Create, Edit, Delete)** — Hosts can create, edit, and delete properties via `PropertyController`. Routes: `POST /properties`, `PUT /properties/{id}`, `DELETE /properties/{id}`. Add/Edit modals (`AddPropertyModal`, `EditPropertyModal`) with full form validation. Image upload supports both file uploads (Laravel Storage) and URL input.
 - **Calendar & Availability** — Full calendar at `/calendar` with month/week/year views and backend persistence. `availability` table stores date status (available, blocked, maintenance, pending-inquiry). `CalendarController` provides `POST /calendar/availability` (bulk upsert) and `DELETE /calendar/availability/{id}`. Loads real events from booked inquiries and date availability from DB. `DateAvailabilityModal` for managing individual dates.
@@ -47,6 +60,8 @@ These features are fully functional with backend logic, database support, and a 
 ### Marketing & Communication
 
 - **Email Notifications for Inquiries** — When a traveler submits an inquiry, host receives email via `SendNewInquiryMail` job (queued). Uses Brevo transactional templates. Dispatched from `InquiryController` after `Inquiry::create()`.
+- **Inquiry Response Notifications** — When a host replies to an inquiry, traveler receives email via `SendInquiryResponseMail` job. Includes the host's message and property context.
+- **Inquiry Confirmation to Traveler** — Traveler receives confirmation email via `SendInquiryConfirmationMail` when they submit an inquiry.
 - **Host Messaging Reply** — Inquiries page includes Reply actions: Email (`mailto:`), WhatsApp (pre-filled message with property context), and Call. No backend required; opens native mail/phone apps.
 - **Airbnb Import** — Two-step import flow at `/import-airbnb`. Hosts paste Airbnb listing URL; `AirbnbScraper` fetches and extracts listing data. Preview card for review/edit before save. Creates new Property (status: Active, approval: pending). Backend: `AirbnbImportController`, `AirbnbScraper`. 18 feature tests.
 - **Marketing Page (Social Tab)** — At `/marketing` with Email and Social tabs. Social tab: image picker (property photos), AI caption generation via `generateCaption`, hashtag suggestions, copy-to-clipboard. AI/ML API config via `AI_ML_API_KEY`, `AI_ML_API_URL`.
@@ -56,7 +71,10 @@ These features are fully functional with backend logic, database support, and a 
 - **Users** — Full migration with name, email, password, role, email verification, 2FA columns.
 - **Properties** — Complete schema: name, type, status, approval_status, location, description, amenities (JSON), images (JSON), house_rules (JSON), policies (JSON), pricing fields, capacity fields, availability fields, performance counters. Belongs to User.
 - **Inquiries** — Complete schema: property_id, user_id (host), traveler_user_id, traveler details, check-in/out dates, guests, message, status, sent_at. Belongs to Property, Host, and Traveler.
+- **InquiryResponses** — Stores threaded conversation replies: inquiry_id, sender (host/traveler), message, timestamps. Belongs to Inquiry.
 - **Availability** — Table for calendar: property_id, date, status (available, blocked, maintenance, pending-inquiry), reason. Unique (property_id, date). Belongs to Property.
+- **GuestNotes** — Notes attached to guests: user_id, traveler_email, property_id (optional), note text. Belongs to User and Property.
+- **GuestTags** — Tags for guest segmentation: user_id, name, color. Many-to-many relationship with guests via pivot table.
 - **Guests** — Standalone table with name, email, phone, property_id, booking_count, total_spent, last_booking_date. Currently unused — CRM derives guest data from Inquiries instead.
 
 ---
@@ -155,11 +173,11 @@ These features are referenced in the UI, pricing page, or codebase comments but 
 | Category | Completed | Needs Finishing | Not Built |
 |----------|:---------:|:---------------:|:---------:|
 | Auth & Security | 8 | 0 | 0 |
-| Host Dashboard | 9 | 2 | 0 |
+| Host Dashboard | 10 | 2 | 0 |
 | Public Pages | 7 | 0 | 0 |
 | Admin Panel | 1 | 4 | 0 |
 | Property CRUD | 4 | 0 | 0 |
-| Marketing & Communication | 4 | 1 | 1 |
+| Marketing & Communication | 6 | 1 | 1 |
 | Payments & Booking | 0 | 0 | 2 |
 | Search & Discovery | 0 | 0 | 3 |
 | Traveler Features | 0 | 0 | 3 |
@@ -167,4 +185,4 @@ These features are referenced in the UI, pricing page, or codebase comments but 
 | i18n | 0 | 0 | 1 |
 | Analytics | 0 | 0 | 3 |
 | Content/SEO | 0 | 0 | 2 |
-| **Total** | **33** | **7** | **17** |
+| **Total** | **36** | **7** | **17** |
