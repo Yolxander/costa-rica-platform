@@ -15,7 +15,7 @@
     --text-sm--line-height: 1.25rem;
 
     --font-sans:
-        'ABeeZee', ui-sans-serif, system-ui, sans-serif,
+        'Manrope', ui-sans-serif, system-ui, sans-serif,
         'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
         'Noto Color Emoji';
 
@@ -101,8 +101,8 @@
     --sidebar-accent-foreground: oklch(0.2101 0.0318 264.6645);
     --sidebar-border: oklch(0.9276 0.0058 264.5313);
     --sidebar-ring: oklch(0.6716 0.1368 48.5130);
-    --font-sans: ABeeZee, ui-sans-serif, system-ui, sans-serif;
-    --font-serif: serif;
+    --font-sans: Manrope, ui-sans-serif, system-ui, sans-serif;
+    --font-serif: 'DM Serif Display', ui-serif, Georgia, serif;
     --font-mono: JetBrains Mono, monospace;
     --shadow-color: #000000;
     --shadow-opacity: 0.05;
@@ -157,8 +157,8 @@
     --sidebar-border: oklch(0.2520 0 0);
     --sidebar-ring: oklch(0.7214 0.1337 49.9802);
     --radius: 0.75rem;
-    --font-sans: ABeeZee, ui-sans-serif, system-ui, sans-serif;
-    --font-serif: serif;
+    --font-sans: Manrope, ui-sans-serif, system-ui, sans-serif;
+    --font-serif: 'DM Serif Display', ui-serif, Georgia, serif;
     --font-mono: JetBrains Mono, monospace;
     --shadow-color: #000000;
     --shadow-opacity: 0.05;
@@ -183,9 +183,13 @@
         @apply border-border;
     }
 
+    html, body {
+        @apply transition-colors duration-500 ease-in-out;
+    }
+
     body {
         @apply bg-background text-foreground;
-    letter-spacing: var(--tracking-normal);
+        letter-spacing: var(--tracking-normal);
     }
 }
 
@@ -206,9 +210,9 @@
         var(--sidebar-border);
     --color-sidebar-ring:
         var(--sidebar-ring);
-    --font-sans: ABeeZee, ui-sans-serif, system-ui, sans-serif;
+    --font-sans: Manrope, ui-sans-serif, system-ui, sans-serif;
     --font-mono: JetBrains Mono, monospace;
-    --font-serif: serif;
+    --font-serif: 'DM Serif Display', ui-serif, Georgia, serif;
     --radius: 0.75rem;
     --tracking-tighter: calc(var(--tracking-normal) - 0.05em);
     --tracking-tight: calc(var(--tracking-normal) - 0.025em);

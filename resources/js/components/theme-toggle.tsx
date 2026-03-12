@@ -1,50 +1,30 @@
 import { useAppearance } from '@/hooks/use-appearance';
 import { Button } from '@/components/ui/button';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu';
-import { Moon, Sun, Monitor } from 'lucide-react';
+import { Moon, Sun } from 'lucide-react';
 
 export function ThemeToggle() {
     const { appearance, updateAppearance } = useAppearance();
 
-    const getIcon = () => {
-        switch (appearance) {
-            case 'light':
-                return <Sun className="h-4 w-4" />;
-            case 'dark':
-                return <Moon className="h-4 w-4" />;
-            case 'system':
-            default:
-                return <Monitor className="h-4 w-4" />;
-        }
+    const toggleTheme = () => {
+        const newTheme = appearance === 'dark' ? 'light' : 'dark';
+        updateAppearance(newTheme);
     };
 
+    const isDark = appearance === 'dark';
+
     return (
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                    {getIcon()}
-                    <span className="sr-only">Toggle theme</span>
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => updateAppearance('light')}>
-                    <Sun className="mr-2 h-4 w-4" />
-                    <span>Light</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => updateAppearance('dark')}>
-                    <Moon className="mr-2 h-4 w-4" />
-                    <span>Dark</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => updateAppearance('system')}>
-                    <Monitor className="mr-2 h-4 w-4" />
-                    <span>System</span>
-                </DropdownMenuItem>
-            </DropdownMenuContent>
-        </DropdownMenu>
+        <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 w-8 p-0"
+            onClick={toggleTheme}
+        >
+            {isDark ? (
+                <Sun className="h-4 w-4" />
+            ) : (
+                <Moon className="h-4 w-4" />
+            )}
+            <span className="sr-only">Toggle theme</span>
+        </Button>
     );
 }

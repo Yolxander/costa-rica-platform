@@ -203,6 +203,7 @@ export default function Landing() {
     const [popularRegionsInView, setPopularRegionsInView] = useState(false);
     const [pricingInView, setPricingInView] = useState(false);
     const [ctaInView, setCtaInView] = useState(false);
+    const [heroLoaded, setHeroLoaded] = useState(false);
     const [scrollY, setScrollY] = useState(0);
     const [vh, setVh] = useState(800);
 
@@ -210,6 +211,9 @@ export default function Landing() {
         setVh(window.innerHeight);
         const handleScroll = () => setScrollY(window.scrollY);
         window.addEventListener('scroll', handleScroll, { passive: true });
+
+        // Trigger hero load animation
+        const timer = setTimeout(() => setHeroLoaded(true), 80);
 
         // Initialize Lenis smooth scroll with script load detection
         let lenisInstance: { raf: (time: number) => void; destroy: () => void } | null = null;
@@ -257,6 +261,7 @@ export default function Landing() {
 
         return () => {
             window.removeEventListener('scroll', handleScroll);
+            clearTimeout(timer);
             if (lenisInstance) lenisInstance.destroy();
         };
     }, []);
@@ -383,11 +388,11 @@ export default function Landing() {
                                     heroWidthProgress > 0.5 ? '0px' : '16px',
                             }}
                         >
-                            {/* Background image - top half with zoom parallax */}
+                            {/* Background image - top half with zoom parallax + load animation */}
                             <div
-                                className="absolute inset-0 bg-[url('/sora-bg.jpg')] bg-[length:100%_200%] bg-[position:50%_0%]"
+                                className="absolute inset-0 bg-[url('/sora-bg.jpg')] bg-[length:100%_200%] bg-[position:50%_0%] dark:bg-[url('/sunset-bg.jpg')] transition-transform duration-[1400ms] ease-out"
                                 style={{
-                                    transform: `scale(${heroBgScale})`,
+                                    transform: `scale(${heroBgScale + (heroLoaded ? 0 : 0.12)})`,
                                     transformOrigin: 'center center',
                                 }}
                             />
@@ -395,22 +400,45 @@ export default function Landing() {
                             {/* Dark overlay */}
                             <div className="absolute inset-0 bg-black/20" />
 
-                            {/* Content with fade and subtle parallax */}
+                            {/* Content with fade and subtle parallax + load animation */}
                             <div
-                                className="relative z-10 mx-auto w-full max-w-3xl px-6 py-16 text-center sm:px-8 sm:py-20"
-                                style={{ opacity: heroContentOpacity }}
+                                className="relative z-10 mx-auto w-full max-w-3xl px-6 py-16 text-center sm:px-8 sm:py-20 transition-all duration-700 ease-out"
+                                style={{
+                                    opacity: heroLoaded ? heroContentOpacity : 0,
+                                    transform: heroLoaded ? 'translateY(0px)' : 'translateY(30px)',
+                                }}
                             >
-                                <h1 className="text-4xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl">
+                                <h1
+                                    className="text-4xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl transition-all duration-700 ease-out"
+                                    style={{
+                                        opacity: heroLoaded ? 1 : 0,
+                                        transform: heroLoaded ? 'translateY(0)' : 'translateY(30px)',
+                                    }}
+                                >
                                     Own Your Direct Bookings
                                 </h1>
 
-                                <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-white sm:text-lg md:text-xl">
+                                <p
+                                    className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-white sm:text-lg md:text-xl transition-all duration-700 ease-out"
+                                    style={{
+                                        opacity: heroLoaded ? 1 : 0,
+                                        transform: heroLoaded ? 'translateY(0)' : 'translateY(25px)',
+                                        transitionDelay: '120ms',
+                                    }}
+                                >
                                     Accept direct bookings, collect payments,
                                     and turn one-time guests into repeat
                                     customers without paying OTA commissions.
                                 </p>
 
-                                <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
+                                <div
+                                    className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4 transition-all duration-700 ease-out"
+                                    style={{
+                                        opacity: heroLoaded ? 1 : 0,
+                                        transform: heroLoaded ? 'translateY(0)' : 'translateY(20px)',
+                                        transitionDelay: '220ms',
+                                    }}
+                                >
                                     <Button
                                         size="lg"
                                         className="w-full gap-2 rounded-full px-8 sm:w-auto"

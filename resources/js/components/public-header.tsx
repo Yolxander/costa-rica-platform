@@ -3,6 +3,7 @@ import { IconBeach } from '@tabler/icons-react';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
 import { type SharedData } from '@/types';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 interface PublicHeaderProps {
     /** When true, header stays minimal until user scrolls (for landing hero). When false, always styled. */
@@ -45,8 +46,9 @@ export function PublicHeader({ transparentUntilScroll = false }: PublicHeaderPro
                     : 'w-7xl px-2'
             }`}
         >
-            <div className={`flex h-14 items-center gap-6 ${showStyled ? '' : 'mx-auto max-w-full'}`}>
-                <Link href="/" className="flex items-center gap-2">
+            <div className={`flex h-14 items-center justify-between gap-6 ${showStyled ? '' : 'mx-auto max-w-full'}`}>
+                {/* Left: Logo */}
+                <Link href="/" className="flex items-center gap-2 shrink-0">
                     <img
                         src="/brisa-logo.png"
                         alt="Sora Logo"
@@ -54,12 +56,17 @@ export function PublicHeader({ transparentUntilScroll = false }: PublicHeaderPro
                     />
                     <p className="text-lg font-semibold">Sora</p>
                 </Link>
-                <div className="ml-auto flex items-center gap-6">
-                    <nav className="hidden items-center gap-6 md:flex">
-                        {navLink('/', 'Home', isActive('/'))}
-                        {navLink('/pricing', 'Pricing', isActive('/pricing'))}
-                        {navLink('/how-it-works', 'How it works', isActive('/how-it-works'))}
-                    </nav>
+
+                {/* Center: Navigation */}
+                <nav className="hidden items-center gap-6 md:flex absolute left-1/2 -translate-x-1/2">
+                    {navLink('/', 'Home', isActive('/'))}
+                    {navLink('/pricing', 'Pricing', isActive('/pricing'))}
+                    {navLink('/how-it-works', 'How it works', isActive('/how-it-works'))}
+                </nav>
+
+                {/* Right: Theme Toggle + CTA */}
+                <div className="flex items-center gap-3 shrink-0">
+                    <ThemeToggle />
                     {auth?.user ? (
                         <Link href="/dashboard">
                             <Button className="h-9 rounded-full bg-foreground text-background hover:bg-foreground/90">Dashboard</Button>
