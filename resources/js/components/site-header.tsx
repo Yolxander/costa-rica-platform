@@ -2,7 +2,7 @@ import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Button } from "@/components/ui/button"
-import { IconBell, IconCirclePlusFilled } from "@tabler/icons-react"
+import { IconBell, IconCirclePlusFilled, IconArrowLeft } from "@tabler/icons-react"
 import { usePage, router } from "@inertiajs/react"
 import { useState } from "react"
 import { QuickAddModal } from "@/components/quick-add-modal"
@@ -35,6 +35,28 @@ export function SiteHeader() {
 
   const handleUploadImage = () => {
     console.log("Upload image clicked")
+  }
+
+  const shouldShowBackButton = () => {
+    const url = page.url
+    // /discovery-pages/*/edit
+    if (url.match(/\/discovery-pages\/\d+\/edit/)) return true
+    // /property/*
+    if (url.match(/\/property\/\d+/)) return true
+    // /socials/create
+    if (url === '/socials/create') return true
+    // /marketing/email/new
+    if (url === '/marketing/email/new') return true
+    return false
+  }
+
+  const getBackUrl = () => {
+    const url = page.url
+    if (url.match(/\/discovery-pages\/\d+\/edit/)) return '/listings'
+    if (url.match(/\/property\/\d+/)) return '/listings'
+    if (url === '/socials/create') return '/socials'
+    if (url === '/marketing/email/new') return '/marketing'
+    return '/'
   }
 
   const getHeaderTitle = () => {
@@ -83,23 +105,37 @@ export function SiteHeader() {
         />
         <h1 className="text-base font-medium">{getHeaderTitle()}</h1>
         <div className="ml-auto flex items-center gap-2">
-          <Button
-            size="icon"
-            className="size-8 bg-primary text-primary-foreground hover:bg-primary/90"
-            onClick={handleQuickAddClick}
-          >
-            <IconCirclePlusFilled />
-            <span className="sr-only">Quick Add</span>
-          </Button>
-          <Button
-            size="icon"
-            className="size-8"
-            variant="outline"
-          >
-            <IconBell />
-            <span className="sr-only">Notifications</span>
-          </Button>
-          <ThemeToggle />
+          {shouldShowBackButton() ? (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => router.visit(getBackUrl())}
+              className="gap-1"
+            >
+              <IconArrowLeft className="size-4" />
+              Back
+            </Button>
+          ) : (
+            <>
+              <Button
+                size="icon"
+                className="size-8 bg-primary text-primary-foreground hover:bg-primary/90"
+                onClick={handleQuickAddClick}
+              >
+                <IconCirclePlusFilled />
+                <span className="sr-only">Quick Add</span>
+              </Button>
+              <Button
+                size="icon"
+                className="size-8"
+                variant="outline"
+              >
+                <IconBell />
+                <span className="sr-only">Notifications</span>
+              </Button>
+              <ThemeToggle />
+            </>
+          )}
         </div>
       </div>
     </header>

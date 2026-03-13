@@ -38,22 +38,7 @@ export default function SocialsCreatePage() {
                     <SiteHeader />
                     <div className="flex flex-1 flex-col">
                         <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-                            <div className="px-4 lg:px-6 max-w-7xl mx-auto w-full">
-                                {/* Header */}
-                                <div className="flex items-center gap-4 mb-6">
-                                    <Link href="/socials">
-                                        <Button variant="ghost" size="icon">
-                                            <IconArrowLeft className="h-4 w-4" />
-                                        </Button>
-                                    </Link>
-                                    <div>
-                                        <h1 className="text-2xl font-semibold tracking-tight">Create Post</h1>
-                                        <p className="text-muted-foreground">
-                                            Create and schedule your social media post
-                                        </p>
-                                    </div>
-                                </div>
-
+                            <div className="px-4 lg:px-6 max-w-7xl mx-auto w-full mb-8">
                                 {/* Wizard */}
                                 <SocialPostWizard
                                     properties={properties}
