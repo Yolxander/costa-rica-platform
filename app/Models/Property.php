@@ -48,8 +48,12 @@ class Property extends Model
         'show_airbnb_button',
         'show_bookingcom_button',
         'show_whatsapp_button',
+        'show_vrbo_button',
+        'show_website_button',
         'custom_message',
         'accent_color',
+        'highlighted_amenities',
+        'highlighted_images',
     ];
 
     protected $casts = [
@@ -61,12 +65,16 @@ class Property extends Model
         'cleaning_fee' => 'decimal:2',
         'service_fee' => 'decimal:2',
         'rating' => 'decimal:2',
+        'highlighted_amenities' => 'array',
+        'highlighted_images' => 'array',
         // Discovery page toggles
         'discovery_page_enabled' => 'boolean',
         'show_book_direct_button' => 'boolean',
         'show_airbnb_button' => 'boolean',
         'show_bookingcom_button' => 'boolean',
         'show_whatsapp_button' => 'boolean',
+        'show_vrbo_button' => 'boolean',
+        'show_website_button' => 'boolean',
     ];
 
     protected static function booted(): void

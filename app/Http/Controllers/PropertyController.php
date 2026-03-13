@@ -231,6 +231,8 @@ class PropertyController extends Controller
             'show_airbnb_button' => 'boolean',
             'show_bookingcom_button' => 'boolean',
             'show_whatsapp_button' => 'boolean',
+            'show_vrbo_button' => 'boolean',
+            'show_website_button' => 'boolean',
             'airbnb_url' => 'nullable|url',
             'bookingcom_url' => 'nullable|url',
             'vrbo_url' => 'nullable|url',
@@ -238,6 +240,10 @@ class PropertyController extends Controller
             'whatsapp_number' => 'nullable|string',
             'custom_message' => 'nullable|string|max:500',
             'accent_color' => 'nullable|string|regex:/^#[a-fA-F0-9]{6}$/',
+            'highlighted_amenities' => 'nullable|array',
+            'highlighted_amenities.*' => 'string',
+            'highlighted_images' => 'nullable|array',
+            'highlighted_images.*' => 'string',
         ]);
 
         $property->update($validated);
