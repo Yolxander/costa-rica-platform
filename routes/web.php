@@ -168,6 +168,92 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('marketing/email/understand', [MarketingController::class, 'understandEmailIntent'])->name('marketing.email.understand');
     Route::post('marketing/email/generate-content', [MarketingController::class, 'generateEmailContent'])->name('marketing.email.generate-content');
 
+    // Socials Routes
+    Route::get('socials', function () {
+        $user = auth()->user();
+        $posts = \App\Models\SocialPost::where('user_id', $user->id)
+            ->with('property:id,name')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $allPosts = $posts->map(function ($post) {
+            return [
+                'id' => $post->id,
+                'caption' => $post->caption,
+                'hashtags' => $post->hashtags,
+                'location' => $post->location,
+                'property_name' => $post->property?->name ?? null,
+                'images_count' => is_array($post->images) ? count($post->images) : 0,
+                'created_at' => $post->created_at->toISOString(),
+                'platform' => $post->platform,
+                'status' => $post->status,
+            ];
+        });
+
+        $facebookPosts = $allPosts->where('platform', 'facebook')->values()->all();
+        $instagramPosts = $allPosts->where('platform', 'instagram')->values()->all();
+
+        return Inertia::render('socials', [
+            'facebookPosts' => $facebookPosts,
+            'instagramPosts' => $instagramPosts,
+        ]);
+    })->name('socials');
+
+    Route::get('socials/create', function () {
+        $user = auth()->user();
+        $properties = \App\Models\Property::where('user_id', $user->id)
+            ->get(['id', 'name', 'slug', 'discovery_page_enabled'])
+            ->map(fn ($p) => [
+                'id' => $p->id,
+                'name' => $p->name,
+                'slug' => $p->slug,
+                'discovery_page_enabled' => $p->discovery_page_enabled,
+                'discovery_page_url' => $p->discovery_page_enabled ? url("/discovery/{$p->slug}") : null,
+            ])
+            ->toArray();
+
+        return Inertia::render('socials-create', [
+            'properties' => $properties,
+        ]);
+    })->name('socials.create');
+
+    Route::post('socials', function () {
+        $validated = request()->validate([
+            'platform' => 'required|in:instagram,facebook',
+            'property_id' => 'nullable|exists:properties,id',
+            'caption' => 'required|string',
+            'hashtags' => 'nullable|string',
+            'location' => 'nullable|string',
+            'link_url' => 'nullable|url',
+            'scheduled_at' => 'nullable|date',
+        ]);
+
+        $post = \App\Models\SocialPost::create([
+            'user_id' => auth()->id(),
+            'property_id' => $validated['property_id'] ?? null,
+            'platform' => $validated['platform'],
+            'images' => [],
+            'caption' => $validated['caption'],
+            'hashtags' => $validated['hashtags'] ?? null,
+            'location' => $validated['location'] ?? null,
+            'link_url' => $validated['link_url'] ?? null,
+            'status' => 'draft',
+            'scheduled_at' => $validated['scheduled_at'] ?? null,
+        ]);
+
+        return redirect()->route('socials')->with('success', 'Post saved as draft');
+    })->name('socials.store');
+
+    Route::delete('socials/{id}', function ($id) {
+        $post = \App\Models\SocialPost::where('id', $id)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
+
+        $post->delete();
+
+        return redirect()->route('socials')->with('success', 'Post deleted');
+    })->name('socials.destroy');
+
     Route::get('crm', function () {
         $user = auth()->user();
         $properties = \App\Models\Property::where('user_id', $user->id)->get(['id', 'name']);

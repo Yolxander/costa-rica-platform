@@ -41,14 +41,21 @@ const data = {
       icon: IconList,
     },
     {
+      title: "Calendar",
+      url: "/calendar",
+      icon: IconCalendar,
+    },
+  ],
+  navDiscoveryAndSocials: [
+    {
       title: "Discovery Pages",
       url: "/discovery-pages",
       icon: IconLayoutGrid,
     },
     {
-      title: "Calendar",
-      url: "/calendar",
-      icon: IconCalendar,
+      title: "Socials",
+      url: "/socials",
+      icon: IconBrandInstagram,
     },
   ],
   navCommunication: [
@@ -65,7 +72,7 @@ const data = {
     {
       title: "Marketing",
       url: "/marketing",
-      icon: IconBrandInstagram,
+      icon: IconSettings,
     },
   ],
   navSecondary: [
@@ -110,6 +117,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   items={data.navPropertyManagement}
                   label="Property Management"
               />
+              <NavGroup items={data.navDiscoveryAndSocials} label="Promote" />
               <NavGroup items={data.navCommunication} label="Communication" />
               <NavSecondary items={data.navSecondary} className="mt-auto" />
           </SidebarContent>
