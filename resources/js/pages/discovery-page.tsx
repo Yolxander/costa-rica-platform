@@ -41,7 +41,8 @@ interface Property {
   price_format: string | null
   currency: string
   custom_message: string | null
-  accent_color: string
+  primary_color: string
+  secondary_color: string
   host: {
     name: string
     avatar: string | null
@@ -166,7 +167,12 @@ export default function DiscoveryPage({ property }: DiscoveryPageProps) {
                                   }
                                   className="block"
                               >
-                                  <Button className="h-14 w-full text-base font-semibold">
+                                  <Button
+                                      className="h-14 w-full text-base font-semibold text-white"
+                                      style={{
+                                          backgroundColor: property.primary_color,
+                                      }}
+                                  >
                                       <IconHome className="mr-2 h-5 w-5" />
                                       Book Direct (Best Price)
                                   </Button>
@@ -192,7 +198,11 @@ export default function DiscoveryPage({ property }: DiscoveryPageProps) {
                                   >
                                       <Button
                                           variant="outline"
-                                          className="h-12 w-full border-rose-200 bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700"
+                                          className="h-12 w-full border text-white hover:opacity-90"
+                                          style={{
+                                              backgroundColor: property.secondary_color,
+                                              borderColor: property.secondary_color,
+                                          }}
                                       >
                                           <IconBrandAirbnb className="mr-2 h-5 w-5" />
                                           Book on Airbnb
@@ -211,7 +221,11 @@ export default function DiscoveryPage({ property }: DiscoveryPageProps) {
                                   >
                                       <Button
                                           variant="outline"
-                                          className="h-12 w-full border-blue-200 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700"
+                                          className="h-12 w-full border text-white hover:opacity-90"
+                                          style={{
+                                              backgroundColor: property.secondary_color,
+                                              borderColor: property.secondary_color,
+                                          }}
                                       >
                                           <IconBrandBooking className="mr-2 h-5 w-5" />
                                           Book on Booking.com
@@ -230,7 +244,11 @@ export default function DiscoveryPage({ property }: DiscoveryPageProps) {
                                   >
                                       <Button
                                           variant="outline"
-                                          className="h-12 w-full border-blue-100 bg-blue-50/50 text-blue-500 hover:bg-blue-50"
+                                          className="h-12 w-full border text-white hover:opacity-90"
+                                          style={{
+                                              backgroundColor: property.secondary_color,
+                                              borderColor: property.secondary_color,
+                                          }}
                                       >
                                           Book on VRBO
                                           <IconExternalLink className="ml-auto h-4 w-4 opacity-50" />
@@ -248,7 +266,11 @@ export default function DiscoveryPage({ property }: DiscoveryPageProps) {
                                   >
                                       <Button
                                           variant="outline"
-                                          className="h-12 w-full"
+                                          className="h-12 w-full border text-white hover:opacity-90"
+                                          style={{
+                                              backgroundColor: property.secondary_color,
+                                              borderColor: property.secondary_color,
+                                          }}
                                       >
                                           Visit Our Website
                                           <IconExternalLink className="ml-auto h-4 w-4 opacity-50" />

@@ -239,12 +239,19 @@ class PropertyController extends Controller
             'website_url' => 'nullable|url',
             'whatsapp_number' => 'nullable|string',
             'custom_message' => 'nullable|string|max:500',
-            'accent_color' => 'nullable|string|regex:/^#[a-fA-F0-9]{6}$/',
+            'primary_color' => 'nullable|string|regex:/^#[a-fA-F0-9]{6}$/',
+            'secondary_color' => 'nullable|string|regex:/^#[a-fA-F0-9]{6}$/',
             'highlighted_amenities' => 'nullable|array',
             'highlighted_amenities.*' => 'string',
             'highlighted_images' => 'nullable|array',
             'highlighted_images.*' => 'string',
         ]);
+
+        // Map primary_color to accent_color for database compatibility
+        if (isset($validated['primary_color'])) {
+            $validated['accent_color'] = $validated['primary_color'];
+            unset($validated['primary_color']);
+        }
 
         $property->update($validated);
 

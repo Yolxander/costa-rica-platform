@@ -29,7 +29,6 @@ import {
   IconBath,
   IconHome,
   IconExternalLink,
-  IconChevronRight,
 } from "@tabler/icons-react"
 import { SharedData } from "@/types"
 
@@ -61,9 +60,18 @@ interface Property {
   show_website_button: boolean
   custom_message: string | null
   accent_color: string
+  secondary_color: string
   host?: {
     name: string
     avatar: string | null
+  }
+  buttons: {
+    book_direct: ButtonConfig
+    airbnb: ButtonConfig
+    bookingcom: ButtonConfig
+    vrbo: ButtonConfig
+    whatsapp: ButtonConfig
+    website: ButtonConfig
   }
 }
 
@@ -89,7 +97,6 @@ export default function DiscoveryPageEdit() {
     website_url: property.website_url || "",
     whatsapp_number: property.whatsapp_number || "",
     custom_message: property.custom_message || "",
-    accent_color: property.accent_color || "#10b981",
     highlighted_amenities: property.amenities?.slice(0, 6) || [],
     highlighted_images: property.images?.slice(1, 6) || [],
     show_welcome_message: true,
@@ -98,6 +105,8 @@ export default function DiscoveryPageEdit() {
     show_photo_gallery: true,
     show_contact_section: true,
     show_pricing: true,
+    primary_color: property.accent_color ?? '#e78a53',
+    secondary_color: property.secondary_color ?? '#5f8787',
   })
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -160,6 +169,140 @@ export default function DiscoveryPageEdit() {
                                           </CardContent>
                                       </Card>
 
+                                      {/* Primary & Secondary Colors */}
+                                      <Collapsible>
+                                          <Card className="group overflow-hidden rounded-2xl border border-border/30 bg-background py-0 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
+                                              <CollapsibleTrigger asChild>
+                                                  <button
+                                                      className="group flex w-full cursor-pointer items-center justify-between p-5 text-left transition-colors hover:bg-muted/50"
+                                                      type="button"
+                                                  >
+                                                      <div className="pr-4">
+                                                          <h3 className="text-base font-semibold">
+                                                              Primary & Secondary
+                                                          </h3>
+                                                          <p className="text-sm text-muted-foreground">
+                                                              Customize your
+                                                              button colors
+                                                          </p>
+                                                      </div>
+                                                      <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-background transition-all duration-300 group-data-[state=open]:bg-secondary">
+                                                          <Plus className="size-4 group-data-[state=open]:hidden" />
+                                                          <Minus className="hidden size-4 group-data-[state=open]:block" />
+                                                      </span>
+                                                  </button>
+                                              </CollapsibleTrigger>
+                                              <CollapsibleContent>
+                                                  <CardContent className="space-y-6 pb-6">
+                                                      {/* Primary Color */}
+                                                      <div className="space-y-2">
+                                                          <Label htmlFor="primary-color">
+                                                              Primary Color (Book
+                                                              Direct)
+                                                          </Label>
+                                                          <div className="flex items-center gap-3">
+                                                              <Input
+                                                                  id="primary-color"
+                                                                  type="color"
+                                                                  value={
+                                                                      data.primary_color
+                                                                  }
+                                                                  onChange={(
+                                                                      e,
+                                                                  ) =>
+                                                                      setData(
+                                                                          'primary_color',
+                                                                          e
+                                                                              .target
+                                                                              .value,
+                                                                      )
+                                                                  }
+                                                                  className="h-10 w-20"
+                                                              />
+                                                              <Input
+                                                                  type="text"
+                                                                  value={
+                                                                      data.primary_color
+                                                                  }
+                                                                  onChange={(
+                                                                      e,
+                                                                  ) =>
+                                                                      setData(
+                                                                          'primary_color',
+                                                                          e
+                                                                              .target
+                                                                              .value,
+                                                                      )
+                                                                  }
+                                                                  placeholder="#e78a53"
+                                                                  className="flex-1"
+                                                              />
+                                                          </div>
+                                                          {errors.primary_color && (
+                                                              <p className="text-sm text-red-500">
+                                                                  {
+                                                                      errors.primary_color
+                                                                  }
+                                                              </p>
+                                                          )}
+                                                      </div>
+
+                                                      {/* Secondary Color */}
+                                                      <div className="space-y-2">
+                                                          <Label htmlFor="secondary-color">
+                                                              Secondary Color
+                                                              (Other Buttons)
+                                                          </Label>
+                                                          <div className="flex items-center gap-3">
+                                                              <Input
+                                                                  id="secondary-color"
+                                                                  type="color"
+                                                                  value={
+                                                                      data.secondary_color
+                                                                  }
+                                                                  onChange={(
+                                                                      e,
+                                                                  ) =>
+                                                                      setData(
+                                                                          'secondary_color',
+                                                                          e
+                                                                              .target
+                                                                              .value,
+                                                                      )
+                                                                  }
+                                                                  className="h-10 w-20"
+                                                              />
+                                                              <Input
+                                                                  type="text"
+                                                                  value={
+                                                                      data.secondary_color
+                                                                  }
+                                                                  onChange={(
+                                                                      e,
+                                                                  ) =>
+                                                                      setData(
+                                                                          'secondary_color',
+                                                                          e
+                                                                              .target
+                                                                              .value,
+                                                                      )
+                                                                  }
+                                                                  placeholder="#5f8787"
+                                                                  className="flex-1"
+                                                              />
+                                                          </div>
+                                                          {errors.secondary_color && (
+                                                              <p className="text-sm text-red-500">
+                                                                  {
+                                                                      errors.secondary_color
+                                                                  }
+                                                              </p>
+                                                          )}
+                                                      </div>
+                                                  </CardContent>
+                                              </CollapsibleContent>
+                                          </Card>
+                                      </Collapsible>
                                       {/* Welcome Message */}
                                       <Collapsible>
                                           <Card className="group overflow-hidden rounded-2xl border border-border/30 bg-background py-0 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
@@ -611,88 +754,6 @@ export default function DiscoveryPageEdit() {
                                                                       </p>
                                                                   )}
                                                               </div>
-                                                          )}
-                                                      </div>
-                                                  </CardContent>
-                                              </CollapsibleContent>
-                                          </Card>
-                                      </Collapsible>
-
-                                      {/* Accent Color */}
-                                      <Collapsible>
-                                          <Card className="group overflow-hidden rounded-2xl border border-border/30 bg-background py-0 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
-                                              <CollapsibleTrigger asChild>
-                                                  <button
-                                                      className="group flex w-full cursor-pointer items-center justify-between p-5 text-left transition-colors hover:bg-muted/50"
-                                                      type="button"
-                                                  >
-                                                      <div className="pr-4">
-                                                          <h3 className="text-base font-semibold">
-                                                              Accent Color
-                                                          </h3>
-                                                          <p className="text-sm text-muted-foreground">
-                                                              Personalize your
-                                                              primary button
-                                                              color
-                                                          </p>
-                                                      </div>
-                                                      <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-background transition-all duration-300 group-data-[state=open]:bg-secondary">
-                                                          <Plus className="size-4 group-data-[state=open]:hidden" />
-                                                          <Minus className="hidden size-4 group-data-[state=open]:block" />
-                                                      </span>
-                                                  </button>
-                                              </CollapsibleTrigger>
-                                              <CollapsibleContent>
-                                                  <CardContent className="space-y-4 pb-6">
-                                                      <div className="space-y-2">
-                                                          <Label htmlFor="accent-color">
-                                                              Primary Button
-                                                              Color
-                                                          </Label>
-                                                          <div className="flex items-center gap-3">
-                                                              <Input
-                                                                  id="accent-color"
-                                                                  type="color"
-                                                                  value={
-                                                                      data.accent_color
-                                                                  }
-                                                                  onChange={(
-                                                                      e,
-                                                                  ) =>
-                                                                      setData(
-                                                                          'accent_color',
-                                                                          e
-                                                                              .target
-                                                                              .value,
-                                                                      )
-                                                                  }
-                                                                  className="h-10 w-20"
-                                                              />
-                                                              <Input
-                                                                  type="text"
-                                                                  value={
-                                                                      data.accent_color
-                                                                  }
-                                                                  onChange={(
-                                                                      e,
-                                                                  ) =>
-                                                                      setData(
-                                                                          'accent_color',
-                                                                          e
-                                                                              .target
-                                                                              .value,
-                                                                      )
-                                                                  }
-                                                                  placeholder="#10b981"
-                                                                  className="flex-1"
-                                                              />
-                                                          </div>
-                                                          {errors.accent_color && (
-                                                              <p className="text-sm text-red-500">
-                                                                  {
-                                                                      errors.accent_color
-                                                                  }
-                                                              </p>
                                                           )}
                                                       </div>
                                                   </CardContent>
@@ -1164,7 +1225,7 @@ export default function DiscoveryPageEdit() {
                                                   </div>
 
                                                   {/* Scrollable Content */}
-                                                  <div className="h-[580px] overflow-y-auto">
+                                                  <div className="h-[580px] overflow-y-auto hide-scrollbar">
                                                       {/* Hero Image - Larger like actual page */}
                                                       <div className="relative h-56 w-full overflow-hidden">
                                                           {property.images &&
@@ -1250,7 +1311,7 @@ export default function DiscoveryPageEdit() {
                                                                       className="flex h-12 w-full items-center justify-center gap-2 rounded-lg text-sm font-semibold text-white"
                                                                       style={{
                                                                           backgroundColor:
-                                                                              data.accent_color,
+                                                                              data.primary_color,
                                                                       }}
                                                                   >
                                                                       <IconHome className="h-5 w-5" />
@@ -1261,28 +1322,20 @@ export default function DiscoveryPageEdit() {
                                                                   </button>
                                                               )}
 
-                                                              {/* Check Availability */}
-                                                              <button
-                                                                  type="button"
-                                                                  className="flex h-11 w-full items-center justify-center gap-2 rounded-lg border border-input bg-background text-sm hover:bg-accent"
-                                                              >
-                                                                  Check
-                                                                  Availability
-                                                                  <IconChevronRight className="ml-auto h-4 w-4 opacity-50" />
-                                                              </button>
-
                                                               {/* External Platforms */}
                                                               {data.show_airbnb_button &&
                                                                   data.airbnb_url && (
                                                                       <button
                                                                           type="button"
-                                                                          className="flex h-11 w-full items-center justify-center gap-2 rounded-lg border border-rose-200 bg-rose-50 text-sm text-rose-600 hover:bg-rose-100"
+                                                                          className="group flex h-11 w-full items-center justify-center gap-2 rounded-xl border-2 px-4 text-sm font-medium shadow-md transition-all duration-200 hover:shadow-lg hover:brightness-110 active:scale-[0.98]"
+                                                                          style={{
+                                                                              backgroundColor: data.secondary_color,
+                                                                              borderColor: data.secondary_color,
+                                                                          }}
                                                                       >
-                                                                          <IconBrandAirbnb className="h-5 w-5" />
-                                                                          Book
-                                                                          on
-                                                                          Airbnb
-                                                                          <IconExternalLink className="ml-auto h-4 w-4 opacity-50" />
+                                                                          <IconBrandAirbnb className="h-5 w-5 text-rose-500" />
+                                                                          <span className="flex-1 text-white">Book on Airbnb</span>
+                                                                          <IconExternalLink className="h-4 w-4 text-white opacity-70 transition-opacity group-hover:opacity-100" />
                                                                       </button>
                                                                   )}
 
@@ -1290,13 +1343,15 @@ export default function DiscoveryPageEdit() {
                                                                   data.bookingcom_url && (
                                                                       <button
                                                                           type="button"
-                                                                          className="flex h-11 w-full items-center justify-center gap-2 rounded-lg border border-blue-200 bg-blue-50 text-sm text-blue-600 hover:bg-blue-100"
+                                                                          className="group flex h-11 w-full items-center justify-center gap-2 rounded-xl border-2 px-4 text-sm font-medium shadow-md transition-all duration-200 hover:shadow-lg hover:brightness-110 active:scale-[0.98]"
+                                                                          style={{
+                                                                              backgroundColor: data.secondary_color,
+                                                                              borderColor: data.secondary_color,
+                                                                          }}
                                                                       >
-                                                                          <IconBrandBooking className="h-5 w-5" />
-                                                                          Book
-                                                                          on
-                                                                          Booking.com
-                                                                          <IconExternalLink className="ml-auto h-4 w-4 opacity-50" />
+                                                                          <IconBrandBooking className="h-5 w-5 text-blue-500" />
+                                                                          <span className="flex-1 text-white">Book on Booking.com</span>
+                                                                          <IconExternalLink className="h-4 w-4 text-white opacity-70 transition-opacity group-hover:opacity-100" />
                                                                       </button>
                                                                   )}
 
@@ -1304,12 +1359,15 @@ export default function DiscoveryPageEdit() {
                                                                   data.vrbo_url && (
                                                                       <button
                                                                           type="button"
-                                                                          className="flex h-11 w-full items-center justify-center gap-2 rounded-lg border border-blue-100 bg-blue-50/50 text-sm text-blue-500 hover:bg-blue-50"
+                                                                          className="group flex h-11 w-full items-center justify-center gap-2 rounded-xl border-2 px-4 text-sm font-medium shadow-md transition-all duration-200 hover:shadow-lg hover:brightness-110 active:scale-[0.98]"
+                                                                          style={{
+                                                                              backgroundColor: data.secondary_color,
+                                                                              borderColor: data.secondary_color,
+                                                                          }}
                                                                       >
-                                                                          Book
-                                                                          on
-                                                                          VRBO
-                                                                          <IconExternalLink className="ml-auto h-4 w-4 opacity-50" />
+                                                                          <IconHome className="h-5 w-5 text-sky-400" />
+                                                                          <span className="flex-1 text-white">Book on VRBO</span>
+                                                                          <IconExternalLink className="h-4 w-4 text-white opacity-70 transition-opacity group-hover:opacity-100" />
                                                                       </button>
                                                                   )}
 
@@ -1317,12 +1375,15 @@ export default function DiscoveryPageEdit() {
                                                                   data.website_url && (
                                                                       <button
                                                                           type="button"
-                                                                          className="flex h-11 w-full items-center justify-center gap-2 rounded-lg border border-input bg-background text-sm hover:bg-accent"
+                                                                          className="group flex h-11 w-full items-center justify-center gap-2 rounded-xl border-2 px-4 text-sm font-medium shadow-md transition-all duration-200 hover:shadow-lg hover:brightness-110 active:scale-[0.98]"
+                                                                          style={{
+                                                                              backgroundColor: data.secondary_color,
+                                                                              borderColor: data.secondary_color,
+                                                                          }}
                                                                       >
-                                                                          Visit
-                                                                          Our
-                                                                          Website
-                                                                          <IconExternalLink className="ml-auto h-4 w-4 opacity-50" />
+                                                                          <IconExternalLink className="h-5 w-5 text-emerald-400" />
+                                                                          <span className="flex-1 text-white">Visit Our Website</span>
+                                                                          <IconExternalLink className="h-4 w-4 text-white opacity-70 transition-opacity group-hover:opacity-100" />
                                                                       </button>
                                                                   )}
                                                           </div>

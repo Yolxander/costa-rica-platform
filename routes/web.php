@@ -532,7 +532,8 @@ Route::get('/stay/{slug}', function ($slug) {
             'price_format' => $property->price_format,
             'currency' => $property->currency,
             'custom_message' => $property->custom_message,
-            'accent_color' => $property->accent_color ?? '#10b981',
+            'primary_color' => $property->accent_color ?? '#e78a53',
+            'secondary_color' => $property->secondary_color ?? '#5f8787',
             'host' => [
                 'name' => $property->user?->name ?? 'Host',
                 'avatar' => $property->user?->avatar ?? null,

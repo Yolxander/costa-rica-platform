@@ -52,6 +52,7 @@ class Property extends Model
         'show_website_button',
         'custom_message',
         'accent_color',
+        'secondary_color',
         'highlighted_amenities',
         'highlighted_images',
     ];
