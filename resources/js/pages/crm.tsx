@@ -43,6 +43,8 @@ import {
     IconTag,
     IconNote,
     IconX,
+    IconLayoutGrid,
+    IconList,
 } from "@tabler/icons-react"
 import { useState, useMemo, useCallback } from "react"
 
@@ -137,6 +139,9 @@ export default function CrmPage() {
     const { guests, properties } = usePage<CrmProps>().props
     const [searchQuery, setSearchQuery] = useState("")
     const [propertyFilter, setPropertyFilter] = useState<string>("all")
+    const [viewMode, setViewMode] = useState<'table' | 'grid'>(() => {
+        return guests.length < 5 ? 'grid' : 'table'
+    })
     const [selectedGuestEmail, setSelectedGuestEmail] = useState<string | null>(null)
     const [guestDetail, setGuestDetail] = useState<GuestDetail | null>(null)
     const [loadingDetail, setLoadingDetail] = useState(false)
@@ -343,10 +348,32 @@ export default function CrmPage() {
                                     <div>
                                         <p className="text-muted-foreground">Manage your guest contacts</p>
                                     </div>
-                                    <Button variant="outline" onClick={() => exportToCsv(filteredGuests)}>
-                                        <IconDownload className="mr-2 size-4" />
-                                        Export CSV
-                                    </Button>
+                                    <div className="flex items-center gap-2">
+                                        <div className="flex items-center border rounded-md">
+                                            <Button
+                                                variant={viewMode === 'table' ? 'secondary' : 'ghost'}
+                                                size="sm"
+                                                className="rounded-none rounded-l-md"
+                                                onClick={() => setViewMode('table')}
+                                            >
+                                                <IconList className="mr-2 size-4" />
+                                                List
+                                            </Button>
+                                            <Button
+                                                variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
+                                                size="sm"
+                                                className="rounded-none rounded-r-md"
+                                                onClick={() => setViewMode('grid')}
+                                            >
+                                                <IconLayoutGrid className="mr-2 size-4" />
+                                                Grid
+                                            </Button>
+                                        </div>
+                                        <Button variant="outline" onClick={() => exportToCsv(filteredGuests)}>
+                                            <IconDownload className="mr-2 size-4" />
+                                            Export CSV
+                                        </Button>
+                                    </div>
                                 </div>
 
                                 <div className="flex flex-wrap gap-4 mb-6">
@@ -382,71 +409,55 @@ export default function CrmPage() {
                                             </p>
                                         </CardContent>
                                     </Card>
-                                ) : (
-                                    <Card>
+                                ) : viewMode === 'table' ? (
+                                    <Card className="py-0 overflow-hidden">
                                         <CardContent className="p-0">
                                         <Table>
                                             <TableHeader>
-                                                <TableRow>
-                                                    <TableHead>Name</TableHead>
-                                                    <TableHead>Email</TableHead>
-                                                    <TableHead className="hidden sm:table-cell">Phone</TableHead>
-                                                    <TableHead className="hidden md:table-cell">Property</TableHead>
-                                                    <TableHead className="w-[100px]">Bookings</TableHead>
-                                                    <TableHead className="hidden lg:table-cell">Total Spent</TableHead>
-                                                    <TableHead className="hidden md:table-cell">Last Booking</TableHead>
-                                                    <TableHead className="w-[80px] text-right">Actions</TableHead>
+                                                <TableRow className="hover:bg-transparent h-14">
+                                                    <TableHead className="w-[50px]"></TableHead>
+                                                    <TableHead className="h-14">Guest</TableHead>
+                                                    <TableHead className="hidden md:table-cell h-14">Property</TableHead>
+                                                    <TableHead className="h-14">Bookings</TableHead>
+                                                    <TableHead className="hidden sm:table-cell h-14">Last Booking</TableHead>
+                                                    <TableHead className="w-[100px] text-right h-14">Actions</TableHead>
                                                 </TableRow>
                                             </TableHeader>
                                             <TableBody>
                                                 {filteredGuests.map((guest, i) => (
                                                     <TableRow
                                                         key={i}
-                                                        className="cursor-pointer"
+                                                        className="cursor-pointer h-16"
                                                         onClick={() => openGuestSheet(guest)}
                                                     >
-                                                        <TableCell>
+                                                        <TableCell className="py-4">
+                                                            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                                                <span className="text-sm font-medium text-primary">
+                                                                    {guest.name.charAt(0).toUpperCase()}
+                                                                </span>
+                                                            </div>
+                                                        </TableCell>
+                                                        <TableCell className="py-4">
                                                             <div className="font-medium">{guest.name}</div>
+                                                            <div className="text-sm text-muted-foreground">{guest.email}</div>
                                                         </TableCell>
-                                                        <TableCell className="text-muted-foreground max-w-[180px]">
-                                                            <span
-                                                                className="block truncate"
-                                                                title={guest.email}
-                                                            >
-                                                                {guest.email.length > 12
-                                                                    ? `${guest.email.slice(0, 12)}…`
-                                                                    : guest.email}
-                                                            </span>
+                                                        <TableCell className="hidden md:table-cell text-muted-foreground py-4">
+                                                            {guest.property_name}
                                                         </TableCell>
-                                                        <TableCell className="text-muted-foreground hidden sm:table-cell">
-                                                            {guest.phone ?? "—"}
-                                                        </TableCell>
-                                                        <TableCell className="hidden md:table-cell max-w-[180px]">
-                                                            <span
-                                                                className="block truncate"
-                                                                title={guest.property_name}
-                                                            >
-                                                                {guest.property_name.length > 35
-                                                                    ? `${guest.property_name.slice(0, 35)}…`
-                                                                    : guest.property_name}
-                                                            </span>
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            <Badge variant="secondary" className="font-normal">
+                                                        <TableCell className="py-4">
+                                                            <Badge variant={guest.booking_count > 0 ? "default" : "secondary"} className="font-normal">
                                                                 {guest.booking_count}
                                                             </Badge>
                                                         </TableCell>
-                                                        <TableCell className="hidden lg:table-cell">
-                                                            {guest.total_spent > 0 ? `$${guest.total_spent}` : "—"}
+                                                        <TableCell className="hidden sm:table-cell text-muted-foreground py-4">
+                                                            {guest.last_booking_date ? guest.last_booking_date : (
+                                                                <span className="text-muted-foreground/60">No bookings</span>
+                                                            )}
                                                         </TableCell>
-                                                        <TableCell className="text-muted-foreground hidden md:table-cell">
-                                                            {guest.last_booking_date ?? "—"}
-                                                        </TableCell>
-                                                        <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
-                                                            <Button variant="outline" size="sm" asChild>
+                                                        <TableCell className="text-right py-4" onClick={(e) => e.stopPropagation()}>
+                                                            <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
                                                                 <a href={`mailto:${guest.email}`}>
-                                                                    <IconMail className="size-4 sm:mr-1" />
-                                                                    <span className="hidden sm:inline">Email</span>
+                                                                    <IconMail className="size-4" />
                                                                 </a>
                                                             </Button>
                                                         </TableCell>
@@ -456,6 +467,58 @@ export default function CrmPage() {
                                         </Table>
                                         </CardContent>
                                     </Card>
+                                ) : (
+                                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                                        {filteredGuests.map((guest, i) => (
+                                            <Card key={i} className="overflow-hidden cursor-pointer hover:shadow-md transition-shadow py-0" onClick={() => openGuestSheet(guest)}>
+                                                <div className="p-4">
+                                                    <div className="flex items-start gap-3">
+                                                        <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                                                            <span className="text-lg font-medium text-primary">
+                                                                {guest.name.charAt(0).toUpperCase()}
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex-1 min-w-0">
+                                                            <div className="font-semibold text-base truncate">{guest.name}</div>
+                                                            <div className="text-sm text-muted-foreground truncate">{guest.email}</div>
+                                                            <div className="text-xs text-muted-foreground/70 mt-1 truncate">{guest.property_name}</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="px-4 pb-4">
+                                                    <div className="flex items-center justify-between bg-muted/50 rounded-lg p-3">
+                                                        <div className="text-center flex-1">
+                                                            <span className="text-xs text-muted-foreground block">Bookings</span>
+                                                            <Badge variant={guest.booking_count > 0 ? "default" : "secondary"} className="font-normal mt-0.5">
+                                                                {guest.booking_count}
+                                                            </Badge>
+                                                        </div>
+                                                        <div className="w-px h-8 bg-border mx-3" />
+                                                        <div className="text-center flex-1">
+                                                            <span className="text-xs text-muted-foreground block">Last Booking</span>
+                                                            <div className="text-xs text-muted-foreground mt-0.5">
+                                                                {guest.last_booking_date ? guest.last_booking_date : (
+                                                                    <span className="text-muted-foreground/50">—</span>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center justify-between bg-muted/30 px-4 py-3 border-t">
+                                                    <div className="flex items-center gap-2">
+                                                        <Badge variant="outline" className="text-xs font-normal text-white bg-secondary">
+                                                            {guest.booking_count > 0 ? 'Active Guest' : 'New Contact'}
+                                                        </Badge>
+                                                    </div>
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8" asChild onClick={(e) => e.stopPropagation()}>
+                                                        <a href={`mailto:${guest.email}`}>
+                                                            <IconMail className="size-4" />
+                                                        </a>
+                                                    </Button>
+                                                </div>
+                                            </Card>
+                                        ))}
+                                    </div>
                                 )}
                             </div>
                         </div>
