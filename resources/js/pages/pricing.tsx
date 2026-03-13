@@ -161,7 +161,7 @@ function PricingTiersSection({
                             <Link href="/host/register" className="mt-6 block">
                                 <Button
                                     variant="outline"
-                                    className="h-11 w-full rounded-xl transition-all duration-200 hover:scale-[1.04] group"
+                                    className="h-[45px] w-full rounded-xl transition-all duration-200 hover:scale-[1.04] group"
                                 >
                                     Start Free
                                     <IconArrowRight className="ml-1 size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
@@ -197,7 +197,7 @@ function PricingTiersSection({
                                 ))}
                             </ul>
                             <Link href="/host/register" className="mt-6 block">
-                                <Button className="h-11 w-full rounded-xl transition-all duration-200 hover:scale-[1.04] group">
+                                <Button className="h-[45px] w-full rounded-xl transition-all duration-200 hover:scale-[1.04] group">
                                     Upgrade
                                     <IconArrowRight className="ml-1 size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
                                 </Button>
@@ -228,7 +228,7 @@ function PricingTiersSection({
                             <Link href="/host/register" className="mt-6 block">
                                 <Button
                                     variant="outline"
-                                    className="h-11 w-full rounded-xl transition-all duration-200 hover:scale-[1.04] group"
+                                    className="h-[45px] w-full rounded-xl transition-all duration-200 hover:scale-[1.04] group"
                                 >
                                     Start Trial
                                     <IconArrowRight className="ml-1 size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
@@ -459,7 +459,7 @@ function WebsiteAddOnSection() {
                             </ul>
                             <p className="mt-4 text-xs text-muted-foreground">Example: staywithsofia.com</p>
                             <Link href="/join" className="mt-6 block">
-                                <Button variant="outline" className="h-11 w-full rounded-xl transition-all duration-200 hover:scale-[1.03]">
+                                <Button variant="outline" className="h-[45px] w-full rounded-xl transition-all duration-200 hover:scale-[1.03]">
                                     Learn more
                                 </Button>
                             </Link>
@@ -506,7 +506,7 @@ function WebsiteAddOnSection() {
                                 </li>
                             </ul>
                             <Link href="/join" className="mt-6 block">
-                                <Button className="h-11 w-full rounded-xl transition-all duration-200 hover:scale-[1.03] group/btn">
+                                <Button className="h-[45px] w-full rounded-xl transition-all duration-200 hover:scale-[1.03] group/btn">
                                     Learn more
                                     <IconArrowRight className="ml-1 size-4 transition-transform duration-200 group-hover/btn:translate-x-0.5" />
                                 </Button>
@@ -555,7 +555,7 @@ function WebsiteAddOnSection() {
                             </ul>
                             <p className="mt-6 text-center text-sm font-medium text-primary">Powered by Sempre Studios</p>
                             <Link href="/join" className="mt-4 block">
-                                <Button variant="outline" className="h-11 w-full rounded-xl transition-all duration-200 hover:scale-[1.03]">
+                                <Button variant="outline" className="h-[45px] w-full rounded-xl transition-all duration-200 hover:scale-[1.03]">
                                     Learn more
                                 </Button>
                             </Link>

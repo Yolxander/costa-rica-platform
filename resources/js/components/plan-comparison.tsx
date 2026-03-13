@@ -186,18 +186,18 @@ export function PlanComparison() {
                     }}
                 >
                     <Link href="/host/register">
-                        <Button variant="outline" className="rounded-xl transition-all duration-200 hover:scale-[1.03]">
+                        <Button variant="outline" className="h-[45px] rounded-xl transition-all duration-200 hover:scale-[1.03]">
                             Start Free
                         </Button>
                     </Link>
                     <Link href="/host/register">
-                        <Button className="rounded-xl transition-all duration-200 hover:scale-[1.03] group">
+                        <Button className="h-[45px] rounded-xl transition-all duration-200 hover:scale-[1.03] group">
                             Upgrade to Pro Host
                             <IconArrowRight className="ml-1 size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
                         </Button>
                     </Link>
                     <Link href="/host/register">
-                        <Button variant="outline" className="rounded-xl transition-all duration-200 hover:scale-[1.03]">
+                        <Button variant="outline" className="h-[45px] rounded-xl transition-all duration-200 hover:scale-[1.03]">
                             Start Professional Trial
                         </Button>
                     </Link>

@@ -30,11 +30,14 @@ export function PublicHeader({ transparentUntilScroll = false }: PublicHeaderPro
     const navLink = (href: string, label: string, active: boolean) => (
         <Link
             href={href}
-            className={`text-sm font-medium transition-colors ${
-                active ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
+            className={`relative text-sm font-medium transition-all duration-200 ${
+                active
+                    ? 'rounded-full bg-secondary/10 px-3 py-1.5 text-foreground'
+                    : 'px-3 py-1.5 text-muted-foreground hover:text-foreground'
             }`}
         >
             {label}
+
         </Link>
     );
 
@@ -69,11 +72,11 @@ export function PublicHeader({ transparentUntilScroll = false }: PublicHeaderPro
                     <ThemeToggle />
                     {auth?.user ? (
                         <Link href="/dashboard">
-                            <Button className="h-9 rounded-full bg-foreground text-background hover:bg-foreground/90">Dashboard</Button>
+                            <Button className="h-[45px] rounded-full bg-foreground text-background hover:bg-foreground/90">Dashboard</Button>
                         </Link>
                     ) : (
                         <Link href="/login">
-                            <Button className="h-9 rounded-full bg-primary text-background hover:bg-foreground/90">Get Started</Button>
+                            <Button className="h-[45px] rounded-full bg-primary text-background hover:bg-foreground/90">Get Started</Button>
                         </Link>
                     )}
                 </div>

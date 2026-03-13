@@ -402,7 +402,7 @@ export default function Landing() {
 
                             {/* Content with fade and subtle parallax + load animation */}
                             <div
-                                className="relative z-10 mx-auto w-full max-w-3xl px-6 py-16 text-center sm:px-8 sm:py-20 transition-all duration-700 ease-out"
+                                className="relative z-10 mx-auto w-full max-w-6xl px-6 py-16 text-center sm:px-8 sm:py-20 transition-all duration-700 ease-out"
                                 style={{
                                     opacity: heroLoaded ? heroContentOpacity : 0,
                                     transform: heroLoaded ? 'translateY(0px)' : 'translateY(30px)',
@@ -415,7 +415,7 @@ export default function Landing() {
                                         transform: heroLoaded ? 'translateY(0)' : 'translateY(30px)',
                                     }}
                                 >
-                                    Own Your Direct Bookings
+                                    Guest Relationship Platform
                                 </h1>
 
                                 <p
@@ -426,11 +426,7 @@ export default function Landing() {
                                         transitionDelay: '120ms',
                                     }}
                                 >
-                                    Accept direct bookings, collect payments,
-                                    and turn one-time guests into repeat
-                                    customers without paying OTA commissions.
-                                </p>
-
+                                    Turn guests into repeat bookings                                </p>
                                 <div
                                     className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4 transition-all duration-700 ease-out"
                                     style={{
@@ -441,7 +437,7 @@ export default function Landing() {
                                 >
                                     <Button
                                         size="lg"
-                                        className="w-full gap-2 rounded-full px-8 sm:w-auto"
+                                        className="h-[45px] w-full gap-2 rounded-full px-8 sm:w-auto"
                                         onClick={scrollToImport}
                                     >
                                         Import listing
@@ -451,7 +447,7 @@ export default function Landing() {
                                     <Button
                                         variant="secondary"
                                         size="lg"
-                                        className="w-full rounded-full sm:w-auto"
+                                        className="h-[45px] w-full rounded-full sm:w-auto"
                                         onClick={() => setDemoModalOpen(true)}
                                     >
                                         Watch Demo
@@ -632,7 +628,7 @@ export default function Landing() {
                                     <Button
                                         variant="outline"
                                         size="icon"
-                                        className="size-10 rounded-full"
+                                        className="size-[45px] rounded-full"
                                         onClick={() => scrollRegions('l')}
                                     >
                                         <IconChevronLeft className="size-4" />
@@ -640,7 +636,7 @@ export default function Landing() {
                                     <Button
                                         variant="outline"
                                         size="icon"
-                                        className="size-10 rounded-full"
+                                        className="size-[45px] rounded-full"
                                         onClick={() => scrollRegions('r')}
                                     >
                                         <IconChevronRight className="size-4" />
@@ -795,7 +791,7 @@ export default function Landing() {
                                         >
                                             <Button
                                                 variant="secondary"
-                                                className="h-11 w-full rounded-xl transition-transform duration-200 hover:scale-[1.04]"
+                                                className="h-[45px] w-full rounded-xl transition-transform duration-200 hover:scale-[1.04]"
                                             >
                                                 Start Free
                                             </Button>
@@ -851,7 +847,7 @@ export default function Landing() {
                                             href="/host/register"
                                             className="mt-6 block"
                                         >
-                                            <Button className="group h-11 w-full rounded-xl transition-transform duration-200 hover:scale-[1.04]">
+                                            <Button className="group h-[45px] w-full rounded-xl transition-transform duration-200 hover:scale-[1.04]">
                                                 Upgrade
                                                 <IconArrowRight className="ml-1 size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
                                             </Button>
@@ -906,7 +902,7 @@ export default function Landing() {
                                         >
                                             <Button
                                                 variant="secondary"
-                                                className="h-11 w-full rounded-xl transition-transform duration-200 hover:scale-[1.04]"
+                                                className="h-[45px] w-full rounded-xl transition-transform duration-200 hover:scale-[1.04]"
                                             >
                                                 Start Trial
                                             </Button>
@@ -1000,7 +996,7 @@ export default function Landing() {
                                 >
                                     <Button
                                         size="lg"
-                                        className="group h-12 gap-2 rounded-full px-8 text-base shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl"
+                                        className="group h-[45px] gap-2 rounded-full px-8 text-base shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl"
                                     >
                                         Import Now
                                         <IconArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
