@@ -306,6 +306,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                     'thumbnail' => $property->images && count($property->images) > 0 ? $property->images[0] : null,
                     'discovery_url' => url('/stay/' . $property->slug),
                     'is_enabled' => $property->discovery_page_enabled,
+                    'views_7d' => $property->views_7d,
                     'views_30d' => $property->views_30d,
                 ];
             })->toArray();

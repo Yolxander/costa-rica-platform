@@ -9,12 +9,19 @@ import {
   SidebarProvider,
 } from "@/components/ui/sidebar"
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import {
   Eye,
   Edit,
   Copy,
   Plus,
   ImageIcon,
-  MapPin,
+  BarChart3,
 } from "lucide-react"
 import { SharedData } from "@/types"
 
@@ -26,6 +33,7 @@ interface Property {
   thumbnail: string | null
   discovery_url: string
   is_enabled: boolean
+  views_7d: number
   views_30d: number
 }
 
@@ -36,6 +44,7 @@ interface DiscoveryPagesProps extends SharedData {
 export default function DiscoveryPages() {
   const { properties } = usePage<DiscoveryPagesProps>().props
   const [copiedId, setCopiedId] = useState<number | null>(null)
+  const [viewPeriod, setViewPeriod] = useState<"7d" | "30d">("30d")
 
   const copyToClipboard = (url: string, id: number) => {
     navigator.clipboard.writeText(url)
@@ -106,20 +115,35 @@ export default function DiscoveryPages() {
 
                         {/* Content */}
                         <div className="flex flex-col gap-1 px-2 pt-4 pb-2">
+                          <h3 className="text-lg font-semibold tracking-tight line-clamp-1">{property.name}</h3>
+                          <p className="text-sm text-muted-foreground">{property.location}</p>
 
-                          <div className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
-                            <MapPin className="h-3.5 w-3.5 shrink-0" />
-                            <span className="font-medium">{property.views_30d || 0} views (30d)</span>
+                          <div className="mt-2 flex items-center justify-between gap-2 text-xs text-muted-foreground">
+                              <span className="flex items-center justify-center">
+                                  <BarChart3 className="h-3.5 w-3.5 shrink-0" />
+                                <span className="font-small">
+                                  {viewPeriod === "7d"
+                                      ? (property.views_7d || 0)
+                                      : (property.views_30d || 0)
+                                  } views
+                                </span>
+                              </span>
+                            <Select
+                              value={viewPeriod}
+                              onValueChange={(value: "7d" | "30d") => setViewPeriod(value)}
+                            >
+                              <SelectTrigger className="h-4 w-[95px] text-[10px] rounded-full border-muted-foreground/20 px-2">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="7d">Last 7 days</SelectItem>
+                                <SelectItem value="30d">Last 30 days</SelectItem>
+                              </SelectContent>
+                            </Select>
                           </div>
 
                           {/* Actions */}
                           <div className="mt-3 flex flex-wrap gap-2">
-                            <Link href={property.discovery_url} target="_blank">
-                              <Button variant="outline" size="sm" className="h-8 rounded-full">
-                                <Eye className="mr-1.5 h-3.5 w-3.5" />
-                                View
-                              </Button>
-                            </Link>
                             <Link href={`/discovery-pages/${property.id}/edit`}>
                               <Button variant="outline" size="sm" className="h-8 rounded-full">
                                 <Edit className="mr-1.5 h-3.5 w-3.5" />
@@ -144,6 +168,12 @@ export default function DiscoveryPages() {
                                 </>
                               )}
                             </Button>
+                              <Link href={property.discovery_url} target="_blank">
+                                  <Button variant="outline" size="sm" className="h-8 rounded-full">
+                                      <Eye className="mr-1.5 h-3.5 w-3.5" />
+                                      View
+                                  </Button>
+                              </Link>
                           </div>
                         </div>
                       </Card>
