@@ -528,6 +528,8 @@ Route::get('/stay/{slug}', function ($slug) {
             'bedrooms' => $property->bedrooms,
             'bathrooms' => $property->bathrooms,
             'amenities' => $property->amenities ?? [],
+            'highlighted_amenities' => $property->highlighted_amenities ?? [],
+            'highlighted_images' => $property->highlighted_images ?? [],
             'base_price' => $property->base_price,
             'price_format' => $property->price_format,
             'currency' => $property->currency,

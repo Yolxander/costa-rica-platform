@@ -1,24 +1,14 @@
-import { Head, Link } from "@inertiajs/react"
-import { Button } from "@/components/ui/button"
+import { Head } from "@inertiajs/react"
 import {
   IconMapPin,
   IconUsers,
   IconBed,
   IconBath,
   IconHome,
-  IconWifi,
-  IconCar,
-  IconSwimming,
-  IconCoffee,
   IconBrandAirbnb,
   IconBrandBooking,
   IconBrandWhatsapp,
   IconExternalLink,
-  IconChevronRight,
-  IconWashMachine,
-  IconFlame,
-  IconDeviceTv,
-  IconSnowflake,
 } from "@tabler/icons-react"
 
 interface ButtonConfig {
@@ -37,6 +27,8 @@ interface Property {
   bedrooms: number
   bathrooms: number
   amenities: string[]
+  highlighted_amenities: string[]
+  highlighted_images: string[]
   base_price: number
   price_format: string | null
   currency: string
@@ -61,48 +53,21 @@ interface DiscoveryPageProps {
   property: Property
 }
 
-const amenityIcons: Record<string, React.ComponentType<{ className?: string }>> = {
-  wifi: IconWifi,
-  parking: IconCar,
-  pool: IconSwimming,
-  kitchen: IconCoffee,
-  hottub: IconBath,
-  washer: IconWashMachine,
-  dryer: IconWashMachine,
-  tv: IconDeviceTv,
-  hdtv: IconDeviceTv,
-  ac: IconSnowflake,
-  heating: IconFlame,
-  WiFi: IconWifi,
-  Parking: IconCar,
-  Pool: IconSwimming,
-  Kitchen: IconCoffee,
-  HotTub: IconBath,
-  Washer: IconWashMachine,
-  Dryer: IconWashMachine,
-  TV: IconDeviceTv,
-  HDTV: IconDeviceTv,
-  AC: IconSnowflake,
-  Heating: IconFlame,
-}
-
 export default function DiscoveryPage({ property }: DiscoveryPageProps) {
-  const getAmenityIcon = (amenity: string) => {
-    const normalized = amenity.toLowerCase().replace(/[_\s]/g, "")
-    for (const [key, Icon] of Object.entries(amenityIcons)) {
-      if (normalized.includes(key.toLowerCase())) {
-        return Icon
-      }
-    }
-    return null
-  }
+  const displayAmenities = property.highlighted_amenities?.length > 0
+    ? property.highlighted_amenities
+    : property.amenities?.slice(0, 6) ?? []
+
+  const displayImages = property.highlighted_images?.length > 0
+    ? property.highlighted_images
+    : property.images?.slice(1, 6) ?? []
 
   return (
       <>
           <Head title={`${property.name} - Book Your Stay`} />
           <div className="min-h-screen bg-background">
               {/* Hero Image */}
-              <div className="relative h-[45vh] w-full overflow-hidden">
+              <div className="relative h-56 w-full overflow-hidden">
                   {property.images && property.images.length > 0 ? (
                       <img
                           src={property.images[0]}
@@ -111,37 +76,37 @@ export default function DiscoveryPage({ property }: DiscoveryPageProps) {
                       />
                   ) : (
                       <div className="flex h-full items-center justify-center bg-muted">
-                          <IconHome className="h-20 w-20 text-muted-foreground/30" />
+                          <IconHome className="h-10 w-10 text-muted-foreground/30" />
                       </div>
                   )}
                   <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-background" />
               </div>
 
-              {/* Content Container */}
-              <div className="relative -mt-16 px-4 pb-8">
+              {/* Content */}
+              <div className="relative -mt-12 px-4 pb-6">
                   <div className="mx-auto max-w-md">
                       {/* Property Info Card */}
-                      <div className="mb-6 rounded-2xl border bg-card/80 p-6 shadow-sm backdrop-blur-sm">
-                          <h1 className="mb-2 text-2xl font-bold text-card-foreground">
+                      <div className="mb-4 rounded-2xl border bg-card/90 p-4 shadow-sm backdrop-blur-sm">
+                          <h1 className="mb-1 text-lg leading-tight font-bold text-card-foreground">
                               {property.name}
                           </h1>
-                          <div className="mb-3 flex items-center gap-2 text-muted-foreground">
-                              <IconMapPin className="h-4 w-4" />
-                              <span className="text-sm">
+                          <div className="mb-2 flex items-center gap-1.5 text-muted-foreground">
+                              <IconMapPin className="h-3.5 w-3.5" />
+                              <span className="text-xs">
                                   {property.location}
                               </span>
                           </div>
-                          <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                          <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
                               <span className="flex items-center gap-1">
-                                  <IconUsers className="h-4 w-4" />
+                                  <IconUsers className="h-3.5 w-3.5" />
                                   Sleeps {property.guests}
                               </span>
                               <span className="flex items-center gap-1">
-                                  <IconBed className="h-4 w-4" />
+                                  <IconBed className="h-3.5 w-3.5" />
                                   {property.bedrooms} bedrooms
                               </span>
                               <span className="flex items-center gap-1">
-                                  <IconBath className="h-4 w-4" />
+                                  <IconBath className="h-3.5 w-3.5" />
                                   {property.bathrooms} bathrooms
                               </span>
                           </div>
@@ -149,43 +114,36 @@ export default function DiscoveryPage({ property }: DiscoveryPageProps) {
 
                       {/* Custom Message */}
                       {property.custom_message && (
-                          <div className="mb-6 rounded-xl border bg-muted/50 p-4">
-                              <p className="text-center text-sm text-muted-foreground italic">
+                          <div className="mb-4 rounded-xl border bg-muted/50 p-3">
+                              <p className="text-center text-xs text-muted-foreground italic">
                                   &ldquo;{property.custom_message}&rdquo;
                               </p>
                           </div>
                       )}
 
                       {/* Booking Buttons */}
-                      <div className="space-y-4">
+                      <div className="space-y-3">
                           {/* Book Direct - Primary CTA */}
                           {property.buttons.book_direct.visible && (
-                              <Link
+                              <a
                                   href={
                                       property.buttons.book_direct.url ||
                                       `/${property.slug}`
                                   }
                                   className="block"
                               >
-                                  <Button
-                                      className="h-14 w-full text-base font-semibold text-white"
+                                  <button
+                                      type="button"
+                                      className="flex h-12 w-full items-center justify-center gap-2 rounded-lg text-sm font-semibold text-white"
                                       style={{
                                           backgroundColor: property.primary_color,
                                       }}
                                   >
-                                      <IconHome className="mr-2 h-5 w-5" />
+                                      <IconHome className="h-5 w-5" />
                                       Book Direct (Best Price)
-                                  </Button>
-                              </Link>
+                                  </button>
+                              </a>
                           )}
-
-                          {/* Check Availability */}
-                          <Link href={`/${property.slug}`} className="block">
-                              <Button variant="outline" className="h-12 w-full">
-                                  Check Availability
-                                  <IconChevronRight className="ml-2 h-4 w-4" />
-                              </Button>
-                          </Link>
 
                           {/* External Platforms */}
                           {property.buttons.airbnb.visible &&
@@ -196,18 +154,18 @@ export default function DiscoveryPage({ property }: DiscoveryPageProps) {
                                       rel="noopener noreferrer"
                                       className="block"
                                   >
-                                      <Button
-                                          variant="outline"
-                                          className="h-12 w-full border text-white hover:opacity-90"
+                                      <button
+                                          type="button"
+                                          className="group flex h-11 w-full items-center justify-center gap-2 rounded-xl border-2 px-4 text-sm font-medium shadow-md transition-all duration-200 hover:shadow-lg hover:brightness-110 active:scale-[0.98]"
                                           style={{
                                               backgroundColor: property.secondary_color,
                                               borderColor: property.secondary_color,
                                           }}
                                       >
-                                          <IconBrandAirbnb className="mr-2 h-5 w-5" />
-                                          Book on Airbnb
-                                          <IconExternalLink className="ml-auto h-4 w-4 opacity-50" />
-                                      </Button>
+                                          <IconBrandAirbnb className="h-5 w-5 text-rose-500" />
+                                          <span className="flex-1 text-white">Book on Airbnb</span>
+                                          <IconExternalLink className="h-4 w-4 text-white opacity-70 transition-opacity group-hover:opacity-100" />
+                                      </button>
                                   </a>
                               )}
 
@@ -219,18 +177,18 @@ export default function DiscoveryPage({ property }: DiscoveryPageProps) {
                                       rel="noopener noreferrer"
                                       className="block"
                                   >
-                                      <Button
-                                          variant="outline"
-                                          className="h-12 w-full border text-white hover:opacity-90"
+                                      <button
+                                          type="button"
+                                          className="group flex h-11 w-full items-center justify-center gap-2 rounded-xl border-2 px-4 text-sm font-medium shadow-md transition-all duration-200 hover:shadow-lg hover:brightness-110 active:scale-[0.98]"
                                           style={{
                                               backgroundColor: property.secondary_color,
                                               borderColor: property.secondary_color,
                                           }}
                                       >
-                                          <IconBrandBooking className="mr-2 h-5 w-5" />
-                                          Book on Booking.com
-                                          <IconExternalLink className="ml-auto h-4 w-4 opacity-50" />
-                                      </Button>
+                                          <IconBrandBooking className="h-5 w-5 text-blue-500" />
+                                          <span className="flex-1 text-white">Book on Booking.com</span>
+                                          <IconExternalLink className="h-4 w-4 text-white opacity-70 transition-opacity group-hover:opacity-100" />
+                                      </button>
                                   </a>
                               )}
 
@@ -242,17 +200,18 @@ export default function DiscoveryPage({ property }: DiscoveryPageProps) {
                                       rel="noopener noreferrer"
                                       className="block"
                                   >
-                                      <Button
-                                          variant="outline"
-                                          className="h-12 w-full border text-white hover:opacity-90"
+                                      <button
+                                          type="button"
+                                          className="group flex h-11 w-full items-center justify-center gap-2 rounded-xl border-2 px-4 text-sm font-medium shadow-md transition-all duration-200 hover:shadow-lg hover:brightness-110 active:scale-[0.98]"
                                           style={{
                                               backgroundColor: property.secondary_color,
                                               borderColor: property.secondary_color,
                                           }}
                                       >
-                                          Book on VRBO
-                                          <IconExternalLink className="ml-auto h-4 w-4 opacity-50" />
-                                      </Button>
+                                          <IconHome className="h-5 w-5 text-sky-400" />
+                                          <span className="flex-1 text-white">Book on VRBO</span>
+                                          <IconExternalLink className="h-4 w-4 text-white opacity-70 transition-opacity group-hover:opacity-100" />
+                                      </button>
                                   </a>
                               )}
 
@@ -264,122 +223,94 @@ export default function DiscoveryPage({ property }: DiscoveryPageProps) {
                                       rel="noopener noreferrer"
                                       className="block"
                                   >
-                                      <Button
-                                          variant="outline"
-                                          className="h-12 w-full border text-white hover:opacity-90"
+                                      <button
+                                          type="button"
+                                          className="group flex h-11 w-full items-center justify-center gap-2 rounded-xl border-2 px-4 text-sm font-medium shadow-md transition-all duration-200 hover:shadow-lg hover:brightness-110 active:scale-[0.98]"
                                           style={{
                                               backgroundColor: property.secondary_color,
                                               borderColor: property.secondary_color,
                                           }}
                                       >
-                                          Visit Our Website
-                                          <IconExternalLink className="ml-auto h-4 w-4 opacity-50" />
-                                      </Button>
+                                          <IconExternalLink className="h-5 w-5 text-emerald-400" />
+                                          <span className="flex-1 text-white">Visit Our Website</span>
+                                          <IconExternalLink className="h-4 w-4 text-white opacity-70 transition-opacity group-hover:opacity-100" />
+                                      </button>
                                   </a>
                               )}
                       </div>
 
-                      {/* Amenities Preview */}
-                      {property.amenities && property.amenities.length > 0 && (
-                          <div className="mt-8">
-                              <h3 className="mb-4 text-center text-sm font-medium text-muted-foreground">
+                      {/* Property Highlights */}
+                      {displayAmenities.length > 0 && (
+                          <div className="mt-6">
+                              <h3 className="mb-3 text-center text-xs font-medium text-muted-foreground">
                                   Property Highlights
                               </h3>
-                              <div className="flex flex-wrap justify-center gap-3">
-                                  {property.amenities
-                                      .slice(0, 6)
-                                      .map((amenity, index) => {
-                                          const Icon = getAmenityIcon(amenity);
-                                          return (
-                                              <div
-                                                  key={index}
-                                                  className="flex items-center gap-1.5 rounded-full border bg-secondary px-3 py-1.5 text-xs text-white"
-                                              >
-                                                  {Icon && (
-                                                      <Icon className="h-3.5 w-3.5" />
-                                                  )}
-                                                  <span>
-                                                      {amenity.replace(
-                                                          /_/g,
-                                                          ' ',
-                                                      )}
-                                                  </span>
-                                              </div>
-                                          );
-                                      })}
+                              <div className="flex flex-wrap justify-center gap-2">
+                                  {displayAmenities.map((amenity, index) => (
+                                      <div
+                                          key={index}
+                                          className="flex items-center gap-1 rounded-full border bg-muted px-2.5 py-1 text-[10px]"
+                                      >
+                                          <span>
+                                              {amenity.replace(/_/g, ' ')}
+                                          </span>
+                                      </div>
+                                  ))}
                               </div>
                           </div>
                       )}
 
-                      {/* Photo Gallery Preview */}
-                      {property.images && property.images.length > 1 && (
-                          <div className="mt-8">
-                              <h3 className="mb-4 text-center text-sm font-medium text-muted-foreground">
+                      {/* Photo Gallery */}
+                      {displayImages.length > 0 && (
+                          <div className="mt-6">
+                              <h3 className="mb-3 text-center text-xs font-medium text-muted-foreground">
                                   Photo Gallery
                               </h3>
                               <div className="flex gap-2 overflow-x-auto pb-2">
-                                  {property.images
-                                      .slice(1, 6)
-                                      .map((image, index) => (
-                                          <div
-                                              key={index}
-                                              className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg border"
-                                          >
-                                              <img
-                                                  src={image}
-                                                  alt={`${property.name} ${index + 2}`}
-                                                  className="h-full w-full object-cover"
-                                              />
-                                          </div>
-                                      ))}
+                                  {displayImages.map((image, index) => (
+                                      <div
+                                          key={index}
+                                          className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg border"
+                                      >
+                                          <img
+                                              src={image}
+                                              alt={`${property.name} ${index + 1}`}
+                                              className="h-full w-full object-cover"
+                                          />
+                                      </div>
+                                  ))}
                               </div>
                           </div>
                       )}
 
-                      {/* Contact Options */}
-                      {(property.buttons.whatsapp.visible ||
-                          property.buttons.website.visible) && (
-                          <div className="mt-8 border-t pt-6">
-                              <h3 className="mb-4 text-center text-sm font-medium text-muted-foreground">
-                                  Contact Host
-                              </h3>
-                              <div className="flex justify-center gap-3">
-                                  {property.buttons.whatsapp.visible &&
-                                      property.buttons.whatsapp.url && (
-                                          <a
-                                              href={
-                                                  property.buttons.whatsapp.url
-                                              }
-                                              target="_blank"
-                                              rel="noopener noreferrer"
-                                          >
-                                              <Button
-                                                  variant="outline"
-                                                  className="h-12 border-green-200 bg-green-50 text-green-600 hover:bg-green-100 hover:text-green-700"
-                                              >
-                                                  <IconBrandWhatsapp className="mr-2 h-5 w-5" />
-                                                  WhatsApp
-                                              </Button>
-                                          </a>
-                                      )}
-                                  <Link
-                                      href={`/${property.slug}`}
-                                      className="block"
-                                  >
-                                      <Button
-                                          variant="outline"
-                                          className="h-12"
+                      {/* Contact Host */}
+                      {property.buttons.whatsapp.visible &&
+                          property.buttons.whatsapp.url && (
+                              <div className="mt-6 border-t pt-4">
+                                  <h3 className="mb-3 text-center text-xs font-medium text-muted-foreground">
+                                      Contact Host
+                                  </h3>
+                                  <div className="flex justify-center gap-2">
+                                      <a
+                                          href={property.buttons.whatsapp.url}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
                                       >
-                                          View Full Listing
-                                      </Button>
-                                  </Link>
+                                          <button
+                                              type="button"
+                                              className="flex h-10 items-center justify-center gap-1.5 rounded-lg border border-green-200 bg-green-50 px-3 text-xs text-green-600 hover:bg-green-100"
+                                          >
+                                              <IconBrandWhatsapp className="h-4 w-4" />
+                                              WhatsApp
+                                          </button>
+                                      </a>
+                                  </div>
                               </div>
-                          </div>
-                      )}
+                          )}
 
                       {/* Price Info */}
                       {property.base_price > 0 && (
-                          <div className="mt-8 text-center">
+                          <div className="mt-6 text-center">
                               <p className="text-xs text-muted-foreground">
                                   Starting from{' '}
                                   <span className="font-semibold text-foreground">
@@ -391,22 +322,21 @@ export default function DiscoveryPage({ property }: DiscoveryPageProps) {
                       )}
 
                       {/* Footer */}
-                      <div className="mt-12 border-t pt-6 text-center">
-                          <div className="mb-3 flex items-center justify-center gap-2">
-                              <div className="flex h-8 w-8 items-center justify-center">
+                      <div className="mt-8 border-t pt-4 text-center">
+                          <div className="mb-2 flex items-center justify-center gap-2">
+                              <div className="flex h-6 w-6 items-center justify-center">
                                   <img
                                       src="/brisa-logo.png"
                                       alt="Sora Logo"
-                                      className="h-6 w-auto"
+                                      className="h-4 w-auto"
                                   />
                               </div>
-                              <span className="text-sm font-medium text-muted-foreground">
+                              <span className="text-xs font-medium text-muted-foreground">
                                   Powered by Sora
                               </span>
                           </div>
-                          <p className="text-xs text-muted-foreground/60">
-                              Book directly with {property.host.name} for the
-                              best experience
+                          <p className="text-[10px] text-muted-foreground/60">
+                              Book directly with the host for the best experience
                           </p>
                       </div>
                   </div>

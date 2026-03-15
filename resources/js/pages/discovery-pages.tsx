@@ -85,18 +85,12 @@ export default function DiscoveryPages() {
                         style={{ transitionDelay: `${index * 100}ms` }}
                       >
                         {/* Thumbnail */}
-                        <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl">
-                          {property.thumbnail ? (
-                            <img
-                              src={property.thumbnail}
-                              alt={property.name}
-                              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                            />
-                          ) : (
-                            <div className="flex h-full items-center justify-center bg-muted">
-                              <ImageIcon className="h-12 w-12 text-muted-foreground/40" />
-                            </div>
-                          )}
+                        <div className="relative aspect-[9/10] w-full overflow-hidden rounded-2xl">
+                          <iframe
+                            src={`/stay/${property.slug}`}
+                            className="h-full w-full border-0 pointer-events-none"
+                            title={property.name}
+                          />
                           <div className="absolute left-3 top-3">
                             <span
                               className={`inline-flex items-center justify-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
@@ -112,8 +106,6 @@ export default function DiscoveryPages() {
 
                         {/* Content */}
                         <div className="flex flex-col gap-1 px-2 pt-4 pb-2">
-                          <h3 className="text-lg font-semibold tracking-tight line-clamp-1">{property.name}</h3>
-                          <p className="text-sm text-muted-foreground">{property.location}</p>
 
                           <div className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
                             <MapPin className="h-3.5 w-3.5 shrink-0" />
