@@ -36,6 +36,8 @@ interface SocialPostWizardProps {
     saveUrl?: string
     updateUrl?: string
     initialStep?: number
+    initialPropertyId?: string
+    initialIncludeDiscoveryLink?: boolean
 }
 
 export function SocialPostWizard({
@@ -43,10 +45,12 @@ export function SocialPostWizard({
     saveUrl,
     updateUrl,
     initialStep,
+    initialPropertyId,
+    initialIncludeDiscoveryLink,
 }: SocialPostWizardProps) {
     const [step, setStep] = useState(initialStep ?? 1)
     const [platform, setPlatform] = useState<"instagram" | "facebook">("instagram")
-    const [propertyId, setPropertyId] = useState<string>("")
+    const [propertyId, setPropertyId] = useState<string>(initialPropertyId ?? "")
     const [caption, setCaption] = useState("")
     const [hashtags, setHashtags] = useState("")
     const [location, setLocation] = useState("")
@@ -54,7 +58,7 @@ export function SocialPostWizard({
     const [isSubmitting, setIsSubmitting] = useState(false)
 
     const [isGenerating, setIsGenerating] = useState(false)
-    const [includeDiscoveryLink, setIncludeDiscoveryLink] = useState(false)
+    const [includeDiscoveryLink, setIncludeDiscoveryLink] = useState(initialIncludeDiscoveryLink ?? false)
 
     const selectedProperty = propertyId
         ? properties.find((p) => p.id === Number(propertyId)) ?? null

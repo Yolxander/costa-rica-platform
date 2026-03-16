@@ -24,6 +24,11 @@ interface SocialsCreateProps extends SharedData {
 export default function SocialsCreatePage() {
     const { properties = [] } = usePage<SocialsCreateProps>().props
 
+    // Read query params for pre-selection from discovery pages
+    const urlParams = new URLSearchParams(window.location.search)
+    const initialPropertyId = urlParams.get("property_id") || undefined
+    const initialIncludeDiscoveryLink = urlParams.get("include_discovery_link") === "1"
+
     return (
         <>
             <Head title="Create Social Post - Sora" />
@@ -43,6 +48,8 @@ export default function SocialsCreatePage() {
                                 <SocialPostWizard
                                     properties={properties}
                                     saveUrl="/socials"
+                                    initialPropertyId={initialPropertyId}
+                                    initialIncludeDiscoveryLink={initialIncludeDiscoveryLink}
                                 />
                             </div>
                         </div>

@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import {
-  Eye,
+  Share2,
   Edit,
   Copy,
   Plus,
@@ -24,6 +24,7 @@ import {
   BarChart3,
 } from "lucide-react"
 import { SharedData } from "@/types"
+import { toast } from "sonner"
 
 interface Property {
   id: number
@@ -47,8 +48,23 @@ export default function DiscoveryPages() {
   const [viewPeriod, setViewPeriod] = useState<"7d" | "30d">("30d")
 
   const copyToClipboard = (url: string, id: number) => {
-    navigator.clipboard.writeText(url)
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(url)
+    } else {
+      const textarea = document.createElement("textarea")
+      textarea.value = url
+      textarea.style.position = "fixed"
+      textarea.style.opacity = "0"
+      document.body.appendChild(textarea)
+      textarea.select()
+      document.execCommand("copy")
+      document.body.removeChild(textarea)
+    }
     setCopiedId(id)
+    toast.success("Link copied to clipboard!", {
+      description: url,
+      position: "bottom-right",
+    })
     setTimeout(() => setCopiedId(null), 2000)
   }
 
@@ -111,6 +127,14 @@ export default function DiscoveryPages() {
                               {property.is_enabled ? "Enabled" : "Disabled"}
                             </span>
                           </div>
+
+                            <button
+                              className="absolute right-3 top-3 inline-flex items-center justify-center gap-1 rounded-full bg-primary px-2.5 py-0.5 text-xs font-medium text-primary-foreground transition-opacity hover:opacity-90 cursor-pointer"
+                              onClick={() => copyToClipboard(property.discovery_url, property.id)}
+                            >
+                              <Copy className="h-3 w-3" />
+                              {copiedId === property.id ? "Copied!" : "Copy Link"}
+                            </button>
                         </div>
 
                         {/* Content */}
@@ -150,28 +174,10 @@ export default function DiscoveryPages() {
                                 Edit
                               </Button>
                             </Link>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 rounded-full"
-                              onClick={() => copyToClipboard(property.discovery_url, property.id)}
-                            >
-                              {copiedId === property.id ? (
-                                <>
-                                  <Copy className="mr-1.5 h-3.5 w-3.5 text-green-500" />
-                                  Copied!
-                                </>
-                              ) : (
-                                <>
-                                  <Copy className="mr-1.5 h-3.5 w-3.5" />
-                                  Copy
-                                </>
-                              )}
-                            </Button>
-                              <Link href={property.discovery_url} target="_blank">
-                                  <Button variant="outline" size="sm" className="h-8 rounded-full">
-                                      <Eye className="mr-1.5 h-3.5 w-3.5" />
-                                      View
+                              <Link href={`/socials/create?property_id=${property.id}&include_discovery_link=1`}>
+                                  <Button size="sm" className="h-8 rounded-full bg-primary text-white">
+                                      <Share2 className="mr-1.5 h-3.5 w-3.5" />
+                                      Share on Social Media
                                   </Button>
                               </Link>
                           </div>
