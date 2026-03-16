@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react"
 import { Head, useForm, usePage } from "@inertiajs/react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -102,6 +103,40 @@ export default function DiscoveryPageEdit() {
     secondary_color: property.secondary_color ?? '#5f8787',
   })
 
+  const iframeRef = useRef<HTMLIFrameElement>(null)
+
+  // Send draft data to iframe preview whenever form data changes
+  useEffect(() => {
+    const iframe = iframeRef.current
+    if (!iframe?.contentWindow) return
+
+    const sendUpdate = () => {
+      iframe.contentWindow?.postMessage(
+        {
+          type: 'discovery-page-preview-update',
+          payload: data,
+        },
+        '*'
+      )
+    }
+
+    // Listen for iframe ready signal and resend data
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'discovery-page-preview-ready') {
+        sendUpdate()
+      }
+    }
+    window.addEventListener('message', handleMessage)
+
+    // Send immediately and also on iframe load
+    sendUpdate()
+    iframe.addEventListener('load', sendUpdate)
+    return () => {
+      iframe.removeEventListener('load', sendUpdate)
+      window.removeEventListener('message', handleMessage)
+    }
+  }, [data])
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     put(`/discovery-pages/${property.id}`)
@@ -166,9 +201,9 @@ export default function DiscoveryPageEdit() {
                                       <Collapsible>
                                           <Card className="group overflow-hidden rounded-2xl border border-border/30 bg-background py-0 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
                                               <CollapsibleTrigger asChild>
-                                                  <button
+                                                  <div
                                                       className="group flex w-full cursor-pointer items-center justify-between p-5 text-left transition-colors hover:bg-muted/50"
-                                                      type="button"
+                                                      role="button"
                                                   >
                                                       <div className="pr-4">
                                                           <h3 className="text-base font-semibold">
@@ -183,7 +218,7 @@ export default function DiscoveryPageEdit() {
                                                           <Plus className="size-4 group-data-[state=open]:hidden" />
                                                           <Minus className="hidden size-4 group-data-[state=open]:block" />
                                                       </span>
-                                                  </button>
+                                                  </div>
                                               </CollapsibleTrigger>
                                               <CollapsibleContent>
                                                   <CardContent className="space-y-6 pb-6">
@@ -300,9 +335,9 @@ export default function DiscoveryPageEdit() {
                                       <Collapsible>
                                           <Card className="group overflow-hidden rounded-2xl border border-border/30 bg-background py-0 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
                                               <CollapsibleTrigger asChild>
-                                                  <button
+                                                  <div
                                                       className="group flex w-full cursor-pointer items-center justify-between p-5 text-left transition-colors hover:bg-muted/50"
-                                                      type="button"
+                                                      role="button"
                                                   >
                                                       <div className="pr-4">
                                                           <h3 className="text-base font-semibold">
@@ -315,6 +350,7 @@ export default function DiscoveryPageEdit() {
                                                           </p>
                                                       </div>
                                                       <div className="flex items-center gap-3">
+                                                          <div onClick={(e) => e.stopPropagation()}>
                                                           <Switch
                                                               id="toggle-welcome-message"
                                                               checked={
@@ -329,12 +365,13 @@ export default function DiscoveryPageEdit() {
                                                                   )
                                                               }
                                                           />
+                                                          </div>
                                                           <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-background transition-all duration-300 group-data-[state=open]:bg-secondary">
                                                               <Plus className="size-4 group-data-[state=open]:hidden" />
                                                               <Minus className="hidden size-4 group-data-[state=open]:block" />
                                                           </span>
                                                       </div>
-                                                  </button>
+                                                  </div>
                                               </CollapsibleTrigger>
                                               <CollapsibleContent>
                                                   <CardContent className="space-y-4 pb-6">
@@ -391,9 +428,9 @@ export default function DiscoveryPageEdit() {
                                       <Collapsible>
                                           <Card className="group overflow-hidden rounded-2xl border border-border/30 bg-background py-0 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
                                               <CollapsibleTrigger asChild>
-                                                  <button
+                                                  <div
                                                       className="group flex w-full cursor-pointer items-center justify-between p-5 text-left transition-colors hover:bg-muted/50"
-                                                      type="button"
+                                                      role="button"
                                                   >
                                                       <div className="pr-4">
                                                           <h3 className="text-base font-semibold">
@@ -405,6 +442,7 @@ export default function DiscoveryPageEdit() {
                                                           </p>
                                                       </div>
                                                       <div className="flex items-center gap-3">
+                                                          <div onClick={(e) => e.stopPropagation()}>
                                                           <Switch
                                                               id="toggle-booking-buttons"
                                                               checked={
@@ -419,12 +457,13 @@ export default function DiscoveryPageEdit() {
                                                                   )
                                                               }
                                                           />
+                                                          </div>
                                                           <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-background transition-all duration-300 group-data-[state=open]:bg-secondary">
                                                               <Plus className="size-4 group-data-[state=open]:hidden" />
                                                               <Minus className="hidden size-4 group-data-[state=open]:block" />
                                                           </span>
                                                       </div>
-                                                  </button>
+                                                  </div>
                                               </CollapsibleTrigger>
                                               <CollapsibleContent>
                                                   <CardContent className="space-y-6 pb-6">
@@ -758,9 +797,9 @@ export default function DiscoveryPageEdit() {
                                       <Collapsible>
                                           <Card className="group overflow-hidden rounded-2xl border border-border/30 bg-background py-0 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
                                               <CollapsibleTrigger asChild>
-                                                  <button
+                                                  <div
                                                       className="group flex w-full cursor-pointer items-center justify-between p-5 text-left transition-colors hover:bg-muted/50"
-                                                      type="button"
+                                                      role="button"
                                                   >
                                                       <div className="pr-4">
                                                           <h3 className="text-base font-semibold">
@@ -774,6 +813,7 @@ export default function DiscoveryPageEdit() {
                                                           </p>
                                                       </div>
                                                       <div className="flex items-center gap-3">
+                                                          <div onClick={(e) => e.stopPropagation()}>
                                                           <Switch
                                                               id="toggle-property-highlights"
                                                               checked={
@@ -788,12 +828,13 @@ export default function DiscoveryPageEdit() {
                                                                   )
                                                               }
                                                           />
+                                                          </div>
                                                           <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-background transition-all duration-300 group-data-[state=open]:bg-secondary">
                                                               <Plus className="size-4 group-data-[state=open]:hidden" />
                                                               <Minus className="hidden size-4 group-data-[state=open]:block" />
                                                           </span>
                                                       </div>
-                                                  </button>
+                                                  </div>
                                               </CollapsibleTrigger>
                                               <CollapsibleContent>
                                                   <CardContent className="space-y-4 pb-6">
@@ -898,9 +939,9 @@ export default function DiscoveryPageEdit() {
                                       <Collapsible>
                                           <Card className="group overflow-hidden rounded-2xl border border-border/30 bg-background py-0 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
                                               <CollapsibleTrigger asChild>
-                                                  <button
+                                                  <div
                                                       className="group flex w-full cursor-pointer items-center justify-between p-5 text-left transition-colors hover:bg-muted/50"
-                                                      type="button"
+                                                      role="button"
                                                   >
                                                       <div className="pr-4">
                                                           <h3 className="text-base font-semibold">
@@ -913,6 +954,7 @@ export default function DiscoveryPageEdit() {
                                                           </p>
                                                       </div>
                                                       <div className="flex items-center gap-3">
+                                                          <div onClick={(e) => e.stopPropagation()}>
                                                           <Switch
                                                               id="toggle-photo-gallery"
                                                               checked={
@@ -927,12 +969,13 @@ export default function DiscoveryPageEdit() {
                                                                   )
                                                               }
                                                           />
+                                                          </div>
                                                           <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-background transition-all duration-300 group-data-[state=open]:bg-secondary">
                                                               <Plus className="size-4 group-data-[state=open]:hidden" />
                                                               <Minus className="hidden size-4 group-data-[state=open]:block" />
                                                           </span>
                                                       </div>
-                                                  </button>
+                                                  </div>
                                               </CollapsibleTrigger>
                                               <CollapsibleContent>
                                                   <CardContent className="space-y-4 pb-6">
@@ -1042,9 +1085,9 @@ export default function DiscoveryPageEdit() {
                                       <Collapsible>
                                           <Card className="group overflow-hidden rounded-2xl border border-border/30 bg-background py-0 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
                                               <CollapsibleTrigger asChild>
-                                                  <button
+                                                  <div
                                                       className="group flex w-full cursor-pointer items-center justify-between p-5 text-left transition-colors hover:bg-muted/50"
-                                                      type="button"
+                                                      role="button"
                                                   >
                                                       <div className="pr-4">
                                                           <h3 className="text-base font-semibold">
@@ -1056,6 +1099,7 @@ export default function DiscoveryPageEdit() {
                                                           </p>
                                                       </div>
                                                       <div className="flex items-center gap-3">
+                                                          <div onClick={(e) => e.stopPropagation()}>
                                                           <Switch
                                                               id="toggle-contact-section"
                                                               checked={
@@ -1070,12 +1114,13 @@ export default function DiscoveryPageEdit() {
                                                                   )
                                                               }
                                                           />
+                                                          </div>
                                                           <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-background transition-all duration-300 group-data-[state=open]:bg-secondary">
                                                               <Plus className="size-4 group-data-[state=open]:hidden" />
                                                               <Minus className="hidden size-4 group-data-[state=open]:block" />
                                                           </span>
                                                       </div>
-                                                  </button>
+                                                  </div>
                                               </CollapsibleTrigger>
                                               <CollapsibleContent>
                                                   <CardContent className="space-y-6 pb-6">
@@ -1219,6 +1264,7 @@ export default function DiscoveryPageEdit() {
 
                                                   {/* Iframe showing actual discovery page */}
                                                   <iframe
+                                                      ref={iframeRef}
                                                       src={`/stay/${property.slug}`}
                                                       className="h-[580px] w-full border-0"
                                                       title="Discovery Page Preview"

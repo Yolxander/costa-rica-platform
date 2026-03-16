@@ -1,4 +1,5 @@
 import { Head } from "@inertiajs/react"
+import { useState, useEffect } from "react"
 import {
   IconMapPin,
   IconUsers,
@@ -53,7 +54,74 @@ interface DiscoveryPageProps {
   property: Property
 }
 
-export default function DiscoveryPage({ property }: DiscoveryPageProps) {
+export default function DiscoveryPage({ property: initialProperty }: DiscoveryPageProps) {
+  const [draftOverrides, setDraftOverrides] = useState<Record<string, unknown> | null>(null)
+
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'discovery-page-preview-update') {
+        setDraftOverrides(event.data.payload)
+      }
+    }
+    window.addEventListener('message', handleMessage)
+
+    // Notify parent that iframe is ready to receive messages
+    if (window.parent !== window) {
+      window.parent.postMessage({ type: 'discovery-page-preview-ready' }, '*')
+    }
+
+    return () => window.removeEventListener('message', handleMessage)
+  }, [])
+
+  // Section visibility flags from draft overrides
+  const showBookingButtons = draftOverrides ? (draftOverrides.show_booking_buttons as boolean) !== false : true
+  const showPropertyHighlights = draftOverrides ? (draftOverrides.show_property_highlights as boolean) !== false : true
+  const showPhotoGallery = draftOverrides ? (draftOverrides.show_photo_gallery as boolean) !== false : true
+  const showContactSection = draftOverrides ? (draftOverrides.show_contact_section as boolean) !== false : true
+  const showPricing = draftOverrides ? (draftOverrides.show_pricing as boolean) !== false : true
+
+  // Merge draft overrides into property
+  const property = draftOverrides
+    ? {
+        ...initialProperty,
+        primary_color: (draftOverrides.primary_color as string) ?? initialProperty.primary_color,
+        secondary_color: (draftOverrides.secondary_color as string) ?? initialProperty.secondary_color,
+        custom_message: draftOverrides.show_welcome_message
+          ? (draftOverrides.custom_message as string) || null
+          : null,
+        highlighted_amenities: (draftOverrides.highlighted_amenities as string[]) ?? initialProperty.highlighted_amenities,
+        highlighted_images: (draftOverrides.highlighted_images as string[]) ?? initialProperty.highlighted_images,
+        buttons: {
+          book_direct: {
+            visible: draftOverrides.show_book_direct_button as boolean,
+            url: initialProperty.buttons.book_direct.url,
+          },
+          airbnb: {
+            visible: draftOverrides.show_airbnb_button as boolean,
+            url: (draftOverrides.airbnb_url as string) || initialProperty.buttons.airbnb.url,
+          },
+          bookingcom: {
+            visible: draftOverrides.show_bookingcom_button as boolean,
+            url: (draftOverrides.bookingcom_url as string) || initialProperty.buttons.bookingcom.url,
+          },
+          vrbo: {
+            visible: draftOverrides.show_vrbo_button as boolean,
+            url: (draftOverrides.vrbo_url as string) || initialProperty.buttons.vrbo.url,
+          },
+          whatsapp: {
+            visible: draftOverrides.show_whatsapp_button as boolean,
+            url: draftOverrides.whatsapp_number
+              ? `https://wa.me/${(draftOverrides.whatsapp_number as string).replace(/\D/g, '')}`
+              : initialProperty.buttons.whatsapp.url,
+          },
+          website: {
+            visible: draftOverrides.show_website_button as boolean,
+            url: (draftOverrides.website_url as string) || initialProperty.buttons.website.url,
+          },
+        },
+      }
+    : initialProperty
+
   const displayAmenities = property.highlighted_amenities?.length > 0
     ? property.highlighted_amenities
     : property.amenities?.slice(0, 6) ?? []
@@ -122,6 +190,7 @@ export default function DiscoveryPage({ property }: DiscoveryPageProps) {
                       )}
 
                       {/* Booking Buttons */}
+                      {showBookingButtons && (
                       <div className="space-y-3">
                           {/* Book Direct - Primary CTA */}
                           {property.buttons.book_direct.visible && (
@@ -238,9 +307,10 @@ export default function DiscoveryPage({ property }: DiscoveryPageProps) {
                                   </a>
                               )}
                       </div>
+                      )}
 
                       {/* Property Highlights */}
-                      {displayAmenities.length > 0 && (
+                      {showPropertyHighlights && displayAmenities.length > 0 && (
                           <div className="mt-6">
                               <h3 className="mb-3 text-center text-xs font-medium text-muted-foreground">
                                   Property Highlights
@@ -261,7 +331,7 @@ export default function DiscoveryPage({ property }: DiscoveryPageProps) {
                       )}
 
                       {/* Photo Gallery */}
-                      {displayImages.length > 0 && (
+                      {showPhotoGallery && displayImages.length > 0 && (
                           <div className="mt-6">
                               <h3 className="mb-3 text-center text-xs font-medium text-muted-foreground">
                                   Photo Gallery
@@ -284,7 +354,7 @@ export default function DiscoveryPage({ property }: DiscoveryPageProps) {
                       )}
 
                       {/* Contact Host */}
-                      {property.buttons.whatsapp.visible &&
+                      {showContactSection && property.buttons.whatsapp.visible &&
                           property.buttons.whatsapp.url && (
                               <div className="mt-6 border-t pt-4">
                                   <h3 className="mb-3 text-center text-xs font-medium text-muted-foreground">
@@ -309,7 +379,7 @@ export default function DiscoveryPage({ property }: DiscoveryPageProps) {
                           )}
 
                       {/* Price Info */}
-                      {property.base_price > 0 && (
+                      {showPricing && property.base_price > 0 && (
                           <div className="mt-6 text-center">
                               <p className="text-xs text-muted-foreground">
                                   Starting from{' '}
