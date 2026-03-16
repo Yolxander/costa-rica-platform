@@ -139,9 +139,6 @@ export default function DiscoveryPages() {
 
                         {/* Content */}
                         <div className="flex flex-col gap-1 px-2 pt-4 pb-2">
-                          <h3 className="text-lg font-semibold tracking-tight line-clamp-1">{property.name}</h3>
-                          <p className="text-sm text-muted-foreground">{property.location}</p>
-
                           <div className="mt-2 flex items-center justify-between gap-2 text-xs text-muted-foreground">
                               <span className="flex items-center justify-center">
                                   <BarChart3 className="h-3.5 w-3.5 shrink-0" />

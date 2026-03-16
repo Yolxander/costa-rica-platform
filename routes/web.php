@@ -537,6 +537,12 @@ Route::get('/stay/{slug}', function ($slug) {
             'custom_message' => $property->custom_message,
             'primary_color' => $property->accent_color ?? '#e78a53',
             'secondary_color' => $property->secondary_color ?? '#5f8787',
+            'show_welcome_message' => $property->show_welcome_message ?? true,
+            'show_booking_buttons' => $property->show_booking_buttons ?? true,
+            'show_property_highlights' => $property->show_property_highlights ?? true,
+            'show_photo_gallery' => $property->show_photo_gallery ?? true,
+            'show_contact_section' => $property->show_contact_section ?? true,
+            'show_pricing' => $property->show_pricing ?? true,
             'host' => [
                 'name' => $property->user?->name ?? 'Host',
                 'avatar' => $property->user?->avatar ?? null,

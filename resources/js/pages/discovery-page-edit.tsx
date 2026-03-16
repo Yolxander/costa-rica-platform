@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react"
 import { Head, useForm, usePage } from "@inertiajs/react"
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -52,6 +53,12 @@ interface Property {
   show_whatsapp_button: boolean
   show_vrbo_button: boolean
   show_website_button: boolean
+  show_welcome_message: boolean
+  show_booking_buttons: boolean
+  show_property_highlights: boolean
+  show_photo_gallery: boolean
+  show_contact_section: boolean
+  show_pricing: boolean
   custom_message: string | null
   accent_color: string
   secondary_color: string
@@ -93,12 +100,12 @@ export default function DiscoveryPageEdit() {
     custom_message: property.custom_message || "",
     highlighted_amenities: property.amenities?.slice(0, 6) || [],
     highlighted_images: property.images?.slice(1, 6) || [],
-    show_welcome_message: true,
-    show_booking_buttons: true,
-    show_property_highlights: true,
-    show_photo_gallery: true,
-    show_contact_section: true,
-    show_pricing: true,
+    show_welcome_message: property.show_welcome_message ?? true,
+    show_booking_buttons: property.show_booking_buttons ?? true,
+    show_property_highlights: property.show_property_highlights ?? true,
+    show_photo_gallery: property.show_photo_gallery ?? true,
+    show_contact_section: property.show_contact_section ?? true,
+    show_pricing: property.show_pricing ?? true,
     primary_color: property.accent_color ?? '#e78a53',
     secondary_color: property.secondary_color ?? '#5f8787',
   })
@@ -139,7 +146,15 @@ export default function DiscoveryPageEdit() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    put(`/discovery-pages/${property.id}`)
+    put(`/discovery-pages/${property.id}`, {
+      onSuccess: () => {
+        toast.success('Discovery Page saved successfully!')
+      },
+      onError: (errors) => {
+        const firstError = Object.values(errors)[0]
+        toast.error(firstError as string || 'Failed to save. Please check your inputs.')
+      },
+    })
   }
 
   return (

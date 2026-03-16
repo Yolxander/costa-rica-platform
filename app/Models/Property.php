@@ -50,6 +50,12 @@ class Property extends Model
         'show_whatsapp_button',
         'show_vrbo_button',
         'show_website_button',
+        'show_welcome_message',
+        'show_booking_buttons',
+        'show_property_highlights',
+        'show_photo_gallery',
+        'show_contact_section',
+        'show_pricing',
         'custom_message',
         'accent_color',
         'secondary_color',
@@ -76,6 +82,12 @@ class Property extends Model
         'show_whatsapp_button' => 'boolean',
         'show_vrbo_button' => 'boolean',
         'show_website_button' => 'boolean',
+        'show_welcome_message' => 'boolean',
+        'show_booking_buttons' => 'boolean',
+        'show_property_highlights' => 'boolean',
+        'show_photo_gallery' => 'boolean',
+        'show_contact_section' => 'boolean',
+        'show_pricing' => 'boolean',
     ];
 
     protected static function booted(): void

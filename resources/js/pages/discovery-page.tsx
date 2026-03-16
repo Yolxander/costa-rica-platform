@@ -36,6 +36,12 @@ interface Property {
   custom_message: string | null
   primary_color: string
   secondary_color: string
+  show_welcome_message?: boolean
+  show_booking_buttons?: boolean
+  show_property_highlights?: boolean
+  show_photo_gallery?: boolean
+  show_contact_section?: boolean
+  show_pricing?: boolean
   host: {
     name: string
     avatar: string | null
@@ -73,12 +79,13 @@ export default function DiscoveryPage({ property: initialProperty }: DiscoveryPa
     return () => window.removeEventListener('message', handleMessage)
   }, [])
 
-  // Section visibility flags from draft overrides
-  const showBookingButtons = draftOverrides ? (draftOverrides.show_booking_buttons as boolean) !== false : true
-  const showPropertyHighlights = draftOverrides ? (draftOverrides.show_property_highlights as boolean) !== false : true
-  const showPhotoGallery = draftOverrides ? (draftOverrides.show_photo_gallery as boolean) !== false : true
-  const showContactSection = draftOverrides ? (draftOverrides.show_contact_section as boolean) !== false : true
-  const showPricing = draftOverrides ? (draftOverrides.show_pricing as boolean) !== false : true
+  // Section visibility flags — use draft overrides if available, otherwise read from server props
+  const showWelcomeMessage = draftOverrides ? (draftOverrides.show_welcome_message as boolean) !== false : (initialProperty.show_welcome_message !== false)
+  const showBookingButtons = draftOverrides ? (draftOverrides.show_booking_buttons as boolean) !== false : (initialProperty.show_booking_buttons !== false)
+  const showPropertyHighlights = draftOverrides ? (draftOverrides.show_property_highlights as boolean) !== false : (initialProperty.show_property_highlights !== false)
+  const showPhotoGallery = draftOverrides ? (draftOverrides.show_photo_gallery as boolean) !== false : (initialProperty.show_photo_gallery !== false)
+  const showContactSection = draftOverrides ? (draftOverrides.show_contact_section as boolean) !== false : (initialProperty.show_contact_section !== false)
+  const showPricing = draftOverrides ? (draftOverrides.show_pricing as boolean) !== false : (initialProperty.show_pricing !== false)
 
   // Merge draft overrides into property
   const property = draftOverrides
@@ -181,7 +188,7 @@ export default function DiscoveryPage({ property: initialProperty }: DiscoveryPa
                       </div>
 
                       {/* Custom Message */}
-                      {property.custom_message && (
+                      {showWelcomeMessage && property.custom_message && (
                           <div className="mb-4 rounded-xl border bg-muted/50 p-3">
                               <p className="text-center text-xs text-muted-foreground italic">
                                   &ldquo;{property.custom_message}&rdquo;
